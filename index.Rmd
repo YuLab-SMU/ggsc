@@ -124,10 +124,12 @@ VlnPlot(pbmc,'CD4')
 sc_violin(pbmc, 'CD4')
 
 ## allows applying an user-defined function to transform/filter the data
-sc_violin(pbmc, 'CD4', .fun=function(d) dplyr::filter(d, value > 0))
+sc_violin(pbmc, 'CD4', .fun=function(d) dplyr::filter(d, value > 0)) +
+  ggforce::geom_sina(size=.1)
 ```
 
 ```{r fig.height=9}
 VlnPlot(pbmc, features)
-sc_violin(pbmc, features)
+sc_violin(pbmc, features) + 
+  theme(axis.text.x = element_text(angle=45, hjust=1))
 ```
