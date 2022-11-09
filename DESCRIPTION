@@ -1,12 +1,27 @@
 Package: scplot
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+Title: Visualizing single cell data
+Version: 0.0.1
+Authors@R: c(
+       person("Guangchuang", "Yu",     email = "guangchuangyu@gmail.com", role = c("aut", "cre", "cph"), comment = c(ORCID = "0000-0002-6485-8781")),
+       person("Shuangbin", "Xu",       email = "xshuangbin@163.com",      role = "aut", comment = c(ORCID="0000-0003-3513-5362"))
+       )
+Description: Useful functions to visualize single cell data.
+Imports:
+  dplyr,
+  ggplot2,
+  rlang,
+  scattermore,
+  SeuratObject,
+  tidydr,
+  tidyr,
+  utils
+Suggests:
+  knitr,
+  rmarkdown,
+  prettydoc
+VignetteBuilder: knitr
+ByteCompile: true
+License: Artistic-2.0
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
