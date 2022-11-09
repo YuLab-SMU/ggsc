@@ -3,15 +3,20 @@
 ##' @param object Seurat object
 ##' @param features selected features (i.e., genes)
 ##' @param dims selected dimensions (must be a two-length vector) that are used in visualization
+##' @param ncol number of facet columns if 'length(features) > 1'
 ##' @param .fun user defined function that will be applied to selected features (default is to filter out genes with no expression values)
 ##' @param ... additional parameters pass to 'scattermore::geom_scattermore()'
 ##' @return layer of points for selected features
 ##' @export
-sc_dim_geom_feature <- function(object, features, dims = c(1,2), ..., 
+sc_dim_geom_feature <- function(object, features, dims = c(1,2), ncol=3, ..., 
             .fun=function(.data) dplyr::filter(.data, .data$value > 0)) {
     d <- get_dim_data(object, dims=dims, features=features)
     d <- tidyr::pivot_longer(d, 4:ncol(d), names_to = "features")
-    sc_geom_point(data = .fun(d), ...)
+    d$features <- factor(d$features, levels = features)
+    p <- sc_geom_point(data = .fun(d), ...)
+    list(p, 
+        .feature_setting(features=features, ncol=ncol)
+    )
 }
 
 

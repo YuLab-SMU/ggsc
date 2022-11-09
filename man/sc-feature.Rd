@@ -11,7 +11,7 @@ sc_feature(
   reduction = NULL,
   cells = NULL,
   slot = "data",
-  mapping,
+  mapping = NULL,
   ncol = 3,
   ...
 )

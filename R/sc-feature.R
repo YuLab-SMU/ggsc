@@ -20,7 +20,7 @@
 ##' @export
 sc_feature <- function(object, features, 
                     dims=c(1,2), reduction=NULL, 
-                    cells=NULL, slot = "data", mapping, ncol=3, ...) {
+                    cells=NULL, slot = "data", mapping=NULL, ncol=3, ...) {
     d <- get_dim_data(object = object, features = features,
                     dims = dims, reduction = reduction, 
                     cells = cells, slot = slot)
@@ -39,23 +39,26 @@ sc_feature <- function(object, features,
         scale_color_gradient(low='grey', high='blue')           
         #scale_color_gradient2(low='blue', mid='grey', high='red') + 
 
+    p + .feature_setting(features=features, ncol=ncol)
+}
+
+
+.feature_setting <- function(features, ncol) {
     if (length(features) == 1) {
-        p <- p + ggtitle(features) +
-            theme(plot.title=element_text(size=rel(1.5), face='bold')) 
+        res <- list(ggtitle(features),
+            theme(plot.title=element_text(size=rel(1.5), face='bold'))
+        ) 
     } else {
-        p <- p + facet_wrap(~features, ncol=ncol) +
-            theme_bw() 
+        res <- list(facet_wrap(~features, ncol=ncol),
+            theme_bw(),
             theme(axis.text = element_blank(), 
                 axis.title = element_blank(), 
                 axis.ticks = element_blank(), 
                 panel.grid = element_blank()
-            ) 
+            )
+        ) 
     }
-
-    return(p)
+    return(res)
 }
-
-## features = c("MS4A1", "GNLY", "CD3E", "CD14", "FCER1A", "FCGR3A", "LYZ", "PPBP", "CD8A")
-## sc_feature(pbmc, features)
 
 

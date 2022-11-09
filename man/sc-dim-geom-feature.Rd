@@ -8,6 +8,7 @@ sc_dim_geom_feature(
   object,
   features,
   dims = c(1, 2),
+  ncol = 3,
   ...,
   .fun = function(.data) dplyr::filter(.data, .data$value > 0)
 )
@@ -18,6 +19,8 @@ sc_dim_geom_feature(
 \item{features}{selected features (i.e., genes)}
 
 \item{dims}{selected dimensions (must be a two-length vector) that are used in visualization}
+
+\item{ncol}{number of facet columns if 'length(features) > 1'}
 
 \item{...}{additional parameters pass to 'scattermore::geom_scattermore()'}
 

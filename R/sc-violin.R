@@ -23,6 +23,7 @@ sc_violin <- function(object, features,
                     mapping = NULL, ncol=3, ...) {
     d <- get_dim_data(object, dims=NULL, features=features)
     d <- tidyr::pivot_longer(d, 2:ncol(d), names_to = "features")
+    d$features <- factor(d$features, levels = features)
     if (!is.null(.fun)) {
         d <- .fun(d)
     }

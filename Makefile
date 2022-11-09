@@ -43,3 +43,9 @@ clean:
 	cd ..;\
 	$(RM) -r $(PKGNAME).Rcheck/
 
+pages:
+	Rscript -e 'rmarkdown::render("gh-pages/index.Rmd")'
+
+publish:
+	cd gh-pages;\
+	git add .; git commit -m 'update'; git push
