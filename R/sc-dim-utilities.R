@@ -10,13 +10,19 @@
 ##' @export
 sc_dim_geom_feature <- function(object, features, dims = c(1,2), ncol=3, ..., 
             .fun=function(.data) dplyr::filter(.data, .data$value > 0)) {
-    d <- get_dim_data(object, dims=dims, features=features)
-    d <- tidyr::pivot_longer(d, 4:ncol(d), names_to = "features")
-    d$features <- factor(d$features, levels = features)
-    p <- sc_geom_point(data = .fun(d), ...)
-    list(p, 
-        .feature_setting(features=features, ncol=ncol)
+    params <- list(...)
+    structure(
+      list(data=object, features=features, 
+           dims=dims, ncol=ncol, params=params, .fun=.fun), 
+       class = 'sc_dim_geom_feature'
     )
+    #d <- get_dim_data(object, dims=dims, features=features)
+    #d <- tidyr::pivot_longer(d, 4:ncol(d), names_to = "features")
+    #d$features <- factor(d$features, levels = features)
+    #p <- sc_geom_point(data = .fun(d), ...)
+    #list(p, 
+    #    .feature_setting(features=features, ncol=ncol)
+    #)
 }
 
 
