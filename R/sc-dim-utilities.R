@@ -25,6 +25,29 @@ sc_dim_geom_feature <- function(object, features, dims = c(1,2), ncol=3, ...,
     #)
 }
 
+##' @method ggplot_add sc_dim_geom_feature
+##' @importFrom tibble as_tibble
+##' @export
+ggplot_add.sc_dim_geom_feature <- function(object, plot, object_name){
+    d <- get_dim_data(object$data, dims=object$dims, features=object$features)
+    d <- as_tibble(d, rownames='.ID.NAME')
+    d <- tidyr::pivot_longer(d, 5:ncol(d), names_to = "features") |> 
+         dplyr::select(-c(2, 3, 4)) |>
+         dplyr::left_join(plot$data[,seq_len(3)] |>
+                          tibble::as_tibble(rownames='.ID.NAME'), 
+                          by='.ID.NAME'
+         )
+    d$features <- factor(d$features, levels = object$features)
+    d <- object$.fun(d)
+    sc.point.params <- object$params
+    sc.point.params$data <- d
+    p <- do.call(sc_geom_point, sc.point.params)
+    ly <- list(p,
+        .feature_setting(features=object$features, ncol=object$ncol)
+    )
+    ggplot_add(ly, plot, object_name)
+}
+
 
 ##' @title sc_dim_geom_label
 ##' @rdname sc-dim-geom-label
