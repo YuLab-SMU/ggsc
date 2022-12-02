@@ -57,6 +57,9 @@ pbmc <- FindNeighbors(pbmc, dims = 1:10, verbose = FALSE)
 pbmc <- FindClusters(pbmc, resolution = 0.5, verbose = FALSE)
 pbmc <- RunUMAP(pbmc, dims = 1:10, umap.method = "uwot", metric = "cosine")
 
+## Run tSNE 
+pbmc <- RunTSNE(pbmc, reduction = "pca", dims=1:5, tsne.method = "Rtsne")
+
 ## Assigning cell type identity to clusters
 new.cluster.ids <- c("Naive CD4 T", "CD14+ Mono", "Memory CD4 T", "B", "CD8 T",
                      "FCGR3A+ Mono", "NK", "DC", "Platelet")
@@ -104,7 +107,15 @@ sc_dim(pbmc, alpha=.3) +
     ggnewscale::new_scale_color() + 
     sc_dim_geom_feature(pbmc, features, mapping=aes(color=features)) +
     scale_color_viridis_d()
-```    
+
+sc_dim(pbmc, reduction = 'tsne') +
+    sc_dim_geom_feature(pbmc, 'CD4', color='black')
+
+sc_dim(pbmc, alpha=.3, reduction = 'tsne') +
+    ggnewscale::new_scale_color() +
+    sc_dim_geom_feature(pbmc, features, mapping=aes(color=features)) +
+    scale_color_viridis_d()
+```
 
 ## Visualize ellipse on a dimensional reduction plot
 
