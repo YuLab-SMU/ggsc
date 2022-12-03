@@ -1,5 +1,6 @@
 # scplot 0.0.2
 
++ `sc_dim_geom_sub` and `sc_dim_sub` (2022-12-03, Sat)
 + `sc_dim_geom_ellipse` to draw ellipse on `sc_dim()` (2022-12-02, Fri)
 
 # scplot 0.0.1

@@ -7,7 +7,7 @@
 sc_dim_geom_ellipse(mapping = NULL, level = 0.95, ...)
 }
 \arguments{
-\item{mapping, }{aesthetic mapping}
+\item{mapping}{aesthetic mapping}
 
 \item{level}{the level at which to draw an ellipse}
 

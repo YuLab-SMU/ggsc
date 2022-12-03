@@ -18,7 +18,7 @@ sc_dim <- function(object,
                     dims = dims, reduction = reduction, 
                     cells = cells, slot = slot)
 
-    default_mapping <- aes_string(color="ident")
+    default_mapping <- aes(color=.data$ident)
     if (is.null(mapping)) {
         mapping <- default_mapping
     } else {
@@ -31,7 +31,7 @@ sc_dim <- function(object,
 ##' @importFrom tidydr theme_dr
 sc_dim_internal <- function(data, mapping, ...) {
     dims <- names(data)[1:2]
-    ggplot(data, aes_string(dims[1], dims[2])) + 
+    ggplot(data, aes(.data[[dims[1]]], .data[[dims[2]]])) + 
         sc_geom_point(mapping, ...) + 
         theme_dr()
 } 

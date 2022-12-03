@@ -87,7 +87,7 @@ ggplot_add.sc_dim_geom_label <- function(object, plot, object_name) {
 
 ##' @title sc_dim_geom_ellipse
 ##' @rdname sc-dim-geom-ellipse
-##' @param mapping, aesthetic mapping
+##' @param mapping aesthetic mapping
 ##' @param level the level at which to draw an ellipse
 ##' @param ... additional parameters pass to the stat_ellipse
 ##' @return layer of ellipse
@@ -118,3 +118,54 @@ ggplot_add.sc_dim_geom_ellipse <- function(object, plot, object_name) {
     ggplot_add(ly, plot, object_name)
 }
 
+##' @title sc_dim_geom_subset
+##' @rdname sc-dim-geom-subset
+##' @param mapping aesthetic mapping
+##' @param subset subset of clusters to be displayed
+##' @param .column which column represents cluster (e.g., 'ident')
+##' @param ... additional parameters pass to sc_geom_point
+##' @return plot with a layer of specified clusters
+##' @export
+sc_dim_geom_sub <- function(mapping = NULL, subset, .column = "ident", ...) {
+  structure(list(mapping = mapping, 
+        subset = subset, 
+        .column = .column,
+        ...), 
+    class = "dim_geom_sub")
+}
+
+##' @method ggplot_add dim_geom_sub
+##' @export     
+ggplot_add.dim_geom_sub <- function(object, plot, object_name) {
+  ii <- plot$data[[object$.column]] %in% object$subset
+  object$data <- plot$data[ii, ]
+  default_mapping <- aes(color = .data[[object$.column]])
+  if (is.null(object$mapping)) {
+    mapping <- default_mapping
+  } else {
+    mapping <- modifyList(default_mapping, object$mapping)
+  }
+  object$mapping <- mapping
+  object$subset <- NULL
+  object$.column <- NULL
+  ly <- do.call(sc_geom_point, object)
+  ggplot_add(ly, plot, object_name)
+}
+
+##' @title sc_dim_sub
+##' @rdname sc-dim-sub
+##' @param subset subset of clusters to be displayed
+##' @param .column which column represents cluster (e.g., 'ident')
+##' @return update plot with only subset displayed
+##' @export
+sc_dim_sub <- function(subset, .column = "ident") {
+  structure(list(subset = subset, .column = .column), class = "dim_sub")
+}
+
+##' @method ggplot_add dim_sub
+##' @export     
+ggplot_add.dim_sub <- function(object, plot, object_name) {
+  ii <- plot$data[[object$.column]] %in% object$subset
+  plot$data <- plot$data[ii, ]
+  plot
+}
