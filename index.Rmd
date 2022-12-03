@@ -124,6 +124,22 @@ sc_dim(pbmc) +
   sc_dim_geom_ellipse(level=0.95)
 ```
 
+## Visualize selected clusters 
+
+```{r}
+selected <- c("Naive CD4 T", "NK")
+sc_dim(pbmc) + 
+  sc_dim_sub(subset=selected)
+```
+
+```{r}
+sc_dim(pbmc, color='grey') + 
+  sc_dim_geom_sub(subset=selected) + 
+    sc_dim_geom_label(geom = shadowtext::geom_shadowtext, 
+          mapping = aes(subset = ident %in% selected),
+            color='black', bg.color='white')
+```
+
 ## Dot plot
 
 ```{r eval=FALSE}
@@ -151,3 +167,4 @@ VlnPlot(pbmc, features)
 sc_violin(pbmc, features) + 
   theme(axis.text.x = element_text(angle=45, hjust=1))
 ```
+
