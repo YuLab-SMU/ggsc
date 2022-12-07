@@ -50,15 +50,20 @@ sc_feature <- function(object, features,
         ) 
     } else {
         res <- list(facet_wrap(~features, ncol=ncol),
-            theme_bw(),
-            theme(axis.text = element_blank(), 
-                axis.title = element_blank(), 
-                axis.ticks = element_blank(), 
-                panel.grid = element_blank()
-            )
+            theme_bw2()
         ) 
     }
     return(res)
 }
 
+##' @importFrom ggplot2 %+replace%
+theme_bw2 <- function(...) {
+    theme_bw() %+replace% 
+    theme(axis.text = element_blank(), 
+        axis.title = element_blank(), 
+        axis.ticks = element_blank(), 
+        panel.grid = element_blank()
+      ) %+replace% 
+    theme(...)
+}
 

@@ -1,3 +1,7 @@
+# scplot 0.0.3
+
++ `sc_spatial` to visualize spatial features (2022-12-07, Wed)
+
 # scplot 0.0.2
 
 + `sc_dim_geom_sub` and `sc_dim_sub` (2022-12-03, Sat)
