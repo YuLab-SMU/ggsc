@@ -168,3 +168,19 @@ sc_violin(pbmc, features) +
   theme(axis.text.x = element_text(angle=45, hjust=1))
 ```
 
+
+
+## Spatial features
+
+```{r}
+library(SeuratData)
+# InstallData("stxBrain")
+brain <- LoadData("stxBrain", type = "anterior1")
+# Normalization 
+brain <- SCTransform(brain, assay = "Spatial", verbose = FALSE)
+SpatialFeaturePlot(brain, features = c("Hpca", "Ttr"))
+
+
+sc_spatial(brain, features = c("Hpca", "Ttr"))
+```
+
