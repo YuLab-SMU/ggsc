@@ -1,3 +1,5 @@
+
+
 Package: scplot
 Title: Visualizing single cell data
 Version: 0.0.3
@@ -13,7 +15,6 @@ Imports:
   scattermore,
   SeuratObject,
   Seurat,
-  reshape2,
   tidydr,
   tidyr,
   tibble,
