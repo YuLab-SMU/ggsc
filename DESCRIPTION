@@ -13,6 +13,7 @@ Imports:
   scattermore,
   SeuratObject,
   Seurat,
+  reshape2,
   tidydr,
   tidyr,
   tibble,
