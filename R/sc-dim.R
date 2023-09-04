@@ -1,5 +1,5 @@
 ##' @title sc_dim
-##' @rdname sc-dim
+##' @rdname sc-dim-methods
 ##' @param object Seurat object
 ##' @param dims selected dimensions (must be a two-length vector) that are used in visualization
 ##' @param reduction reduction method, default is NULL and will use the default setting store in the object
@@ -11,7 +11,17 @@
 ##' @seealso
 ##'  [geom_scattermore][scattermore::geom_scattermore]; 
 ##' @export
-sc_dim <- function(object, 
+setGeneric('sc_dim', 
+           function(object, dims=c(1,2), reduction=NULL, 
+                    cells=NULL, slot = "data", mapping = NULL, ...)
+               standardGeneric('sc_dim')
+)
+
+#' @importFrom methods setMethod
+#' @rdname sc-dim-methods
+#' @aliases sc_dim,Seurat
+#' @exportMethod sc_dim
+setMethod("sc_dim", 'Seurat', function(object, 
                     dims=c(1,2), reduction=NULL, 
                     cells=NULL, slot = "data", mapping = NULL, ...) {
     d <- get_dim_data(object = object, features = NULL,
@@ -26,7 +36,7 @@ sc_dim <- function(object,
     }               
     p <- sc_dim_internal(d, mapping, ...)
     return(p)
-}
+})
 
 ##' @importFrom tidydr theme_dr
 sc_dim_internal <- function(data, mapping, ...) {

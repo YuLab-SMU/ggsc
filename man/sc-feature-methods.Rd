@@ -2,9 +2,23 @@
 % Please edit documentation in R/sc-feature.R
 \name{sc_feature}
 \alias{sc_feature}
+\alias{sc_feature,Seurat-method}
+\alias{sc_feature,Seurat}
 \title{sc_feature}
 \usage{
 sc_feature(
+  object,
+  features,
+  dims = c(1, 2),
+  reduction = NULL,
+  cells = NULL,
+  slot = "data",
+  mapping = NULL,
+  ncol = 3,
+  ...
+)
+
+\S4method{sc_feature}{Seurat}(
   object,
   features,
   dims = c(1, 2),

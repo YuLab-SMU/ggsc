@@ -2,9 +2,22 @@
 % Please edit documentation in R/sc-violin.R
 \name{sc_violin}
 \alias{sc_violin}
+\alias{sc_violin,Seurat-method}
+\alias{sc_violin,Seurat}
 \title{sc_violin}
 \usage{
 sc_violin(
+  object,
+  features,
+  cells = NULL,
+  slot = "data",
+  .fun = NULL,
+  mapping = NULL,
+  ncol = 3,
+  ...
+)
+
+\S4method{sc_violin}{Seurat}(
   object,
   features,
   cells = NULL,

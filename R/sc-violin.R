@@ -1,5 +1,5 @@
 ##' @title sc_violin
-##' @rdname sc-violin
+##' @rdname sc-violin-methods
 ##' @param object Seurat object
 ##' @param features selected features
 ##' @param cells selected cells to plot (default is all cells)
@@ -18,7 +18,15 @@
 ##' @importFrom ggplot2 facet_wrap
 ##' @importFrom tidyr pivot_longer
 ##' @export
-sc_violin <- function(object, features, 
+setGeneric('sc_violin', function(object, features, cells=NULL, 
+                                 slot = "data", .fun = NULL, mapping = NULL, ncol=3, ...)
+    standardGeneric('sc_violin')
+)
+
+##' @rdname sc-violin-methods
+##' @aliases sc_violin,Seurat
+##' @exportMethod sc_violin
+setMethod("sc_violin", 'Seurat', function(object, features, 
                     cells=NULL, slot = "data", .fun = NULL, 
                     mapping = NULL, ncol=3, ...) {
     d <- get_dim_data(object, dims=NULL, features=features)
@@ -41,7 +49,7 @@ sc_violin <- function(object, features,
         p <- p + facet_wrap(~features, ncol=ncol)
     }
     return(p)
-}
+})
 
 
 

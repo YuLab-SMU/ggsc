@@ -2,9 +2,13 @@
 % Please edit documentation in R/sc-spatial.R
 \name{sc_spatial}
 \alias{sc_spatial}
+\alias{sc_spatial,Seurat-method}
+\alias{sc_spatial,Seurat}
 \title{sc_spatial}
 \usage{
 sc_spatial(object, features = NULL, slot = "data")
+
+\S4method{sc_spatial}{Seurat}(object, features = NULL, slot = "data")
 }
 \arguments{
 \item{object}{Seurat object}

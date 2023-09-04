@@ -2,9 +2,21 @@
 % Please edit documentation in R/sc-dim.R
 \name{sc_dim}
 \alias{sc_dim}
+\alias{sc_dim,Seurat-method}
+\alias{sc_dim,Seurat}
 \title{sc_dim}
 \usage{
 sc_dim(
+  object,
+  dims = c(1, 2),
+  reduction = NULL,
+  cells = NULL,
+  slot = "data",
+  mapping = NULL,
+  ...
+)
+
+\S4method{sc_dim}{Seurat}(
   object,
   dims = c(1, 2),
   reduction = NULL,
