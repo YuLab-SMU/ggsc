@@ -55,8 +55,41 @@ setMethod('sc_feature', 'Seurat', function(object, features,
         #scale_color_gradient2(low='blue', mid='grey', high='red') + 
 
     p + .feature_setting(features=features, ncol=ncol)
-}
-)
+})
+
+##' @rdname sc-feature-methods
+##' @aliases sc_feature,SingleCellExperiment
+##' @exportMethod sc_feature
+setMethod("sc_feature", "SingleCellExperiment", 
+          function(object, features, dims = c(1, 2), reduction = NULL, 
+                   cells = NULL, slot = 'data', mapping = NULL, ncol = 3, ...){
+          
+    d <- .extract_sce_data(object = object, features = features, dims = dims, 
+                           reduction = reduction, cells = cells, slot = slot)
+    
+    d2 <- tidyr::pivot_longer(d, seq(ncol(d) - length(features) + 1, ncol(d)), names_to = 'features')
+
+    if (is.numeric(features)){
+        features <- rownames(object)[features]
+    }
+
+    d2$features <- factor(d2$features, features)
+    
+    default_mapping <- aes_string(color="value")
+    if (is.null(mapping)) {
+        mapping <- default_mapping
+    } else {
+        mapping <- modifyList(default_mapping, mapping)
+    }
+
+    p <- sc_dim_internal(d2, mapping, ...) +
+        scale_color_gradient(low='grey', high='blue')
+        #scale_color_gradient2(low='blue', mid='grey', high='red') +
+
+    p + .feature_setting(features=features, ncol=ncol)
+
+          
+})
 
 
 .feature_setting <- function(features, ncol) {
@@ -64,6 +97,8 @@ setMethod('sc_feature', 'Seurat', function(object, features,
         res <- list(ggtitle(features),
             theme(plot.title=element_text(size=rel(1.5), face='bold'))
         ) 
+    }else if(missing(features) || is.null(features)){
+        res <- theme_bw2()
     } else {
         res <- list(facet_wrap(~features, ncol=ncol),
             theme_bw2()

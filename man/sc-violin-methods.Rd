@@ -4,6 +4,8 @@
 \alias{sc_violin}
 \alias{sc_violin,Seurat-method}
 \alias{sc_violin,Seurat}
+\alias{sc_violin,SingleCellExperiment-method}
+\alias{sc_violin,SingleCellExperiment}
 \title{sc_violin}
 \usage{
 sc_violin(
@@ -18,6 +20,17 @@ sc_violin(
 )
 
 \S4method{sc_violin}{Seurat}(
+  object,
+  features,
+  cells = NULL,
+  slot = "data",
+  .fun = NULL,
+  mapping = NULL,
+  ncol = 3,
+  ...
+)
+
+\S4method{sc_violin}{SingleCellExperiment}(
   object,
   features,
   cells = NULL,
