@@ -63,10 +63,6 @@ setMethod('sc_dim', 'SingleCellExperiment', function(object, dims = c(1, 2), red
 ##' @importFrom SummarizedExperiment assay colData
 ##' @importFrom cli cli_abort
 .extract_sce_data <- function(object, features = NULL, dims = c(1, 2), reduction = NULL, cells = NULL, slot = 1){
-    if (length(reducedDimNames(object)) == 0){
-        cli::cli_abort(c("The {.cls {class(object)}} didn't contain the results of reduction."))
-    }
-
     if (!is.null(cells)){
         object <- object[, cells]
     }
@@ -74,6 +70,9 @@ setMethod('sc_dim', 'SingleCellExperiment', function(object, dims = c(1, 2), red
     xx <- colData(object) |> as.data.frame(check.names = FALSE) |> suppressWarnings()
 
     if (!is.null(dims)){
+        if (length(reducedDimNames(object)) == 0){
+            cli::cli_abort(c("The {.cls {class(object)}} didn't contain the results of reduction."))
+        }
         if (is.null(reduction)){
             reduction <- 1
         }

@@ -125,7 +125,7 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
     rownames(d) <- d$Row.names
     d$Row.names <- NULL
     
-    default_mapping <- aes_string(x = colnames(coords.da)[1], y = colnames(coords.da)[2])
+    default_mapping <- aes_string(x = colnames(coords.da)[2], y = colnames(coords.da)[1])
     if (!is.null(features)){
         d <- tidyr::pivot_longer(d, seq(ncol(d) - length(features) + 1, ncol(d)), names_to = 'features')
         default_mapping <- modifyList(default_mapping, aes_string(color = "value"))
