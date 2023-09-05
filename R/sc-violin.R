@@ -61,7 +61,7 @@ setMethod('sc_violin', 'SingleCellExperiment',
 
     d <- .extract_sce_data(object, dims = NULL, features = features)
     
-    d2 <- tidyr::pivot_longer(d, seq(ncol(d) - length(features) + 1, ncol(d)), names_to = "features")
+    d <- tidyr::pivot_longer(d, seq(ncol(d) - length(features) + 1, ncol(d)), names_to = "features")
 
     if (is.numeric(features)){
         features <- rownames(object)[features]

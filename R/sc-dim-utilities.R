@@ -29,14 +29,22 @@ sc_dim_geom_feature <- function(object, features, dims = c(1,2), ncol=3, ...,
 ##' @importFrom tibble as_tibble
 ##' @export
 ggplot_add.sc_dim_geom_feature <- function(object, plot, object_name){
-    d <- get_dim_data(object$data, dims=object$dims, features=object$features)
+    if (inherits(object$data, 'Seurat')){
+        d <- get_dim_data(object$data, dims=object$dims, features=object$features)
+    }else{
+        d <- .extract_sce_data(object$data, dims = object$dims, features = object$features)
+    }
     d <- as_tibble(d, rownames='.ID.NAME')
-    d <- tidyr::pivot_longer(d, 5:ncol(d), names_to = "features") |> 
+
+    d <- tidyr::pivot_longer(d, seq(ncol(d) - length(object$features) + 1, ncol(d)), names_to = "features") |> 
          dplyr::select(-c(2, 3, 4)) |>
          dplyr::left_join(plot$data[,seq_len(3)] |>
                           tibble::as_tibble(rownames='.ID.NAME'), 
                           by='.ID.NAME'
          )
+    if (is.numeric(object$features)){
+        object$features <- rownames(object$data)[object$features]
+    }
     d$features <- factor(d$features, levels = object$features)
     d <- object$.fun(d)
     sc.point.params <- object$params
@@ -66,14 +74,15 @@ sc_dim_geom_label <- function(geom = ggplot2::geom_text, ...) {
 ##' @export
 ggplot_add.sc_dim_geom_label <- function(object, plot, object_name) {
     dims <- names(plot$data)[1:2]
+    lab.text <- plot$labels$colour
     if (is.null(object$data)) {
-        object$data <- dplyr::group_by(plot$data, .data$ident) |> 
+        object$data <- dplyr::group_by(plot$data, !!rlang::sym(lab.text)) |> 
             dplyr::summarize(x=mean(get(dims[1])), y=mean(get(dims[2])))
     }
 
     geom <- object$geom
     object$geom <- NULL
-    default_mapping <- aes(x=.data$x, y = .data$y, label = .data$ident)
+    default_mapping <- aes(x=.data$x, y = .data$y, label = !!rlang::sym(lab.text))
     if (is.null(object$mapping)) {
         object$mapping <- default_mapping
     } else {
@@ -103,10 +112,11 @@ sc_dim_geom_ellipse <- function(mapping = NULL, level = 0.95, ...) {
 ##' @method ggplot_add sc_dim_geom_ellipse
 ##' @importFrom ggplot2 aes
 ##' @importFrom ggplot2 stat_ellipse
-##' @export                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+##' @export
 ggplot_add.sc_dim_geom_ellipse <- function(object, plot, object_name) {
     dims <- names(plot$data)[1:2]
-    default_mapping <- aes(x = .data[[dims[1]]], y = .data[[dims[2]]], group = .data$ident)
+    lab.text <- plot$labels$colour
+    default_mapping <- aes(x = .data[[dims[1]]], y = .data[[dims[2]]], group = !!rlang::sym(lab.text))
     if (is.null(object$mapping)) {
         mapping <- default_mapping
     } else {

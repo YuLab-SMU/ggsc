@@ -77,7 +77,7 @@ setMethod('sc_dim', 'SingleCellExperiment', function(object, dims = c(1, 2), red
             reduction <- 1
         }
         tmp.reduced <- reducedDims(object)[[reduction]][,dims] |> as.data.frame(check.names = FALSE)
-        xx <- merge(xx, tmp.reduced, by = 0)
+        xx <- merge(tmp.reduced, xx, by = 0)
         rownames(xx) <- xx$Row.names
         xx$Row.names <- NULL
     }
