@@ -1,5 +1,5 @@
 ##' @title sc_feature
-##' @rdname sc-feature
+##' @rdname sc-feature-methods
 ##' @param object Seurat object
 ##' @param features selected features (i.e., genes)
 ##' @param dims selected dimensions (must be a two-length vector) that are used in visualization
@@ -18,7 +18,22 @@
 ##' @importFrom ggplot2 scale_color_gradient
 ##' @importFrom ggplot2 rel
 ##' @export
-sc_feature <- function(object, features, 
+setGeneric('sc_feature', function(object, 
+                                  features, 
+                                  dims = c(1, 2), 
+                                  reduction = NULL, 
+                                  cells = NULL, 
+                                  slot = 'data', 
+                                  mapping = NULL, 
+                                  ncol = 3, 
+                                  ...)
+    standardGeneric('sc_feature')
+)
+
+##' @rdname sc-feature-methods
+##' @aliases sc_feature,Seurat
+##' @exportMethod sc_feature
+setMethod('sc_feature', 'Seurat', function(object, features, 
                     dims=c(1,2), reduction=NULL, 
                     cells=NULL, slot = "data", mapping=NULL, ncol=3, ...) {
     d <- get_dim_data(object = object, features = features,
@@ -41,6 +56,7 @@ sc_feature <- function(object, features,
 
     p + .feature_setting(features=features, ncol=ncol)
 }
+)
 
 
 .feature_setting <- function(features, ncol) {

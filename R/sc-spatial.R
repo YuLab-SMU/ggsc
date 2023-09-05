@@ -1,16 +1,23 @@
 ##' @title sc_spatial
-##' @rdname sc-spatial
+##' @rdname sc-spatial-methods
 ##' @param object Seurat object
 ##' @param features selected features to be visualized
 ##' @param slot if plotting a feature, which data will be used (e.g., 'data', 'counts')
 ##' @return ggplot object
-##' @importFrom grid rasterGrob
-##' @importFrom ggplot2 facet_grid
+##' @importFrom grid rasterGrob unit
+##' @importFrom ggplot2 facet_grid annotation_custom
 ##' @importFrom ggplot2 geom_point
 ##' @importFrom ggplot2 scale_color_gradientn
 ##' @importFrom Seurat DefaultAssay
 ##' @export
-sc_spatial <- function(object, features = NULL, slot = "data") {
+setGeneric('sc_spatial', function(object, features = NULL, slot = "data") 
+           standardGeneric('sc_spatial')
+)
+
+##' @rdname sc-spatial-methods
+##' @aliases sc_spatial,Seurat
+##' @exportMethod sc_spatial
+setMethod("sc_spatial", 'Seurat', function(object, features = NULL, slot = "data") {
     images <- SeuratObject::Images(object = object, 
                     assay = Seurat::DefaultAssay(object = object)
                 )
@@ -47,7 +54,7 @@ sc_spatial <- function(object, features = NULL, slot = "data") {
         scale_color_gradientn(colours = SpatialColors(n=100)) + 
         theme_bw2()
 
-}
+})
 
 ##' @importFrom yulab.utils get_fun_from_pkg
 SpatialColors <- yulab.utils::get_fun_from_pkg('Seurat', 'SpatialColors')
