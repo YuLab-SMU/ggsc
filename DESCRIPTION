@@ -9,8 +9,11 @@ Description: Useful functions to visualize single cell data.
 Imports:
   methods,
   dplyr,
+  SingleCellExperiment,
+  SummarizedExperiment,
   ggplot2,
   rlang,
+  cli,
   scattermore,
   SeuratObject,
   Seurat,

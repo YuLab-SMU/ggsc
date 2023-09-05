@@ -4,6 +4,8 @@
 \alias{sc_feature}
 \alias{sc_feature,Seurat-method}
 \alias{sc_feature,Seurat}
+\alias{sc_feature,SingleCellExperiment-method}
+\alias{sc_feature,SingleCellExperiment}
 \title{sc_feature}
 \usage{
 sc_feature(
@@ -19,6 +21,18 @@ sc_feature(
 )
 
 \S4method{sc_feature}{Seurat}(
+  object,
+  features,
+  dims = c(1, 2),
+  reduction = NULL,
+  cells = NULL,
+  slot = "data",
+  mapping = NULL,
+  ncol = 3,
+  ...
+)
+
+\S4method{sc_feature}{SingleCellExperiment}(
   object,
   features,
   dims = c(1, 2),

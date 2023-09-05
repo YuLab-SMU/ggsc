@@ -51,6 +51,41 @@ setMethod("sc_violin", 'Seurat', function(object, features,
     return(p)
 })
 
+##' @rdname sc-violin-methods
+##' @aliases sc_violin,SingleCellExperiment
+##' @exportMethod sc_violin
+setMethod('sc_violin', 'SingleCellExperiment', 
+          function(
+             object, features, cells = NULL, slot = 'data', 
+             .fun = NULL, mapping = NULL, ncol = 3, ...){
 
+    d <- .extract_sce_data(object, dims = NULL, features = features)
+    
+    d <- tidyr::pivot_longer(d, seq(ncol(d) - length(features) + 1, ncol(d)), names_to = "features")
+
+    if (is.numeric(features)){
+        features <- rownames(object)[features]
+    }
+
+    d$features <- factor(d$features, levels = features)
+    if (!is.null(.fun)) {
+        d <- .fun(d)
+    }
+    default_mapping = aes_string(fill="label")
+    if (is.null(mapping)) {
+        mapping <- default_mapping
+    } else {
+        mapping <- modifyList(default_mapping, mapping)
+    }
+    p <- ggplot(d, aes_string("label", "value")) +
+        geom_violin(mapping, ...) #+
+        #ggforce::geom_sina(size=.1)
+
+    if (length(features) > 1) {
+        p <- p + facet_wrap(~features, ncol=ncol)
+    }
+    return(p)    
+
+})
 
 

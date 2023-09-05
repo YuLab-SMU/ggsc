@@ -4,6 +4,8 @@
 \alias{sc_dim}
 \alias{sc_dim,Seurat-method}
 \alias{sc_dim,Seurat}
+\alias{sc_dim,SingleCellExperiment-method}
+\alias{sc_dim,SingleCellExperiment}
 \title{sc_dim}
 \usage{
 sc_dim(
@@ -17,6 +19,16 @@ sc_dim(
 )
 
 \S4method{sc_dim}{Seurat}(
+  object,
+  dims = c(1, 2),
+  reduction = NULL,
+  cells = NULL,
+  slot = "data",
+  mapping = NULL,
+  ...
+)
+
+\S4method{sc_dim}{SingleCellExperiment}(
   object,
   dims = c(1, 2),
   reduction = NULL,

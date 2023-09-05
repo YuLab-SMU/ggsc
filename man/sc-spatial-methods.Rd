@@ -4,18 +4,81 @@
 \alias{sc_spatial}
 \alias{sc_spatial,Seurat-method}
 \alias{sc_spatial,Seurat}
+\alias{sc_spatial,SingleCellExperiment-method}
+\alias{sc_spatial,SingleCellExperiment}
 \title{sc_spatial}
 \usage{
-sc_spatial(object, features = NULL, slot = "data")
+sc_spatial(
+  object,
+  features = NULL,
+  sample.id = NULL,
+  image.id = NULL,
+  slot = "data",
+  image.plot = TRUE,
+  image.rotate.degree = NULL,
+  image.mirror.axis = NULL,
+  remove.point = FALSE,
+  mapping = NULL,
+  ncol = 6,
+  ...
+)
 
-\S4method{sc_spatial}{Seurat}(object, features = NULL, slot = "data")
+\S4method{sc_spatial}{Seurat}(
+  object,
+  features = NULL,
+  sample.id = NULL,
+  image.id = NULL,
+  slot = "data",
+  image.plot = TRUE,
+  image.rotate.degree = NULL,
+  image.mirror.axis = NULL,
+  remove.point = FALSE,
+  mapping = NULL,
+  ncol = 6,
+  ...
+)
+
+\S4method{sc_spatial}{SingleCellExperiment}(
+  object,
+  features = NULL,
+  sample.id = NULL,
+  image.id = NULL,
+  slot = 1,
+  image.plot = TRUE,
+  image.rotate.degree = NULL,
+  image.mirror.axis = "h",
+  remove.point = FALSE,
+  mapping = NULL,
+  ncol = 6,
+  ...
+)
 }
 \arguments{
 \item{object}{Seurat object}
 
 \item{features}{selected features to be visualized}
 
-\item{slot}{if plotting a feature, which data will be used (e.g., 'data', 'counts')}
+\item{sample.id}{the index name of sample id, which only work with SingleCellExperiment or SpatialExperiment.}
+
+\item{image.id}{the index name of image id, which only work with SingleCellExperiment or SpatialExperiment.}
+
+\item{slot}{if plotting a feature, which data will be used (e.g., 'data', 'counts'), the assay name if object
+is SingleCellExperiment or SpatialExperiment.}
+
+\item{image.plot}{whether to display the issue image as background.}
+
+\item{image.rotate.degree}{integer the degree to ratate image, default is NULL.}
+
+\item{image.mirror.axis}{character the direction to mirror the image, default is 'h'.}
+
+\item{remove.point}{whether to remove the spot points, it is nice if your just view the issue
+image, default is FALSE.}
+
+\item{mapping}{aesthetic mapping, default is NULL.}
+
+\item{ncol}{integer number of facet columns if 'length(features) > 1', default is 6.}
+
+\item{...}{additional parameters.}
 }
 \value{
 ggplot object
