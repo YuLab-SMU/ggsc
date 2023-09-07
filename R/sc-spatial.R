@@ -7,6 +7,8 @@
 ##' @param slot if plotting a feature, which data will be used (e.g., 'data', 'counts'), the assay name if object
 ##' is SingleCellExperiment or SpatialExperiment.
 ##' @param image.plot whether to display the issue image as background.
+##' @param image.first.operation character which the first operation to image, 'rotate' or 'mirror', 
+##' default is 'rotate'.
 ##' @param image.rotate.degree integer the degree to ratate image, default is NULL.
 ##' @param image.mirror.axis character the direction to mirror the image, default is 'h'.
 ##' @param remove.point whether to remove the spot points, it is nice if your just view the issue 
@@ -24,6 +26,7 @@
 setGeneric('sc_spatial', function(object, features = NULL, 
                                   sample.id = NULL, image.id = NULL, 
                                   slot = "data", image.plot = TRUE, 
+                                  image.first.operation = 'rotate',
                                   image.rotate.degree = NULL,
                                   image.mirror.axis = NULL,
                                   remove.point = FALSE,
@@ -37,9 +40,10 @@ setGeneric('sc_spatial', function(object, features = NULL,
 ##' @rdname sc-spatial-methods
 ##' @aliases sc_spatial,Seurat
 ##' @exportMethod sc_spatial
-setMethod("sc_spatial", 'Seurat', function(object, features = NULL, slot = "data", image.plot = TRUE, 
-                                           image.rotate.degree = NULL, image.mirror.axis = 'h', 
-                                           remove.point = FALSE, mapping = NULL, ncol = 6, ...) {
+setMethod("sc_spatial", 'Seurat', function(object, features = NULL, slot = "data", image.plot = TRUE,
+                                           image.first.operation = 'rotate', image.rotate.degree = NULL, 
+                                           image.mirror.axis = 'v', remove.point = FALSE, mapping = NULL, 
+                                           ncol = 6, ...) {
     images <- SeuratObject::Images(object = object, 
                     assay = Seurat::DefaultAssay(object = object)
                 )
@@ -67,7 +71,7 @@ setMethod("sc_spatial", 'Seurat', function(object, features = NULL, slot = "data
     p <- ggplot(d, mapping)
 
     if (image.plot){
-        img.annot <- .build_img_annot_layer(img, image.rotate.degree, image.mirror.axis)
+        img.annot <- .build_img_annot_layer(img, image.first.operation, image.rotate.degree, image.mirror.axis)
         p <- p + img.annot
     }
 
@@ -82,12 +86,17 @@ setMethod("sc_spatial", 'Seurat', function(object, features = NULL, slot = "data
          ylab(NULL) +
          xlab(NULL) +
          coord_fixed() +
-         scale_color_gradientn(colours = SpatialColors(n=100)) +
          theme_bw2() 
 
+    color.aes <- .check_aes_exits(p$mapping, c('color', 'colour'))
+    if (!is.null(color.aes)) {
+        type.color.value <- p$data |> dplyr::pull(!!color.aes)
+        if (inherits(type.color.value, 'numeric')) {
+            p <- p + scale_color_gradientn(colours = SpatialColors(n=100))
+        }
+    }     
+
     return(p)    
-
-
 })
 
 #' @importFrom SingleCellExperiment int_metadata
@@ -100,8 +109,9 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
                                                          image.id = NULL, 
                                                          slot = 1,
                                                          image.plot = TRUE,
+                                                         image.first.operation = 'rotate',
                                                          image.rotate.degree = NULL,
-                                                         image.mirror.axis = 'h',
+                                                         image.mirror.axis = 'v',
                                                          remove.point = FALSE,
                                                          mapping = NULL,
                                                          ncol = 6,
@@ -140,7 +150,7 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
     p <- ggplot(d, mapping) 
 
     if (image.plot){
-        img.annot <- .build_img_annot_layer(img.da, image.rotate.degree, image.mirror.axis)
+        img.annot <- .build_img_annot_layer(img.da, image.first.operation, image.rotate.degree, image.mirror.axis)
         p <- p + img.annot
     }
 
@@ -155,8 +165,15 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
          ylab(NULL) +
          xlab(NULL) +
          coord_fixed() +
-         scale_color_gradientn(colours = SpatialColors(n=100))
+         theme_bw2() 
 
+    color.aes <- .check_aes_exits(p$mapping, c('color', 'colour'))
+    if (!is.null(color.aes)) {
+        type.color.value <- p$data |> dplyr::pull(!!color.aes)
+        if (inherits(type.color.value, 'numeric')) {
+            p <- p + scale_color_gradientn(colours = SpatialColors(n=100))
+        }
+    }     
     return(p)
 })
 
@@ -182,19 +199,35 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
     return(x)
 }
 
-.build_img_annot_layer <- function(image.da, image.rotate.degree = NULL, image.mirror.axis = NULL){
+.build_img_annot_layer <- function(image.da, image.first.operation = NULL, image.rotate.degree = NULL, image.mirror.axis = NULL){
+    if (!is.null(image.first.operation)){
+        image.first.operation <- match.arg(image.first.operation, c('rotate', 'mirror'))
+    }else{
+        image.first.operation <- 'rotate'
+    }
+
     if (inherits(image.da, 'raster')){
         img <- image.da
     }else{
         img <- image.da[['data']][[1]] |> as.raster()
     }
 
-    if (!is.null(image.rotate.degree)){
-        img <- .rotate.image(img, image.rotate.degree)
+    if (image.first.operation == 'rotate'){
+        if (!is.null(image.rotate.degree)){
+            img <- .rotate.image(img, image.rotate.degree)
+        } 
+        if (!is.null(image.mirror.axis)){
+            img <- .mirror.image(img, image.mirror.axis)
+        } 
+    }else{
+        if (!is.null(image.mirror.axis)){
+            img <- .mirror.image(img, image.mirror.axis)
+        }
+        if (!is.null(image.rotate.degree)){
+            img <- .rotate.image(img, image.rotate.degree)
+        }
     }
-    if (!is.null(image.mirror.axis)){
-        img <- .mirror.image(img, image.mirror.axis)
-    }
+
 
     annotation_custom(grob = grid::rasterGrob(img),
                       xmin = 1,
@@ -219,9 +252,21 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
 .mirror.image <- function(img.raster, mirror.axis){
     mirror.axis <- match.arg(mirror.axis, c('h', 'v'))
     x <- switch(mirror.axis, 
-                h = apply(img.raster, 2, rev),
-                v = t(apply(img.raster, 1, rev)))
+                v = apply(img.raster, 2, rev),
+                h = t(apply(img.raster, 1, rev)))
     as.raster(x)
+}
+
+.check_aes_exits <- function(mapping, aesthetic){
+    x <- match(aesthetic, names(mapping))
+    x <- x[!is.na(x)]
+    if (length(x)==0){
+        return(NULL)
+    }else{
+        x <- names(mapping)[x]
+        x <- mapping[[x]]
+        return(x)
+    }
 }
 
 ##' @importFrom yulab.utils get_fun_from_pkg

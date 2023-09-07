@@ -60,7 +60,7 @@ setMethod('sc_dim', 'SingleCellExperiment', function(object, dims = c(1, 2), red
 
 ##' @importFrom methods as
 ##' @importFrom SingleCellExperiment reducedDims reducedDimNames
-##' @importFrom SummarizedExperiment assay colData
+##' @importFrom SummarizedExperiment assay colData assayNames
 ##' @importFrom cli cli_abort
 .extract_sce_data <- function(object, features = NULL, dims = c(1, 2), reduction = NULL, cells = NULL, slot = 1){
     if (!is.null(cells)){
@@ -84,7 +84,11 @@ setMethod('sc_dim', 'SingleCellExperiment', function(object, dims = c(1, 2), red
 
     if (!is.null(features)){
         if (slot == 'data'){
-            slot <- 1
+            if ('logcounts' %in% assayNames(object)){
+                slot <- 'logcounts'
+            }else{
+                slot <- 1
+            }
         }
         tmp <- assay(object, slot)
         tmp <- tmp[features, ,drop=FALSE] |> 

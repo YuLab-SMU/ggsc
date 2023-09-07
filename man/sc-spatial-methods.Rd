@@ -15,6 +15,7 @@ sc_spatial(
   image.id = NULL,
   slot = "data",
   image.plot = TRUE,
+  image.first.operation = "rotate",
   image.rotate.degree = NULL,
   image.mirror.axis = NULL,
   remove.point = FALSE,
@@ -30,6 +31,7 @@ sc_spatial(
   image.id = NULL,
   slot = "data",
   image.plot = TRUE,
+  image.first.operation = "rotate",
   image.rotate.degree = NULL,
   image.mirror.axis = NULL,
   remove.point = FALSE,
@@ -45,8 +47,9 @@ sc_spatial(
   image.id = NULL,
   slot = 1,
   image.plot = TRUE,
+  image.first.operation = "rotate",
   image.rotate.degree = NULL,
-  image.mirror.axis = "h",
+  image.mirror.axis = "v",
   remove.point = FALSE,
   mapping = NULL,
   ncol = 6,
@@ -66,6 +69,9 @@ sc_spatial(
 is SingleCellExperiment or SpatialExperiment.}
 
 \item{image.plot}{whether to display the issue image as background.}
+
+\item{image.first.operation}{character which the first operation to image, 'rotate' or 'mirror',
+default is 'rotate'.}
 
 \item{image.rotate.degree}{integer the degree to ratate image, default is NULL.}
 
