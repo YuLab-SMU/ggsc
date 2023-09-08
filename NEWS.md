@@ -1,6 +1,6 @@
 # ggsc 0.0.4
 
-+ compatible with SingleCellExperiment (2023-09-05, Tue, #5)
++ compatible with 'SingleCellExperiment' (2023-09-05, Tue, #5)
 + using S4 OOP to reorganize the functions (2023-09-05, Tue, #4)
 + rename the package to 'ggsc' as there is a package called 'scplot' in CRAN
 + add H&E image to `sc_spatial()` (#3)

@@ -33,7 +33,16 @@ library(scater)
 library(scran)
 library(ggplot2)
 
-spe <- Visium_humanDLPFC()
+
+
+# create ExperimentHub instance
+eh <- ExperimentHub()
+
+# query STexampleData datasets
+myfiles <- query(eh, "STexampleData")
+spe <- myfiles[["EH7538"]]
+
+# spe <- Visium_humanDLPFC()
 
 assay(spe) |> as('CsparseMatrix') -> counts.da
 assay(spe, 'counts') <- counts.da
@@ -152,11 +161,10 @@ f <- sc_spatial(spe, features = target.features,
 
 f
 
-pp <- list()
-for (i in target.features){
-    pp[[i]] <- sc_spatial(spe, features = i, slot = 'logcounts', image.rotate.degree = -90, image.mirror.axis = NULL)
-}
-names(pp) <- NULL
+pp <- lapply(target.features, function(i) {
+  sc_spatial(spe, features = i, slot = 'logcounts', image.rotate.degree = -90, image.mirror.axis = NULL)
+})
+
 aplot::plot_list(gglist = pp)
 ```
 
