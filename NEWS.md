@@ -1,4 +1,4 @@
-# ggsc 0.0.4
+# ggsc 0.99.0
 
 + compatible with 'SingleCellExperiment' (2023-09-05, Tue, #5)
 + using S4 OOP to reorganize the functions (2023-09-05, Tue, #4)
