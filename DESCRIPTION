@@ -25,7 +25,16 @@ Imports:
 Suggests:
   knitr,
   rmarkdown,
-  prettydoc
+  prettydoc,
+  aplot,
+  BiocParallel,
+  scran,
+  scater,
+  igraph,
+  shadowtext,
+  ggnewscale,
+  ggforce,
+  STexampleData 
 VignetteBuilder: knitr
 ByteCompile: true
 License: Artistic-2.0

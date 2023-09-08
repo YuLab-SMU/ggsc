@@ -1,0 +1,162 @@
+---
+title: "Visualizing single cell data"
+author: 
+- name: Guangchuang Yu and Shuangbin Xu
+  email: guangchuangyu@gmail.com
+  affiliation: Department of Bioinformatics, School of Basic Medical Sciences, Southern Medical University
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
+  pdf_document:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Visualizing single cell data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\usepackage[utf8]{inputenc}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r style, echo=FALSE, results="asis", message=FALSE}
+knitr::opts_chunk$set(tidy = FALSE,
+                      warning = FALSE,
+                      message = FALSE, 
+                      fig.width = 9,
+                      fig.height = 6)
+```
+
+```{r, message=FALSE, setup.preprocess}
+library(BiocParallel)
+library(STexampleData)
+library(scater)
+library(scran)
+library(ggplot2)
+
+spe <- Visium_humanDLPFC()
+
+assay(spe) |> as('CsparseMatrix') -> counts.da
+assay(spe, 'counts') <- counts.da
+
+spe <- addPerCellQC(spe, subsets=list(Mito=grep("^MT-", rowData(spe)$gene_name)))
+colData(spe) |> head()
+
+colData(spe) |> data.frame() |> 
+  ggplot(aes(x = sum, y = detected, colour = as.factor(in_tissue))) +
+   geom_point() 
+
+plotColData(spe, x='sum', y = 'subsets_Mito_percent', other_fields="in_tissue") + facet_wrap(~in_tissue)
+
+
+spe <- spe[, spe$in_tissue == 1]
+
+#p <- plotHighestExprs(spe, exprs_values = "counts")
+
+clusters <- quickCluster(
+              spe, 
+              BPPARAM = BiocParallel::MulticoreParam(workers=5), 
+              block.BPPARAM = BiocParallel::MulticoreParam(workers=5)
+            )
+
+spe <- computeSumFactors(spe, clusters = clusters, BPPARAM = BiocParallel::MulticoreParam(workers=5))
+spe <- logNormCounts(spe)
+
+# identify genes that drive biological heterogeneity in the data set by 
+# modelling the per-gene variance
+dec <- modelGeneVar(spe)
+
+# Get the top 15% genes.
+top.hvgs <- getTopHVGs(dec, prop=0.15)
+spe <- runPCA(spe, subset_row=top.hvgs)
+
+output <- getClusteredPCs(reducedDim(spe), BPPARAM = BiocParallel::MulticoreParam(workers=5))
+npcs <- metadata(output)$chosen
+npcs
+
+reducedDim(spe, "PCAsub") <- reducedDim(spe, "PCA")[,1:npcs,drop=FALSE]
+
+g <- buildSNNGraph(spe, use.dimred="PCAsub", BPPARAM = MulticoreParam(workers=5))
+cluster <- igraph::cluster_walktrap(g)$membership
+colLabels(spe) <- factor(cluster)
+set.seed(123)
+spe <- runTSNE(spe, dimred="PCAsub", BPPARAM = MulticoreParam(workers=5))
+```
+
+# Dimensional reduction plot
+
+```{r setup}
+library(ggsc)
+library(ggplot2)
+
+sc_dim(spe, reduction = 'TSNE') + sc_dim_geom_label()
+sc_dim(spe, reduction = 'TSNE') + 
+  sc_dim_geom_label(
+    geom = shadowtext::geom_shadowtext,
+    color='black', 
+    bg.color='white'
+  )
+```
+
+# Visualize ‘features’ on a dimensional reduction plot
+
+```{r}
+genes <- c('MOBP', 'PCP4', 'SNAP25', 'HBB', 'IGKC', 'NPY')
+target.features <- rownames(spe)[match(genes, rowData(spe)$gene_name)]
+sc_feature(spe, target.features[1], slot='logcounts', reduction = 'TSNE')
+sc_feature(spe, target.features, slot='logcounts', reduction = 'TSNE')
+
+sc_dim(spe, slot='logcounts', reduction = 'TSNE') +
+   sc_dim_geom_feature(spe, target.features[1], color='black')
+
+sc_dim(spe, alpha=.3, slot='logcounts', reduction = 'TSNE') + 
+    ggnewscale::new_scale_color() + 
+    sc_dim_geom_feature(spe, target.features, mapping=aes(color=features)) +
+    scale_color_viridis_d()
+
+sc_dim(spe, reduction = 'TSNE') +
+  sc_dim_geom_ellipse(level=0.95)
+
+selected.cluster <- c(1, 6, 8)
+sc_dim(spe, reduction = 'TSNE') +
+  sc_dim_sub(subset=selected.cluster, .column = 'label')
+
+sc_dim(spe, color='grey', reduction = 'TSNE') + 
+  sc_dim_geom_sub(subset=selected.cluster, .column = 'label') + 
+    sc_dim_geom_label(geom = shadowtext::geom_shadowtext, 
+          mapping = aes(subset = label %in% selected.cluster),
+            color='black', bg.color='white')  
+```
+
+# Violin plot of gene expression
+
+```{r}
+sc_violin(spe, target.features[1], slot = 'logcounts')
+sc_violin(spe, target.features[1], slot = 'logcounts', 
+     .fun=function(d) dplyr::filter(d, value > 0)
+     ) + 
+     ggforce::geom_sina(size=.1)
+
+sc_violin(spe, target.features, slot = 'logcounts') + 
+  theme(axis.text.x = element_text(angle=45, hjust=1))
+```
+
+# Spatial features
+
+```{r, fig.width = 14, fig.height = 10}
+library(aplot)
+f <- sc_spatial(spe, features = target.features, 
+           slot = 'logcounts', ncol = 3, 
+           image.mirror.axis = NULL,
+           image.rotate.degree = -90
+           )
+
+f
+
+pp <- list()
+for (i in target.features){
+    pp[[i]] <- sc_spatial(spe, features = i, slot = 'logcounts', image.rotate.degree = -90, image.mirror.axis = NULL)
+}
+names(pp) <- NULL
+aplot::plot_list(gglist = pp)
+```
+
