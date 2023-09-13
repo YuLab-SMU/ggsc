@@ -1,39 +1,41 @@
 Package: ggsc
-Title: Visualizing single cell data
-Version: 0.99.1
+Title: Visualizing Single Cell Data
+Version: 0.99.2
 Authors@R: c(
        person("Guangchuang", "Yu",     email = "guangchuangyu@gmail.com", role = c("aut", "cre", "cph"), comment = c(ORCID = "0000-0002-6485-8781")),
        person("Shuangbin", "Xu",       email = "xshuangbin@163.com",      role = "aut", comment = c(ORCID="0000-0003-3513-5362"))
        )
-Description: Useful functions to visualize single cell data.
+Description: Useful functions to visualize single cell data. It supports both 'SingleCellExperiment' and 'Seurat' objects and supports visualizing the data using grammar of graphics implemented in 'ggplot2'.
 Imports:
-  methods,
-  dplyr,
-  SingleCellExperiment,
-  SummarizedExperiment,
-  ggplot2,
-  rlang,
   cli,
+  dplyr,
+  ggplot2,
+  methods,
+  rlang,
   scattermore,
+  stats,
   SeuratObject,
   Seurat,
+  SingleCellExperiment,
+  SummarizedExperiment,
   tidydr,
   tidyr,
   tibble,
   utils,
   yulab.utils
 Suggests:
-  knitr,
-  rmarkdown,
-  prettydoc,
   aplot,
   BiocParallel,
+  forcats,
+  ggforce,
+  ggnewscale,
+  igraph,
+  knitr,
+  prettydoc,
+  rmarkdown,
   scran,
   scater,
-  igraph,
   shadowtext,
-  ggnewscale,
-  ggforce,
   STexampleData 
 biocViews: GeneExpression, SingleCell, Software, Spatial, Transcriptomics,
     Visualization

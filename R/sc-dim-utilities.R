@@ -1,3 +1,55 @@
+
+##' @title sc_dim_count
+##' @rdname sc-dim-count
+##' @param sc_dim_plot dimension reduction plot of single cell data
+##' @return a bar plot to present the cell numbers of different clusters
+##' @importFrom ggplot2 coord_flip
+##' @importFrom ggplot2 layer_data
+##' @importFrom ggplot2 geom_col
+##' @importFrom ggplot2 scale_y_continuous
+##' @importFrom ggplot2 theme_mimimal
+##' @importFrom stats setNames
+##' @export
+sc_dim_count <- function(sc_dim_plot) {
+  x <- layer_data(sc_dim_plot)
+
+
+  if (length(sc_dim_plot$layers) >= 2) {
+    ## assume label exists
+    dd <- layer_data(sc_dim_plot, 2)
+
+    pos <- dplyr::group_by(x, .data$colour) |>
+      dplyr::summarize(x=mean(.data$x), y=mean(.data$y))
+    dd <- unique(dd[, c("x", "y", "label")])
+    # idx <- match(paste(dd$x, dd$y), paste(pos$x, pos$y)) # find closest one is better
+    idx <- vapply(1:nrow(dd), function(i) {
+                which.min((dd$x[i] - pos$x)^2 + (dd$y[i] - pos$y)^2)
+            }, FUN.VALUE = numeric(1)
+        )
+    dd$colour <- pos$colour[idx]
+    y <- setNames(dd$label, dd$colour)
+  } else {
+    d2 <- unique(x[, c("colour", "group")])
+    y <- setNames(d2$group -1, d2$colour)
+  }
+
+  d <- as.data.frame(sort(table(x$colour)))
+  d$group <- y[as.character(d$Var1)]
+  
+  rlang::check_installed("forcats", "for sc_dim_count()")
+
+  ggplot(d, 
+    aes(forcats::fct_rev(.data$group), 
+        .data$Freq, 
+        fill = I(as.character(.data$Var1)))) + 
+    geom_col() + coord_flip() +
+    scale_y_continuous(expand=c(0,0)) +
+    theme_minimal() +
+    xlab(NULL) +
+    ylab(NULL)
+}
+
+
 ##' @title sc_dim_geom_feature
 ##' @rdname sc-dim-geom-feature
 ##' @param object Seurat object
