@@ -7,7 +7,7 @@
 ##' @importFrom ggplot2 layer_data
 ##' @importFrom ggplot2 geom_col
 ##' @importFrom ggplot2 scale_y_continuous
-##' @importFrom ggplot2 theme_mimimal
+##' @importFrom ggplot2 theme_minimal
 ##' @importFrom stats setNames
 ##' @export
 sc_dim_count <- function(sc_dim_plot) {
