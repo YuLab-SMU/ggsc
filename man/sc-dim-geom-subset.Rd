@@ -21,3 +21,19 @@ plot with a layer of specified clusters
 \description{
 sc_dim_geom_subset
 }
+\examples{
+library(scuttle)
+library(scater)
+library(scran)
+library(ggplot2)
+sce <- mockSCE()
+sce <- logNormCounts(sce)
+clusters <- clusterCells(sce, assay.type = 'logcounts')
+colLabels(sce) <- clusters
+sce <- runUMAP(sce, assay.type = 'logcounts')
+p1 <- sc_dim(sce, reduction = 'UMAP')
+f1 <- p1 + sc_dim_geom_sub(subset = c(1, 2), .column = 'label')
+}
+\seealso{
+\link{sc_dim_geom_sub}
+}

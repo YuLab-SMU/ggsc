@@ -92,3 +92,17 @@ ggplot object
 \description{
 sc_spatial
 }
+\examples{
+\donttest{
+library(SpatialExperiment)
+library(STexampleData)
+spe <- Visium_humanDLPFC()
+spe <- spe[, colData(spe)$in_tissue == 1]
+set.seed(123)
+rownames(spe) |> sample(6) -> genes
+p <- sc_spatial(spe, features = genes, 
+                image.rotate.degree = -90, 
+                image.mirror.axis = NULL, 
+                ncol = 3)
+}
+}

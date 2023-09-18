@@ -64,6 +64,26 @@ violin plot to visualize feature expression distribution
 \description{
 sc_violin
 }
+\examples{
+library(scuttle)
+library(scater)
+library(scran)
+library(ggplot2)
+sce <- mockSCE()
+sce <- logNormCounts(sce)
+clusters <- clusterCells(sce, assay.type = 'logcounts')
+colLabels(sce) <- clusters
+sce <- runUMAP(sce, assay.type = 'logcounts')
+set.seed(123)
+genes <- rownames(sce) |> sample(6) 
+sc_violin(sce, genes[1], slot = 'logcounts')
+sc_violin(sce, genes[1], slot = 'logcounts',
+     .fun=function(d) dplyr::filter(d, value > 0)
+     ) +
+     ggforce::geom_sina(size=.1)
+sc_violin(sce, genes, slot = 'logcounts') +
+  theme(axis.text.x = element_text(angle=45, hjust=1))
+}
 \seealso{
 \link[ggplot2:geom_violin]{geom_violin};
 }
