@@ -63,11 +63,11 @@ spe <- spe[, spe$in_tissue == 1]
 
 clusters <- quickCluster(
               spe, 
-              BPPARAM = BiocParallel::MulticoreParam(workers=5), 
-              block.BPPARAM = BiocParallel::MulticoreParam(workers=5)
+              BPPARAM = BiocParallel::MulticoreParam(workers=2), 
+              block.BPPARAM = BiocParallel::MulticoreParam(workers=2)
             )
 
-spe <- computeSumFactors(spe, clusters = clusters, BPPARAM = BiocParallel::MulticoreParam(workers=5))
+spe <- computeSumFactors(spe, clusters = clusters, BPPARAM = BiocParallel::MulticoreParam(workers=2))
 spe <- logNormCounts(spe)
 
 # identify genes that drive biological heterogeneity in the data set by 
@@ -78,17 +78,17 @@ dec <- modelGeneVar(spe)
 top.hvgs <- getTopHVGs(dec, prop=0.15)
 spe <- runPCA(spe, subset_row=top.hvgs)
 
-output <- getClusteredPCs(reducedDim(spe), BPPARAM = BiocParallel::MulticoreParam(workers=5))
+output <- getClusteredPCs(reducedDim(spe), BPPARAM = BiocParallel::MulticoreParam(workers=2))
 npcs <- metadata(output)$chosen
 npcs
 
 reducedDim(spe, "PCAsub") <- reducedDim(spe, "PCA")[,1:npcs,drop=FALSE]
 
-g <- buildSNNGraph(spe, use.dimred="PCAsub", BPPARAM = MulticoreParam(workers=5))
+g <- buildSNNGraph(spe, use.dimred="PCAsub", BPPARAM = MulticoreParam(workers=2))
 cluster <- igraph::cluster_walktrap(g)$membership
 colLabels(spe) <- factor(cluster)
 set.seed(123)
-spe <- runTSNE(spe, dimred="PCAsub", BPPARAM = MulticoreParam(workers=5))
+spe <- runTSNE(spe, dimred="PCAsub", BPPARAM = MulticoreParam(workers=2))
 ```
 
 # Dimensional reduction plot
@@ -168,3 +168,10 @@ pp <- lapply(target.features, function(i) {
 aplot::plot_list(gglist = pp)
 ```
 
+# Session information
+
+Here is the output of sessionInfo() on the system on which this document was compiled:
+
+```{r, echo=FALSE}
+sessionInfo()
+```

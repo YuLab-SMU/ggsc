@@ -17,3 +17,13 @@ layer of points
 \description{
 sc_geom_point
 }
+\examples{
+library(ggplot2)
+ggplot(iris,
+ aes(x= Sepal.Length, y = Petal.Width, color=Species)
+) + 
+sc_geom_point()
+}
+\seealso{
+\code{\link[=sc_dim]{sc_dim()}} and \code{\link[=sc_feature]{sc_feature()}}
+}

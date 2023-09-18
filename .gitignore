@@ -1,2 +1,4 @@
 gh-pages
 inst/doc
+vignettes/*.html
+vignettes/*.R

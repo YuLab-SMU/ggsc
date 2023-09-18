@@ -15,3 +15,19 @@ a bar plot to present the cell numbers of different clusters
 \description{
 sc_dim_count
 }
+\examples{
+library(scuttle)
+library(scater)
+library(scran)
+library(ggplot2)
+sce <- mockSCE()
+sce <- logNormCounts(sce)
+clusters <- clusterCells(sce, assay.type = 'logcounts')
+colLabels(sce) <- clusters
+sce <- runUMAP(sce, assay.type = 'logcounts')
+p <- sc_dim(sce, reduction = 'UMAP')
+p1 <- sc_dim_count(p)
+}
+\seealso{
+\code{\link[=sc_dim]{sc_dim()}}
+}

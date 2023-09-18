@@ -23,6 +23,19 @@
 ##' @importFrom ggplot2 scale_color_gradientn
 ##' @importFrom Seurat DefaultAssay
 ##' @export
+##' @examples
+##' \donttest{
+##' library(SpatialExperiment)
+##' library(STexampleData)
+##' spe <- Visium_humanDLPFC()
+##' spe <- spe[, colData(spe)$in_tissue == 1]
+##' set.seed(123)
+##' rownames(spe) |> sample(6) -> genes
+##' p <- sc_spatial(spe, features = genes, 
+##'                 image.rotate.degree = -90, 
+##'                 image.mirror.axis = NULL, 
+##'                 ncol = 3)
+##' }
 setGeneric('sc_spatial', function(object, features = NULL, 
                                   sample.id = NULL, image.id = NULL, 
                                   slot = "data", image.plot = TRUE, 

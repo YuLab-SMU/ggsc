@@ -18,6 +18,27 @@
 ##' @importFrom ggplot2 scale_color_gradient
 ##' @importFrom ggplot2 rel
 ##' @export
+##' @examples
+##' library(scuttle)
+##' library(scater)
+##' library(scran)
+##' library(ggplot2)
+##' sce <- mockSCE()
+##' sce <- logNormCounts(sce)
+##' clusters <- clusterCells(sce, assay.type = 'logcounts')
+##' colLabels(sce) <- clusters
+##' sce <- runTSNE(sce, assay.type = 'logcounts')
+##' set.seed(123)
+##' genes <- rownames(sce) |> sample(6)
+##' p1 <- sc_feature(sce, genes[1], slot='logcounts', reduction = 'TSNE')
+##' p2 <- sc_feature(sce, genes, slot='logcounts', reduction = 'TSNE')
+##' f1 <- sc_dim(sce, slot='logcounts', reduction = 'TSNE') +
+##'       sc_dim_geom_feature(sce, genes[1], color='black')
+##' f2 <- sc_dim(sce, alpha=.3, slot='logcounts', reduction = 'TSNE') +
+##'     ggnewscale::new_scale_color() +
+##'     sc_dim_geom_feature(sce, genes, mapping=aes(color=features)) +
+##'     scale_color_viridis_d()
+##' p1 + p2 + f1 + f2
 setGeneric('sc_feature', function(object, 
                                   features, 
                                   dims = c(1, 2), 

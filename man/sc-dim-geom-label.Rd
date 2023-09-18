@@ -17,3 +17,20 @@ layer of labels
 \description{
 sc_dim_geom_label
 }
+\examples{
+library(scuttle)
+library(scater)
+library(scran)
+library(ggplot2)
+sce <- mockSCE()
+sce <- logNormCounts(sce)
+clusters <- clusterCells(sce, assay.type = 'logcounts')
+colLabels(sce) <- clusters
+sce <- runUMAP(sce, assay.type = 'logcounts')
+p1 <- sc_dim(sce, reduction = 'UMAP', mapping = aes(colour = Cell_Cycle))
+p2 <- sc_dim(sce, reduction = 'UMAP')
+f1 <- p1 + sc_dim_geom_label()
+}
+\seealso{
+\code{\link[=sc_dim_geom_label]{sc_dim_geom_label()}}
+}
