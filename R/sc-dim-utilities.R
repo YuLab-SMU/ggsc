@@ -22,7 +22,7 @@ sc_dim_count <- function(sc_dim_plot) {
       dplyr::summarize(x=mean(.data$x), y=mean(.data$y))
     dd <- unique(dd[, c("x", "y", "label")])
     # idx <- match(paste(dd$x, dd$y), paste(pos$x, pos$y)) # find closest one is better
-    idx <- vapply(1:nrow(dd), function(i) {
+    idx <- vapply(seq_len(nrow(dd)), function(i) {
                 which.min((dd$x[i] - pos$x)^2 + (dd$y[i] - pos$y)^2)
             }, FUN.VALUE = numeric(1)
         )
