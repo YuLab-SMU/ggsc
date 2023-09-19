@@ -92,3 +92,22 @@ ggplot object
 \description{
 sc_spatial
 }
+\examples{
+\donttest{
+library(STexampleData)
+# create ExperimentHub instance
+eh <- ExperimentHub()
+
+# query STexampleData datasets
+myfiles <- query(eh, "STexampleData")
+spe <- myfiles[["EH7538"]]
+
+spe <- spe[, colData(spe)$in_tissue == 1]
+set.seed(123)
+genes <- rownames(spe) |> sample(6) 
+p <- sc_spatial(spe, features = genes, 
+                image.rotate.degree = -90, 
+                image.mirror.axis = NULL, 
+                ncol = 3)
+}
+}

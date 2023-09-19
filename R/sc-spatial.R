@@ -23,6 +23,24 @@
 ##' @importFrom ggplot2 scale_color_gradientn
 ##' @importFrom Seurat DefaultAssay
 ##' @export
+##' @examples
+##' \donttest{
+##' library(STexampleData)
+##' # create ExperimentHub instance
+##' eh <- ExperimentHub()
+##' 
+##' # query STexampleData datasets
+##' myfiles <- query(eh, "STexampleData")
+##' spe <- myfiles[["EH7538"]]
+##' 
+##' spe <- spe[, colData(spe)$in_tissue == 1]
+##' set.seed(123)
+##' genes <- rownames(spe) |> sample(6) 
+##' p <- sc_spatial(spe, features = genes, 
+##'                 image.rotate.degree = -90, 
+##'                 image.mirror.axis = NULL, 
+##'                 ncol = 3)
+##' }
 setGeneric('sc_spatial', function(object, features = NULL, 
                                   sample.id = NULL, image.id = NULL, 
                                   slot = "data", image.plot = TRUE, 

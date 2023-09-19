@@ -1,4 +1,3 @@
-
 ##' @title sc_dim_count
 ##' @rdname sc-dim-count
 ##' @param sc_dim_plot dimension reduction plot of single cell data
@@ -9,7 +8,20 @@
 ##' @importFrom ggplot2 scale_y_continuous
 ##' @importFrom ggplot2 theme_minimal
 ##' @importFrom stats setNames
+##' @seealso [sc_dim()]
 ##' @export
+##' @examples
+##' library(scuttle)
+##' library(scater)
+##' library(scran)
+##' library(ggplot2)
+##' sce <- mockSCE()
+##' sce <- logNormCounts(sce)
+##' clusters <- clusterCells(sce, assay.type = 'logcounts')
+##' colLabels(sce) <- clusters
+##' sce <- runUMAP(sce, assay.type = 'logcounts')
+##' p <- sc_dim(sce, reduction = 'UMAP')
+##' p1 <- sc_dim_count(p)
 sc_dim_count <- function(sc_dim_plot) {
   x <- layer_data(sc_dim_plot)
 
@@ -52,7 +64,7 @@ sc_dim_count <- function(sc_dim_plot) {
 
 ##' @title sc_dim_geom_feature
 ##' @rdname sc-dim-geom-feature
-##' @param object Seurat object
+##' @param object Seurat or SingleCellExperiment object
 ##' @param features selected features (i.e., genes)
 ##' @param dims selected dimensions (must be a two-length vector) that are used in visualization
 ##' @param ncol number of facet columns if 'length(features) > 1'
@@ -60,6 +72,25 @@ sc_dim_count <- function(sc_dim_plot) {
 ##' @param ... additional parameters pass to 'scattermore::geom_scattermore()'
 ##' @return layer of points for selected features
 ##' @export
+##' @seealso [sc_feature()]
+##' @examples
+##' library(scuttle)
+##' library(scater)
+##' library(scran)
+##' library(ggplot2)
+##' sce <- mockSCE()
+##' sce <- logNormCounts(sce)
+##' clusters <- clusterCells(sce, assay.type = 'logcounts')
+##' colLabels(sce) <- clusters
+##' sce <- runUMAP(sce, assay.type = 'logcounts')
+##' p1 <- sc_dim(sce, reduction = 'UMAP')
+##' set.seed(123)
+##' genes <- rownames(sce) |> sample(6)
+##' f1 <- p1 + 
+##'       sc_dim_geom_feature(
+##'         object = sce, 
+##'         features = genes
+##'       )
 sc_dim_geom_feature <- function(object, features, dims = c(1,2), ncol=3, ..., 
             .fun=function(.data) dplyr::filter(.data, .data$value > 0)) {
     params <- list(...)
@@ -115,6 +146,20 @@ ggplot_add.sc_dim_geom_feature <- function(object, plot, object_name){
 ##' @param ... additional parameters pass to the geom
 ##' @return layer of labels
 ##' @export
+##' @seealso [sc_dim_geom_label()]
+##' @examples
+##' library(scuttle)
+##' library(scater)
+##' library(scran)
+##' library(ggplot2)
+##' sce <- mockSCE()
+##' sce <- logNormCounts(sce)
+##' clusters <- clusterCells(sce, assay.type = 'logcounts')
+##' colLabels(sce) <- clusters
+##' sce <- runUMAP(sce, assay.type = 'logcounts')
+##' p1 <- sc_dim(sce, reduction = 'UMAP', mapping = aes(colour = Cell_Cycle))
+##' p2 <- sc_dim(sce, reduction = 'UMAP')
+##' f1 <- p1 + sc_dim_geom_label()
 sc_dim_geom_label <- function(geom = ggplot2::geom_text, ...) {
     structure(list(geom = geom, ...),
         class = "sc_dim_geom_label")
@@ -125,7 +170,7 @@ sc_dim_geom_label <- function(geom = ggplot2::geom_text, ...) {
 ##' @method ggplot_add sc_dim_geom_label
 ##' @export
 ggplot_add.sc_dim_geom_label <- function(object, plot, object_name) {
-    dims <- names(plot$data)[1:2]
+    dims <- names(plot$data)[seq_len(2)]
     lab.text <- plot$labels$colour
     if (is.null(object$data)) {
         object$data <- dplyr::group_by(plot$data, !!rlang::sym(lab.text)) |> 
@@ -155,6 +200,19 @@ ggplot_add.sc_dim_geom_label <- function(object, plot, object_name) {
 ##' @seealso
 ##'  [stat_ellipse][ggplot2::stat_ellipse]; 
 ##' @export
+##' @examples
+##' library(scuttle)
+##' library(scater)
+##' library(scran)
+##' library(ggplot2)
+##' sce <- mockSCE()
+##' sce <- logNormCounts(sce)
+##' clusters <- clusterCells(sce, assay.type = 'logcounts')
+##' colLabels(sce) <- clusters
+##' sce <- runUMAP(sce, assay.type = 'logcounts')
+##' p1 <- sc_dim(sce, reduction = 'UMAP', mapping = aes(colour = Cell_Cycle))
+##' p2 <- sc_dim(sce, reduction = 'UMAP')
+##' f1 <- p1 + sc_dim_geom_ellipse()
 sc_dim_geom_ellipse <- function(mapping = NULL, level = 0.95, ...) {
     structure(list(mapping = mapping, level = level, ...), class = "sc_dim_geom_ellipse")
 }
@@ -166,7 +224,7 @@ sc_dim_geom_ellipse <- function(mapping = NULL, level = 0.95, ...) {
 ##' @importFrom ggplot2 stat_ellipse
 ##' @export
 ggplot_add.sc_dim_geom_ellipse <- function(object, plot, object_name) {
-    dims <- names(plot$data)[1:2]
+    dims <- names(plot$data)[seq_len(2)]
     lab.text <- plot$labels$colour
     default_mapping <- aes(x = .data[[dims[1]]], y = .data[[dims[2]]], group = !!rlang::sym(lab.text))
     if (is.null(object$mapping)) {
@@ -188,6 +246,19 @@ ggplot_add.sc_dim_geom_ellipse <- function(object, plot, object_name) {
 ##' @param ... additional parameters pass to sc_geom_point
 ##' @return plot with a layer of specified clusters
 ##' @export
+##' @seealso [sc_dim_geom_sub]
+##' @examples
+##' library(scuttle)
+##' library(scater)
+##' library(scran)
+##' library(ggplot2)
+##' sce <- mockSCE()
+##' sce <- logNormCounts(sce)
+##' clusters <- clusterCells(sce, assay.type = 'logcounts')
+##' colLabels(sce) <- clusters
+##' sce <- runUMAP(sce, assay.type = 'logcounts')
+##' p1 <- sc_dim(sce, reduction = 'UMAP')
+##' f1 <- p1 + sc_dim_geom_sub(subset = c(1, 2), .column = 'label')
 sc_dim_geom_sub <- function(mapping = NULL, subset, .column = "ident", ...) {
   structure(list(mapping = mapping, 
         subset = subset, 
@@ -220,6 +291,19 @@ ggplot_add.dim_geom_sub <- function(object, plot, object_name) {
 ##' @param .column which column represents cluster (e.g., 'ident')
 ##' @return update plot with only subset displayed
 ##' @export
+##' @seealso [sc_dim]
+##' @examples
+##' library(scuttle)
+##' library(scater)
+##' library(scran)
+##' library(ggplot2)
+##' sce <- mockSCE()
+##' sce <- logNormCounts(sce)
+##' clusters <- clusterCells(sce, assay.type = 'logcounts')
+##' colLabels(sce) <- clusters
+##' sce <- runUMAP(sce, assay.type = 'logcounts')
+##' p1 <- sc_dim(sce, reduction = 'UMAP')
+##' f1 <- p1 + sc_dim_sub(subset = c(1, 2), .column = 'label')
 sc_dim_sub <- function(subset, .column = "ident") {
   structure(list(subset = subset, .column = .column), class = "dim_sub")
 }

@@ -18,6 +18,25 @@
 ##' @importFrom ggplot2 facet_wrap
 ##' @importFrom tidyr pivot_longer
 ##' @export
+##' @examples
+##' library(scuttle)
+##' library(scater)
+##' library(scran)
+##' library(ggplot2)
+##' sce <- mockSCE()
+##' sce <- logNormCounts(sce)
+##' clusters <- clusterCells(sce, assay.type = 'logcounts')
+##' colLabels(sce) <- clusters
+##' sce <- runUMAP(sce, assay.type = 'logcounts')
+##' set.seed(123)
+##' genes <- rownames(sce) |> sample(6) 
+##' sc_violin(sce, genes[1], slot = 'logcounts')
+##' sc_violin(sce, genes[1], slot = 'logcounts',
+##'      .fun=function(d) dplyr::filter(d, value > 0)
+##'      ) +
+##'      ggforce::geom_sina(size=.1)
+##' sc_violin(sce, genes, slot = 'logcounts') +
+##'   theme(axis.text.x = element_text(angle=45, hjust=1))
 setGeneric('sc_violin', function(object, features, cells=NULL, 
                                  slot = "data", .fun = NULL, mapping = NULL, ncol=3, ...)
     standardGeneric('sc_violin')
@@ -35,7 +54,7 @@ setMethod("sc_violin", 'Seurat', function(object, features,
     if (!is.null(.fun)) {
         d <- .fun(d)
     }
-    default_mapping = aes_string(fill="ident")
+    default_mapping <- aes_string(fill="ident")
     if (is.null(mapping)) {
         mapping <- default_mapping
     } else {
@@ -71,7 +90,7 @@ setMethod('sc_violin', 'SingleCellExperiment',
     if (!is.null(.fun)) {
         d <- .fun(d)
     }
-    default_mapping = aes_string(fill="label")
+    default_mapping <- aes_string(fill="label")
     if (is.null(mapping)) {
         mapping <- default_mapping
     } else {

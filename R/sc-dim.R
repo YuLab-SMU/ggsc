@@ -11,6 +11,25 @@
 ##' @seealso
 ##'  [geom_scattermore][scattermore::geom_scattermore]; 
 ##' @export
+##' @examples
+##' library(scuttle)
+##' library(scater)
+##' library(scran)
+##' library(ggplot2)
+##' sce <- mockSCE()
+##' sce <- logNormCounts(sce)
+##' clusters <- clusterCells(sce, assay.type = 'logcounts')
+##' colLabels(sce) <- clusters
+##' sce <- runUMAP(sce, assay.type = 'logcounts')
+##' p1 <- sc_dim(sce, reduction = 'UMAP', mapping = aes(colour = Cell_Cycle))
+##' p2 <- sc_dim(sce, reduction = 'UMAP')
+##' f1 <- p1 + sc_dim_geom_label()
+##' f2 <- p2 + 
+##'       sc_dim_geom_label(
+##'         geom = shadowtext::geom_shadowtext,
+##'         color='black',
+##'         bg.color='white'
+##'       )
 setGeneric('sc_dim', 
            function(object, dims=c(1,2), reduction=NULL, 
                     cells=NULL, slot = "data", mapping = NULL, 
@@ -67,7 +86,7 @@ setMethod('sc_dim', 'SingleCellExperiment', function(object, dims = c(1, 2), red
         object <- object[, cells]
     }
     
-    xx <- colData(object) |> as.data.frame(check.names = FALSE) |> suppressWarnings()
+    xx <- colData(object) |> data.frame()
 
     if (!is.null(dims)){
         if (length(reducedDimNames(object)) == 0){
@@ -105,7 +124,7 @@ setMethod('sc_dim', 'SingleCellExperiment', function(object, dims = c(1, 2), red
 
 ##' @importFrom tidydr theme_dr
 sc_dim_internal <- function(data, mapping, ...) {
-    dims <- names(data)[1:2]
+    dims <- names(data)[seq_len(2)]
     ggplot(data, aes(.data[[dims[1]]], .data[[dims[2]]])) + 
         sc_geom_point(mapping, ...) + 
         theme_dr()

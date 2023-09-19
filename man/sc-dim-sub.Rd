@@ -17,3 +17,19 @@ update plot with only subset displayed
 \description{
 sc_dim_sub
 }
+\examples{
+library(scuttle)
+library(scater)
+library(scran)
+library(ggplot2)
+sce <- mockSCE()
+sce <- logNormCounts(sce)
+clusters <- clusterCells(sce, assay.type = 'logcounts')
+colLabels(sce) <- clusters
+sce <- runUMAP(sce, assay.type = 'logcounts')
+p1 <- sc_dim(sce, reduction = 'UMAP')
+f1 <- p1 + sc_dim_sub(subset = c(1, 2), .column = 'label')
+}
+\seealso{
+\link{sc_dim}
+}

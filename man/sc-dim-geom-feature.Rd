@@ -14,7 +14,7 @@ sc_dim_geom_feature(
 )
 }
 \arguments{
-\item{object}{Seurat object}
+\item{object}{Seurat or SingleCellExperiment object}
 
 \item{features}{selected features (i.e., genes)}
 
@@ -31,4 +31,26 @@ layer of points for selected features
 }
 \description{
 sc_dim_geom_feature
+}
+\examples{
+library(scuttle)
+library(scater)
+library(scran)
+library(ggplot2)
+sce <- mockSCE()
+sce <- logNormCounts(sce)
+clusters <- clusterCells(sce, assay.type = 'logcounts')
+colLabels(sce) <- clusters
+sce <- runUMAP(sce, assay.type = 'logcounts')
+p1 <- sc_dim(sce, reduction = 'UMAP')
+set.seed(123)
+genes <- rownames(sce) |> sample(6)
+f1 <- p1 + 
+      sc_dim_geom_feature(
+        object = sce, 
+        features = genes
+      )
+}
+\seealso{
+\code{\link[=sc_feature]{sc_feature()}}
 }
