@@ -51,8 +51,10 @@ Suggests:
   scuttle,
   shadowtext,
   STexampleData,
-  testthat (>= 3.0.0)
+  testthat (>= 3.0.0),
+  sf
 BugReports: https://github.com/YuLab-SMU/ggsc/issues 
+URL: https://github.com/YuLab-SMU/ggsc
 biocViews: DimensionReduction, GeneExpression, SingleCell, 
   Software, Spatial, Transcriptomics,Visualization, 
   DimensionReduction
