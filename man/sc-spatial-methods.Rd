@@ -61,24 +61,27 @@ sc_spatial(
 
 \item{features}{selected features to be visualized}
 
-\item{sample.id}{the index name of sample id, which only work with SingleCellExperiment or SpatialExperiment.}
+\item{sample.id}{the index name of sample id, which only
+work with SingleCellExperiment or SpatialExperiment.}
 
-\item{image.id}{the index name of image id, which only work with SingleCellExperiment or SpatialExperiment.}
+\item{image.id}{the index name of image id, which only work
+with SingleCellExperiment or SpatialExperiment.}
 
-\item{slot}{if plotting a feature, which data will be used (e.g., 'data', 'counts'), the assay name if object
+\item{slot}{if plotting a feature, which data will be used
+(e.g., 'data', 'counts'), the assay name if object
 is SingleCellExperiment or SpatialExperiment.}
 
 \item{image.plot}{whether to display the issue image as background.}
 
-\item{image.first.operation}{character which the first operation to image, 'rotate' or 'mirror',
-default is 'rotate'.}
+\item{image.first.operation}{character which the first operation to
+image, 'rotate' or 'mirror', default is 'rotate'.}
 
 \item{image.rotate.degree}{integer the degree to ratate image, default is NULL.}
 
 \item{image.mirror.axis}{character the direction to mirror the image, default is 'h'.}
 
-\item{remove.point}{whether to remove the spot points, it is nice if your just view the issue
-image, default is FALSE.}
+\item{remove.point}{whether to remove the spot points, it is nice
+if your just view the issue image, default is FALSE.}
 
 \item{mapping}{aesthetic mapping, default is NULL.}
 
@@ -97,11 +100,9 @@ sc_spatial
 library(STexampleData)
 # create ExperimentHub instance
 eh <- ExperimentHub()
-
 # query STexampleData datasets
 myfiles <- query(eh, "STexampleData")
 spe <- myfiles[["EH7538"]]
-
 spe <- spe[, colData(spe)$in_tissue == 1]
 set.seed(123)
 genes <- rownames(spe) |> sample(6) 

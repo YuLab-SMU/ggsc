@@ -27,7 +27,6 @@ Imports:
   rlang,
   scattermore,
   stats,
-  SeuratObject,
   Seurat,
   SingleCellExperiment,
   SummarizedExperiment,
@@ -51,10 +50,10 @@ Suggests:
   scuttle,
   shadowtext,
   sf,
+  SeuratObject,
   SpatialExperiment,
   STexampleData,
-  testthat (>= 3.0.0),
-  sf
+  testthat (>= 3.0.0)
 BugReports: https://github.com/YuLab-SMU/ggsc/issues 
 URL: https://github.com/YuLab-SMU/ggsc
 biocViews: DimensionReduction, GeneExpression, SingleCell, 

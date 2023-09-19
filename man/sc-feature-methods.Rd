@@ -49,9 +49,11 @@ sc_feature(
 
 \item{features}{selected features (i.e., genes)}
 
-\item{dims}{selected dimensions (must be a two-length vector) that are used in visualization}
+\item{dims}{selected dimensions (must be a two-length vector)
+that are used in visualization}
 
-\item{reduction}{reduction method, default is NULL and will use the default setting store in the object}
+\item{reduction}{reduction method, default is NULL and will
+use the default setting store in the object}
 
 \item{cells}{selected cells to plot (default is all cells)}
 

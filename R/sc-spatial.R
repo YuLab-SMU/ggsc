@@ -2,17 +2,20 @@
 ##' @rdname sc-spatial-methods
 ##' @param object Seurat object
 ##' @param features selected features to be visualized
-##' @param sample.id the index name of sample id, which only work with SingleCellExperiment or SpatialExperiment.
-##' @param image.id the index name of image id, which only work with SingleCellExperiment or SpatialExperiment.
-##' @param slot if plotting a feature, which data will be used (e.g., 'data', 'counts'), the assay name if object
+##' @param sample.id the index name of sample id, which only 
+##' work with SingleCellExperiment or SpatialExperiment.
+##' @param image.id the index name of image id, which only work 
+##' with SingleCellExperiment or SpatialExperiment.
+##' @param slot if plotting a feature, which data will be used 
+##' (e.g., 'data', 'counts'), the assay name if object
 ##' is SingleCellExperiment or SpatialExperiment.
 ##' @param image.plot whether to display the issue image as background.
-##' @param image.first.operation character which the first operation to image, 'rotate' or 'mirror', 
-##' default is 'rotate'.
+##' @param image.first.operation character which the first operation to 
+##' image, 'rotate' or 'mirror', default is 'rotate'.
 ##' @param image.rotate.degree integer the degree to ratate image, default is NULL.
 ##' @param image.mirror.axis character the direction to mirror the image, default is 'h'.
-##' @param remove.point whether to remove the spot points, it is nice if your just view the issue 
-##' image, default is FALSE.
+##' @param remove.point whether to remove the spot points, it is nice 
+##' if your just view the issue image, default is FALSE.
 ##' @param mapping aesthetic mapping, default is NULL.
 ##' @param ncol integer number of facet columns if 'length(features) > 1', default is 6.
 ##' @param ... additional parameters.
@@ -28,11 +31,9 @@
 ##' library(STexampleData)
 ##' # create ExperimentHub instance
 ##' eh <- ExperimentHub()
-##' 
 ##' # query STexampleData datasets
 ##' myfiles <- query(eh, "STexampleData")
 ##' spe <- myfiles[["EH7538"]]
-##' 
 ##' spe <- spe[, colData(spe)$in_tissue == 1]
 ##' set.seed(123)
 ##' genes <- rownames(spe) |> sample(6) 
@@ -58,10 +59,11 @@ setGeneric('sc_spatial', function(object, features = NULL,
 ##' @rdname sc-spatial-methods
 ##' @aliases sc_spatial,Seurat
 ##' @exportMethod sc_spatial
-setMethod("sc_spatial", 'Seurat', function(object, features = NULL, slot = "data", image.plot = TRUE,
-                                           image.first.operation = 'rotate', image.rotate.degree = NULL, 
-                                           image.mirror.axis = 'v', remove.point = FALSE, mapping = NULL, 
-                                           ncol = 6, ...) {
+setMethod("sc_spatial", 'Seurat', 
+          function(object, features = NULL, slot = "data", image.plot = TRUE,
+                   image.first.operation = 'rotate', image.rotate.degree = NULL, 
+                   image.mirror.axis = 'v', remove.point = FALSE, mapping = NULL, 
+                   ncol = 6, ...) {
     images <- SeuratObject::Images(object = object, 
                     assay = Seurat::DefaultAssay(object = object)
                 )
@@ -76,7 +78,11 @@ setMethod("sc_spatial", 'Seurat', function(object, features = NULL, slot = "data
     default_mapping <- aes_string(x = colnames(coord)[2], y = colnames(coord)[1])
 
     if (!is.null(features)){
-        d <- tidyr::pivot_longer(d, seq(ncol(d) - length(features) + 1, ncol(d)), names_to = 'features')
+        d <- tidyr::pivot_longer(
+               d, 
+               seq(ncol(d) - length(features) + 1, ncol(d)), 
+               names_to = 'features'
+             )
         default_mapping <- modifyList(default_mapping, aes_string(color = "value"))
     }
 
@@ -89,7 +95,10 @@ setMethod("sc_spatial", 'Seurat', function(object, features = NULL, slot = "data
     p <- ggplot(d, mapping)
 
     if (image.plot){
-        img.annot <- .build_img_annot_layer(img, image.first.operation, image.rotate.degree, image.mirror.axis)
+        img.annot <- .build_img_annot_layer(img, 
+                                            image.first.operation, 
+                                            image.rotate.degree, 
+                                            image.mirror.axis)
         p <- p + img.annot
     }
 
@@ -155,7 +164,9 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
     
     default_mapping <- aes_string(x = colnames(coords.da)[2], y = colnames(coords.da)[1])
     if (!is.null(features)){
-        d <- tidyr::pivot_longer(d, seq(ncol(d) - length(features) + 1, ncol(d)), names_to = 'features')
+        d <- tidyr::pivot_longer(d, 
+                                 seq(ncol(d) - length(features) + 1, ncol(d)), 
+                                 names_to = 'features')
         default_mapping <- modifyList(default_mapping, aes_string(color = "value"))
     }
 
@@ -168,7 +179,10 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
     p <- ggplot(d, mapping) 
 
     if (image.plot){
-        img.annot <- .build_img_annot_layer(img.da, image.first.operation, image.rotate.degree, image.mirror.axis)
+        img.annot <- .build_img_annot_layer(img.da, 
+                                            image.first.operation, 
+                                            image.rotate.degree, 
+                                            image.mirror.axis)
         p <- p + img.annot
     }
 
@@ -217,7 +231,10 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
     return(x)
 }
 
-.build_img_annot_layer <- function(image.da, image.first.operation = NULL, image.rotate.degree = NULL, image.mirror.axis = NULL){
+.build_img_annot_layer <- function(image.da, 
+                                   image.first.operation = NULL, 
+                                   image.rotate.degree = NULL, 
+                                   image.mirror.axis = NULL){
     if (!is.null(image.first.operation)){
         image.first.operation <- match.arg(image.first.operation, c('rotate', 'mirror'))
     }else{
