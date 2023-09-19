@@ -94,12 +94,17 @@ sc_spatial
 }
 \examples{
 \donttest{
-library(SpatialExperiment)
 library(STexampleData)
-spe <- Visium_humanDLPFC()
+# create ExperimentHub instance
+eh <- ExperimentHub()
+
+# query STexampleData datasets
+myfiles <- query(eh, "STexampleData")
+spe <- myfiles[["EH7538"]]
+
 spe <- spe[, colData(spe)$in_tissue == 1]
 set.seed(123)
-rownames(spe) |> sample(6) -> genes
+genes <- rownames(spe) |> sample(6) 
 p <- sc_spatial(spe, features = genes, 
                 image.rotate.degree = -90, 
                 image.mirror.axis = NULL, 

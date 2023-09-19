@@ -1,5 +1,6 @@
-# ggsc 0.99.3
+# ggsc 0.99.5
 
++ add examples in Rd to satisfy BiocCheck (2023-09-18, Mon, #7)
 + `sc_dim_count()` function to generate a barplot from a dimension reduction plot (`sc_dim()` plot) to 
     visualize the number of cells for each clusters (2023-09-13, Wed)
 + add 'biocViews' in DESCRIPTION required by Bioconductor
