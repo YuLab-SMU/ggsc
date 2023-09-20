@@ -1,6 +1,6 @@
 Package: ggsc
 Title: Visualizing Single Cell Data
-Version: 0.99.3
+Version: 0.99.5
 Authors@R: c(
        person("Guangchuang", "Yu", 
               email = "guangchuangyu@gmail.com", 
@@ -18,16 +18,15 @@ Description: Useful functions to visualize single cell and spatial
   It also supports visualizing the data using grammar of graphics 
   implemented in 'ggplot2'.
 Imports:
-  grid,
-  grDevices,
   cli,
   dplyr,
   ggplot2,
+  grDevices,
+  grid,
   methods,
   rlang,
   scattermore,
   stats,
-  SeuratObject,
   Seurat,
   SingleCellExperiment,
   SummarizedExperiment,
@@ -50,12 +49,15 @@ Suggests:
   scater,
   scuttle,
   shadowtext,
+  sf,
+  SeuratObject,
+  SpatialExperiment,
   STexampleData,
   testthat (>= 3.0.0)
 BugReports: https://github.com/YuLab-SMU/ggsc/issues 
+URL: https://github.com/YuLab-SMU/ggsc
 biocViews: DimensionReduction, GeneExpression, SingleCell, 
-  Software, Spatial, Transcriptomics,Visualization, 
-  DimensionReduction
+  Software, Spatial, Transcriptomics,Visualization
 VignetteBuilder: knitr
 ByteCompile: true
 License: Artistic-2.0

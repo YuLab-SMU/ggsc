@@ -1,8 +1,10 @@
 ##' @title sc_dim
 ##' @rdname sc-dim-methods
 ##' @param object Seurat object
-##' @param dims selected dimensions (must be a two-length vector) that are used in visualization
-##' @param reduction reduction method, default is NULL and will use the default setting store in the object
+##' @param dims selected dimensions (must be a two-length vector) that 
+##' are used in visualization
+##' @param reduction reduction method, default is NULL and will use the 
+##' default setting store in the object
 ##' @param cells selected cells to plot (default is all cells)
 ##' @param slot slot to pull expression data from (e.g., 'count' or 'data')
 ##' @param mapping aesthetic mapping
@@ -61,8 +63,9 @@ setMethod("sc_dim", 'Seurat', function(object,
 #' @rdname sc-dim-methods
 #' @aliases sc_dim,SingleCellExperiment
 #' @exportMethod sc_dim
-setMethod('sc_dim', 'SingleCellExperiment', function(object, dims = c(1, 2), reduction = NULL, 
-                                                     cells = NULL, slot = 'data', mapping = NULL, ...){
+setMethod('sc_dim', 'SingleCellExperiment', 
+          function(object, dims = c(1, 2), reduction = NULL, 
+                  cells = NULL, slot = 'data', mapping = NULL, ...){
     d <- .extract_sce_data(object = object, features = NULL, dims = dims, 
                       reduction = reduction, cells = cells, slot = slot)
     
@@ -81,7 +84,8 @@ setMethod('sc_dim', 'SingleCellExperiment', function(object, dims = c(1, 2), red
 ##' @importFrom SingleCellExperiment reducedDims reducedDimNames
 ##' @importFrom SummarizedExperiment assay colData assayNames
 ##' @importFrom cli cli_abort
-.extract_sce_data <- function(object, features = NULL, dims = c(1, 2), reduction = NULL, cells = NULL, slot = 1){
+.extract_sce_data <- function(object, features = NULL, dims = c(1, 2), 
+                              reduction = NULL, cells = NULL, slot = 1){
     if (!is.null(cells)){
         object <- object[, cells]
     }
@@ -95,7 +99,8 @@ setMethod('sc_dim', 'SingleCellExperiment', function(object, dims = c(1, 2), red
         if (is.null(reduction)){
             reduction <- 1
         }
-        tmp.reduced <- reducedDims(object)[[reduction]][,dims] |> as.data.frame(check.names = FALSE)
+        tmp.reduced <- reducedDims(object)[[reduction]][,dims] |> 
+            as.data.frame(check.names = FALSE)
         xx <- merge(tmp.reduced, xx, by = 0)
         rownames(xx) <- xx$Row.names
         xx$Row.names <- NULL
@@ -130,10 +135,10 @@ sc_dim_internal <- function(data, mapping, ...) {
         theme_dr()
 } 
 
-##' @importFrom SeuratObject FetchData
 get_dim_data <- function(object, features = NULL, 
                     dims=c(1,2), reduction=NULL, 
                     cells=NULL, slot = "data") {
+    rlang::check_installed('SeuratObject', 'for the internal function `get_dim_data()`.')
     if (is.null(cells)) {
         cells <- colnames(object)
     }

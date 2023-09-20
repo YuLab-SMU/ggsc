@@ -2,8 +2,10 @@
 ##' @rdname sc-feature-methods
 ##' @param object Seurat object
 ##' @param features selected features (i.e., genes)
-##' @param dims selected dimensions (must be a two-length vector) that are used in visualization
-##' @param reduction reduction method, default is NULL and will use the default setting store in the object
+##' @param dims selected dimensions (must be a two-length vector) 
+##' that are used in visualization
+##' @param reduction reduction method, default is NULL and will 
+##' use the default setting store in the object
 ##' @param cells selected cells to plot (default is all cells)
 ##' @param slot slot to pull expression data from (e.g., 'count' or 'data')
 ##' @param mapping aesthetic mapping
@@ -88,7 +90,11 @@ setMethod("sc_feature", "SingleCellExperiment",
     d <- .extract_sce_data(object = object, features = features, dims = dims, 
                            reduction = reduction, cells = cells, slot = slot)
     
-    d2 <- tidyr::pivot_longer(d, seq(ncol(d) - length(features) + 1, ncol(d)), names_to = 'features')
+    d2 <- tidyr::pivot_longer(
+            d, 
+            seq(ncol(d) - length(features) + 1, ncol(d)), 
+            names_to = 'features'
+          )
 
     if (is.numeric(features)){
         features <- rownames(object)[features]

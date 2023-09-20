@@ -18,13 +18,15 @@ sc_dim_geom_feature(
 
 \item{features}{selected features (i.e., genes)}
 
-\item{dims}{selected dimensions (must be a two-length vector) that are used in visualization}
+\item{dims}{selected dimensions (must be a two-length vector) that are used
+in visualization}
 
 \item{ncol}{number of facet columns if 'length(features) > 1'}
 
 \item{...}{additional parameters pass to 'scattermore::geom_scattermore()'}
 
-\item{.fun}{user defined function that will be applied to selected features (default is to filter out genes with no expression values)}
+\item{.fun}{user defined function that will be applied to selected features
+(default is to filter out genes with no expression values)}
 }
 \value{
 layer of points for selected features

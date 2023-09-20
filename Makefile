@@ -45,6 +45,11 @@ clean:
 	cd ..;\
 	$(RM) -r $(PKGNAME).Rcheck/
 
+push:
+	git push upstream devel;\
+	git push origin devel
+
+
 pages:
 	Rscript -e 'rmarkdown::render("gh-pages/index.Rmd")'
 

@@ -66,9 +66,11 @@ sc_dim_count <- function(sc_dim_plot) {
 ##' @rdname sc-dim-geom-feature
 ##' @param object Seurat or SingleCellExperiment object
 ##' @param features selected features (i.e., genes)
-##' @param dims selected dimensions (must be a two-length vector) that are used in visualization
+##' @param dims selected dimensions (must be a two-length vector) that are used 
+##' in visualization
 ##' @param ncol number of facet columns if 'length(features) > 1'
-##' @param .fun user defined function that will be applied to selected features (default is to filter out genes with no expression values)
+##' @param .fun user defined function that will be applied to selected features 
+##' (default is to filter out genes with no expression values)
 ##' @param ... additional parameters pass to 'scattermore::geom_scattermore()'
 ##' @return layer of points for selected features
 ##' @export
@@ -113,13 +115,21 @@ sc_dim_geom_feature <- function(object, features, dims = c(1,2), ncol=3, ...,
 ##' @export
 ggplot_add.sc_dim_geom_feature <- function(object, plot, object_name){
     if (inherits(object$data, 'Seurat')){
-        d <- get_dim_data(object$data, dims=object$dims, features=object$features)
+        d <- get_dim_data(object$data, 
+                          dims=object$dims, 
+                          features=object$features)
     }else{
-        d <- .extract_sce_data(object$data, dims = object$dims, features = object$features)
+        d <- .extract_sce_data(object$data, 
+                               dims = object$dims, 
+                               features = object$features)
     }
     d <- as_tibble(d, rownames='.ID.NAME')
 
-    d <- tidyr::pivot_longer(d, seq(ncol(d) - length(object$features) + 1, ncol(d)), names_to = "features") |> 
+    d <- tidyr::pivot_longer(
+           d, 
+           seq(ncol(d) - length(object$features) + 1, ncol(d)), 
+           names_to = "features"
+         ) |> 
          dplyr::select(-c(2, 3, 4)) |>
          dplyr::left_join(plot$data[,seq_len(3)] |>
                           tibble::as_tibble(rownames='.ID.NAME'), 
@@ -214,7 +224,8 @@ ggplot_add.sc_dim_geom_label <- function(object, plot, object_name) {
 ##' p2 <- sc_dim(sce, reduction = 'UMAP')
 ##' f1 <- p1 + sc_dim_geom_ellipse()
 sc_dim_geom_ellipse <- function(mapping = NULL, level = 0.95, ...) {
-    structure(list(mapping = mapping, level = level, ...), class = "sc_dim_geom_ellipse")
+    structure(list(mapping = mapping, level = level, ...), 
+              class = "sc_dim_geom_ellipse")
 }
 
 ##' @importFrom ggplot2 ggplot_add
@@ -226,7 +237,9 @@ sc_dim_geom_ellipse <- function(mapping = NULL, level = 0.95, ...) {
 ggplot_add.sc_dim_geom_ellipse <- function(object, plot, object_name) {
     dims <- names(plot$data)[seq_len(2)]
     lab.text <- plot$labels$colour
-    default_mapping <- aes(x = .data[[dims[1]]], y = .data[[dims[2]]], group = !!rlang::sym(lab.text))
+    default_mapping <- aes(x = .data[[dims[1]]], 
+                           y = .data[[dims[2]]], 
+                           group = !!rlang::sym(lab.text))
     if (is.null(object$mapping)) {
         mapping <- default_mapping
     } else {
