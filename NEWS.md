@@ -1,4 +1,4 @@
-# ggsc 0.99.5
+# ggsc 0.99.6
 
 + add examples in Rd to satisfy BiocCheck (2023-09-18, Mon, #7)
 + `sc_dim_count()` function to generate a barplot from a dimension reduction plot (`sc_dim()` plot) to 
