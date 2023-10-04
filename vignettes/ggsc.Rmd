@@ -42,10 +42,6 @@ eh <- ExperimentHub()
 myfiles <- query(eh, "STexampleData")
 spe <- myfiles[["EH7538"]]
 
-# spe <- Visium_humanDLPFC()
-
-assay(spe) |> as('CsparseMatrix') -> counts.da
-assay(spe, 'counts') <- counts.da
 
 spe <- addPerCellQC(spe, subsets=list(Mito=grep("^MT-", rowData(spe)$gene_name)))
 colData(spe) |> head()
