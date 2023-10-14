@@ -1,4 +1,4 @@
-# ggsc 0.99.8
+# ggsc 0.99.9
 
 + add package level man page and update vignette (2023-10-14, Sat)
 + add examples in Rd to satisfy BiocCheck (2023-09-18, Mon, #7)
