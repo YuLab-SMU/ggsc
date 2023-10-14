@@ -1,6 +1,6 @@
 Package: ggsc
 Title: Visualizing Single Cell Data
-Version: 0.99.6
+Version: 0.99.7
 Authors@R: c(
        person("Guangchuang", "Yu", 
               email = "guangchuangyu@gmail.com", 

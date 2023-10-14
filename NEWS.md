@@ -1,5 +1,6 @@
-# ggsc 0.99.6
+# ggsc 0.99.7
 
++ update vignette (2023-10-14, Sat)
 + add examples in Rd to satisfy BiocCheck (2023-09-18, Mon, #7)
 + `sc_dim_count()` function to generate a barplot from a dimension reduction plot (`sc_dim()` plot) to 
     visualize the number of cells for each clusters (2023-09-13, Wed)
