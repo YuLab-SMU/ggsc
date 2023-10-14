@@ -83,6 +83,7 @@ setMethod("sc_spatial", 'Seurat',
                seq(ncol(d) - length(features) + 1, ncol(d)), 
                names_to = 'features'
              )
+        d$features <- factor(d$features, levels=features)
         default_mapping <- modifyList(default_mapping, aes_string(color = "value"))
     }
 
@@ -167,6 +168,7 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
         d <- tidyr::pivot_longer(d, 
                                  seq(ncol(d) - length(features) + 1, ncol(d)), 
                                  names_to = 'features')
+        d$features <- factor(d$features, levels=features)
         default_mapping <- modifyList(default_mapping, aes_string(color = "value"))
     }
 
