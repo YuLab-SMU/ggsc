@@ -26,13 +26,41 @@ knitr::opts_chunk$set(tidy = FALSE,
                       fig.height = 6)
 ```
 
+# 1. Introduction
+
+Single-cell RNA sequencing (scRNA-seq) and Spatial RNA sequencing are widely used techniques for profiling gene expression in individual cells with their locations in the histological sections. These allow molecular biology to be studied at a resolution that cannot be matched by bulk sequencing of cell populations. To better visualize the result of reduction, spatial gene expression pattern in single cell or spatial experiment data, `ggsc` provides some layer functions based on `ggplot2` grammar. It can work with the `SingleCellExperiment` class or `Seurat` class, which are the widely used classes for storing data from single cell experiment.
+
+
+# 2. Installation
+
+
+To install `ggsc` package, please enter the following codes in R:
+
+```{r, eval=FALSE}
+
+# Release
+if (!requireNamespace('BiocManager', quietly = TRUE))
+    install.package("BiocManager")
+
+BiocManager::install("ggsc")
+
+# Or for devel
+if(!requireNamespace("remotes", quietly=TRUE)){
+    install.packages("remotes")
+}
+remotes::install_github("YuLab-SMU/ggsc")
+```
+
+# 3. The data pre-processing
+
+Here we use a example data from a single sample (sample 151673) of human brain dorsolateral prefrontal cortex (DLPFC) in the human brain, measured using the 10x Genomics Visium platform. First, a brief/standard data pre-processing were done with the `scater` and `scran` packages.
+
 ```{r, message=FALSE, setup.preprocess}
 library(BiocParallel)
 library(STexampleData)
 library(scater)
 library(scran)
 library(ggplot2)
-
 
 
 # create ExperimentHub instance
@@ -52,10 +80,13 @@ colData(spe) |> data.frame() |>
 
 plotColData(spe, x='sum', y = 'subsets_Mito_percent', other_fields="in_tissue") + facet_wrap(~in_tissue)
 
+```
+
+This data contain the data that are not in tissue, first we remove the cells not in tissue by the following codes. Then Cell-specific biases are normalized using the `computeSumFactors` method.
+
+```{r}
 
 spe <- spe[, spe$in_tissue == 1]
-
-#p <- plotHighestExprs(spe, exprs_values = "counts")
 
 clusters <- quickCluster(
               spe, 
@@ -66,6 +97,11 @@ clusters <- quickCluster(
 spe <- computeSumFactors(spe, clusters = clusters, BPPARAM = BiocParallel::MulticoreParam(workers=2))
 spe <- logNormCounts(spe)
 
+```
+
+Next, we use the Graph-based clustering method to do the reduction with the `runPCA` and `runTSNE` functions of `scater` package.
+
+```{r}
 # identify genes that drive biological heterogeneity in the data set by 
 # modelling the per-gene variance
 dec <- modelGeneVar(spe)
@@ -87,7 +123,12 @@ set.seed(123)
 spe <- runTSNE(spe, dimred="PCAsub", BPPARAM = MulticoreParam(workers=2))
 ```
 
+
+
 # Dimensional reduction plot
+
+Here, we used the `sc_dim` of `ggsc` package to visualize the result if `TSNE`, unlike other packages to visualize the results, `ggsc` also provides `sc_dim_geom_label` to visualize the cell cluster labels, which can work with `geom_shadowtext` of `shadowtext` and `geom_text` of `ggplot2` (default) by specifying the `geom` argument.
+
 
 ```{r setup}
 library(ggsc)
@@ -104,12 +145,19 @@ sc_dim(spe, reduction = 'TSNE') +
 
 # Visualize ‘features’ on a dimensional reduction plot
 
+To visualize the gene expression of cells in the result of reduction, `ggsc` also provides `sc_feature` function to highlight on a dimensional reduction plot.
+
+
 ```{r}
 genes <- c('MOBP', 'PCP4', 'SNAP25', 'HBB', 'IGKC', 'NPY')
 target.features <- rownames(spe)[match(genes, rowData(spe)$gene_name)]
 sc_feature(spe, target.features[1], slot='logcounts', reduction = 'TSNE')
 sc_feature(spe, target.features, slot='logcounts', reduction = 'TSNE')
+```
 
+In addition, it provides `sc_dim_geom_feature` layer working with `sc_dim` function to visualize the cells expressed the gene and the cell clusters information simultaneously.
+
+```{r}
 sc_dim(spe, slot='logcounts', reduction = 'TSNE') +
    sc_dim_geom_feature(spe, target.features[1], color='black')
 
@@ -117,6 +165,12 @@ sc_dim(spe, alpha=.3, slot='logcounts', reduction = 'TSNE') +
     ggnewscale::new_scale_color() + 
     sc_dim_geom_feature(spe, target.features, mapping=aes(color=features)) +
     scale_color_viridis_d()
+
+```
+
+It also provides `sc_dim_geom_ellipse` to add the ellipse based the cluster result, and `sc_dim_geom_sub` to select and highlight a specific cluster cells. 
+
+```{r}
 
 sc_dim(spe, reduction = 'TSNE') +
   sc_dim_geom_ellipse(level=0.95)
@@ -134,6 +188,8 @@ sc_dim(spe, color='grey', reduction = 'TSNE') +
 
 # Violin plot of gene expression
 
+`ggsc` provides `sc_violin` to visualize the expression information of specific genes using the violin layer with common legend, the genes can be compared more intuitively.
+
 ```{r}
 sc_violin(spe, target.features[1], slot = 'logcounts')
 sc_violin(spe, target.features[1], slot = 'logcounts', 
@@ -146,6 +202,9 @@ sc_violin(spe, target.features, slot = 'logcounts') +
 ```
 
 # Spatial features
+
+To visualize the spatial pattern of gene, `ggsc` provides `sc_spatial` to visualize specific features/genes with image information.
+
 
 ```{r, fig.width = 14, fig.height = 10}
 library(aplot)
