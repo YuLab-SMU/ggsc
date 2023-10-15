@@ -6,6 +6,9 @@
 \alias{aes}
 \alias{theme}
 \title{Objects exported from other packages}
+\value{
+Depending on the re-exported function
+}
 \keyword{internal}
 \description{
 These objects are imported from other packages. Follow the links

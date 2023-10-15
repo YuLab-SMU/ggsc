@@ -1,3 +1,8 @@
+#' @name reexports
+#' @return Depending on the re-exported function
+#' @keywords internal
+NULL
+
 ##' @importFrom ggplot2 aes
 ##' @export
 ggplot2::aes
