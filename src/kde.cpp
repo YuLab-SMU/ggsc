@@ -75,7 +75,7 @@ arma::vec Kde2dWeightedCpp(arma::mat x,
     NumericVector v = rep_each(as<NumericVector>(wrap(w)), n);
     NumericVector dax = Rcpp::dnorm(as<NumericVector>(ax));
 
-    NumericVector day = Rcpp::dnorm(as<NumericVector>(ay)) * v;
+    NumericVector day = Rcpp::dnorm(as<NumericVector>(ay));
     day.attr("dim") = Dimension(n, nx);
     NumericMatrix daym = as<NumericMatrix>(day);
     daym = transpose(daym);
@@ -85,7 +85,7 @@ arma::vec Kde2dWeightedCpp(arma::mat x,
     vx.attr("dim") = Dimension(n, nx);
     NumericMatrix u = as<NumericMatrix>(vx);
 
-    arma::mat z = (as<arma::mat>(u) * as<arma::mat>(daym))/(sum(v) * h[0] * h[1]);
+    arma::mat z = (as<arma::mat>(u) * as<arma::mat>(daym))/(sum(w) * h[0] * h[1]);
     
     arma::vec res = extractDensity(x, gx, gy, z);
     return (res);
