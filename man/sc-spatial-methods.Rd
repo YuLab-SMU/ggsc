@@ -21,6 +21,8 @@ sc_spatial(
   remove.point = FALSE,
   mapping = NULL,
   ncol = 6,
+  density = FALSE,
+  grid.n = 400,
   ...
 )
 
@@ -37,6 +39,8 @@ sc_spatial(
   remove.point = FALSE,
   mapping = NULL,
   ncol = 6,
+  density = FALSE,
+  grid.n = 400,
   ...
 )
 
@@ -53,6 +57,8 @@ sc_spatial(
   remove.point = FALSE,
   mapping = NULL,
   ncol = 6,
+  density = FALSE,
+  grid.n = 400,
   ...
 )
 }
@@ -87,6 +93,11 @@ if your just view the issue image, default is FALSE.}
 
 \item{ncol}{integer number of facet columns if 'length(features) > 1', default is 6.}
 
+\item{density}{whether plot the 2D weighted kernel density, default is FALSE.}
+
+\item{grid.n}{number of grid points in the two directions to estimate 2D
+weighted kernel density, default is 400.}
+
 \item{...}{additional parameters.}
 }
 \value{
@@ -96,7 +107,7 @@ ggplot object
 sc_spatial
 }
 \examples{
-\donttest{
+\dontrun{
 library(STexampleData)
 # create ExperimentHub instance
 eh <- ExperimentHub()

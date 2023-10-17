@@ -10,6 +10,9 @@
 ##' @param slot slot to pull expression data from (e.g., 'count' or 'data')
 ##' @param mapping aesthetic mapping
 ##' @param ncol number of facet columns if 'length(features) > 1'
+##' @param density whether plot the 2D weighted kernel density, default is FALSE.
+##' @param grid.n number of grid points in the two directions to estimate 2D 
+##' weighted kernel density, default is 400. 
 ##' @param ... additional parameters pass to 'scattermore::geom_scattermore()'
 ##' @return dimension reduction plot colored by selected features
 ##' @importFrom ggplot2 theme
@@ -48,7 +51,9 @@ setGeneric('sc_feature', function(object,
                                   cells = NULL, 
                                   slot = 'data', 
                                   mapping = NULL, 
-                                  ncol = 3, 
+                                  ncol = 3,
+                                  density = FALSE,
+                                  grid.n = 400, 
                                   ...)
     standardGeneric('sc_feature')
 )
@@ -58,15 +63,23 @@ setGeneric('sc_feature', function(object,
 ##' @exportMethod sc_feature
 setMethod('sc_feature', 'Seurat', function(object, features, 
                     dims=c(1,2), reduction=NULL, 
-                    cells=NULL, slot = "data", mapping=NULL, ncol=3, ...) {
+                    cells=NULL, slot = "data", mapping=NULL, 
+                    ncol=3, density = FALSE, grid.n = 400, ...) {
     d <- get_dim_data(object = object, features = features,
                     dims = dims, reduction = reduction, 
-                    cells = cells, slot = slot)
+                    cells = cells, slot = slot, density = density, 
+                    grid.n = grid.n)
 
-    d2 <- tidyr::pivot_longer(d, 4:ncol(d), names_to = "features")
+    if (density){
+        valnm <- 'density'
+    }else{
+        valnm <- slot
+    }
+
+    d2 <- tidyr::pivot_longer(d, 4:ncol(d), names_to = "features", values_to = valnm)
     d2$features <- factor(d2$features, features)
 
-    default_mapping <- aes_string(color="value")
+    default_mapping <- aes_string(color=valnm)
     if (is.null(mapping)) {
         mapping <- default_mapping
     } else {
@@ -85,15 +98,28 @@ setMethod('sc_feature', 'Seurat', function(object, features,
 ##' @exportMethod sc_feature
 setMethod("sc_feature", "SingleCellExperiment", 
           function(object, features, dims = c(1, 2), reduction = NULL, 
-                   cells = NULL, slot = 'data', mapping = NULL, ncol = 3, ...){
+                   cells = NULL, slot = 'data', mapping = NULL, ncol = 3, 
+                   density = FALSE, grid.n = 400, ...){
           
     d <- .extract_sce_data(object = object, features = features, dims = dims, 
-                           reduction = reduction, cells = cells, slot = slot)
+                           reduction = reduction, cells = cells, slot = slot,
+                           density = density, grid.n = grid.n
+         )
+
+    if (density){
+       valnm <- 'density'
+    }else{
+       if (is.numeric(slot)){
+           slot <- SummarizedExperiment::assayNames(object)[slot]
+       }
+       valnm <- slot
+    }
     
     d2 <- tidyr::pivot_longer(
             d, 
             seq(ncol(d) - length(features) + 1, ncol(d)), 
-            names_to = 'features'
+            names_to = 'features',
+            values_to = valnm
           )
 
     if (is.numeric(features)){
@@ -102,7 +128,7 @@ setMethod("sc_feature", "SingleCellExperiment",
 
     d2$features <- factor(d2$features, features)
     
-    default_mapping <- aes_string(color="value")
+    default_mapping <- aes_string(color=valnm)
     if (is.null(mapping)) {
         mapping <- default_mapping
     } else {

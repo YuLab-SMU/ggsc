@@ -18,6 +18,7 @@ Description: Useful functions to visualize single cell and spatial
   It also supports visualizing the data using grammar of graphics 
   implemented in 'ggplot2'.
 Imports:
+  Rcpp,
   cli,
   dplyr,
   ggplot2,
@@ -53,7 +54,9 @@ Suggests:
   SeuratObject,
   SpatialExperiment,
   STexampleData,
-  testthat (>= 3.0.0)
+  testthat (>= 3.0.0),
+  ks,
+  Matrix
 BugReports: https://github.com/YuLab-SMU/ggsc/issues 
 URL: https://github.com/YuLab-SMU/ggsc
 biocViews: DimensionReduction, GeneExpression, SingleCell, 
@@ -65,3 +68,6 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Config/testthat/edition: 3
+LinkingTo: 
+  Rcpp,
+  RcppArmadillo

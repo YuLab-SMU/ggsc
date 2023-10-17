@@ -85,13 +85,14 @@ setMethod('sc_dim', 'SingleCellExperiment',
 ##' @importFrom SummarizedExperiment assay colData assayNames
 ##' @importFrom cli cli_abort
 .extract_sce_data <- function(object, features = NULL, dims = c(1, 2), 
-                              reduction = NULL, cells = NULL, slot = 1){
+                              reduction = NULL, cells = NULL, slot = 1, 
+                              density=FALSE, grid.n = 400, sp.coords=NULL){
     if (!is.null(cells)){
         object <- object[, cells]
     }
     
     xx <- colData(object) |> data.frame()
-
+    reduced.dat <- NULL
     if (!is.null(dims)){
         if (length(reducedDimNames(object)) == 0){
             cli::cli_abort(c("The {.cls {class(object)}} didn't contain the results of reduction."))
@@ -99,9 +100,9 @@ setMethod('sc_dim', 'SingleCellExperiment',
         if (is.null(reduction)){
             reduction <- 1
         }
-        tmp.reduced <- reducedDims(object)[[reduction]][,dims] |> 
+        reduced.dat <- reducedDims(object)[[reduction]][,dims] |> 
             as.data.frame(check.names = FALSE)
-        xx <- merge(tmp.reduced, xx, by = 0)
+        xx <- merge(reduced.dat, xx, by = 0)
         rownames(xx) <- xx$Row.names
         xx$Row.names <- NULL
     }
@@ -114,11 +115,20 @@ setMethod('sc_dim', 'SingleCellExperiment',
                 slot <- 1
             }
         }
+        
         tmp <- assay(object, slot)
-        tmp <- tmp[features, ,drop=FALSE] |> 
-               as('matrix') |> 
-               t() |> 
-               as.data.frame(check.names=FALSE)
+        tmp <- tmp[features, ,drop=FALSE] 
+
+        if (density && !is.null(reduced.dat)){
+          tmp <- .buildWkde(w = tmp, coords = reduced.dat, n = grid.n) 
+        }else if (density && !is.null(sp.coords)){
+          tmp <- .buildWkde(w = tmp, coords = sp.coords, n = grid.n)
+        }else{
+          tmp <- tmp |> 
+                 as('matrix') |> 
+                 t() |> 
+                 as.data.frame(check.names=FALSE)
+        }
 
         xx <- merge(xx, tmp, by = 0)
         rownames(xx) <- xx$Row.names
@@ -137,8 +147,13 @@ sc_dim_internal <- function(data, mapping, ...) {
 
 get_dim_data <- function(object, features = NULL, 
                     dims=c(1,2), reduction=NULL, 
-                    cells=NULL, slot = "data") {
+                    cells=NULL, slot = "data", 
+                    density = FALSE, grid.n = 400, 
+                    sp.coords = NULL
+                    ) {
     rlang::check_installed('SeuratObject', 'for the internal function `get_dim_data()`.')
+    reduced.dat <- NULL
+    xx <- SeuratObject::FetchData(object, vars='ident', cells = cells, slot = slot)
     if (is.null(cells)) {
         cells <- colnames(object)
     }
@@ -147,9 +162,25 @@ get_dim_data <- function(object, features = NULL,
             reduction <- SeuratObject::DefaultDimReduc(object)
         }
         dims <- paste0(SeuratObject::Key(object = object[[reduction]]), dims)
+        reduced.dat <- SeuratObject::FetchData(object, vars = dims, cells, slot = slot)
     }
-    SeuratObject::FetchData(object, vars = c(dims, "ident", 
-        features), cells = cells, slot = slot)
+
+    if (!is.null(features)){
+        tmp <- SeuratObject::FetchData(object, vars = features, cells = cells, slot = slot)
+        if (density && !is.null(reduced.dat)){
+            tmp <- .buildWkde(t(tmp), reduced.dat, grid.n)
+            xx <- cbind(reduced.dat, xx, tmp)
+        }else if(density && !is.null(sp.coords)){
+            tmp <- .buildWkde(t(tmp), sp.coords, grid.n)
+            xx <- cbind(xx, tmp)
+        }else{
+            xx <- cbind(xx, tmp)
+        }
+    }
+    #SeuratObject::FetchData(object, vars = c(dims, "ident", 
+    #    features), cells = cells, slot = slot)
+
+    return(xx)
 }
 
 

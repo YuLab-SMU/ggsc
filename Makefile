@@ -6,7 +6,10 @@ all: rd check clean
 
 alldocs: rd readme mkdocs
 
-rd:
+crd:
+	Rscript -e 'Rcpp::compileAttributes()'
+
+rd: crd
 	Rscript -e 'roxygen2::roxygenise(".")'
 
 readme:
