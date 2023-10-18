@@ -1,6 +1,6 @@
 Package: ggsc
 Title: Visualizing Single Cell Data
-Version: 0.99.10
+Version: 0.99.11
 Authors@R: c(
        person("Guangchuang", "Yu", 
               email = "guangchuangyu@gmail.com", 
@@ -44,6 +44,8 @@ Suggests:
   ggnewscale,
   igraph,
   knitr,
+  ks,
+  Matrix,
   prettydoc,
   rmarkdown,
   scran,
@@ -54,9 +56,7 @@ Suggests:
   SeuratObject,
   SpatialExperiment,
   STexampleData,
-  testthat (>= 3.0.0),
-  ks,
-  Matrix
+  testthat (>= 3.0.0)
 BugReports: https://github.com/YuLab-SMU/ggsc/issues 
 URL: https://github.com/YuLab-SMU/ggsc
 biocViews: DimensionReduction, GeneExpression, SingleCell, 

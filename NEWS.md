@@ -1,5 +1,10 @@
+# ggsc 0.99.11
+
++ support density visualization for single and spatial transcriptomic data (2023-10-18, Wed)
+
 # ggsc 0.99.10
 
++ on Bioconductor (2023-10-16, Mon)
 + add `\value` session in the `reexports.Rd` (2023-10-15, Sun)
 + add package level man page and update vignette (2023-10-14, Sat)
 + add examples in Rd to satisfy BiocCheck (2023-09-18, Mon, #7)
