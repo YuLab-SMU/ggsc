@@ -17,6 +17,8 @@ sc_feature(
   slot = "data",
   mapping = NULL,
   ncol = 3,
+  density = FALSE,
+  grid.n = 400,
   ...
 )
 
@@ -29,6 +31,8 @@ sc_feature(
   slot = "data",
   mapping = NULL,
   ncol = 3,
+  density = FALSE,
+  grid.n = 400,
   ...
 )
 
@@ -41,6 +45,8 @@ sc_feature(
   slot = "data",
   mapping = NULL,
   ncol = 3,
+  density = FALSE,
+  grid.n = 400,
   ...
 )
 }
@@ -62,6 +68,11 @@ use the default setting store in the object}
 \item{mapping}{aesthetic mapping}
 
 \item{ncol}{number of facet columns if 'length(features) > 1'}
+
+\item{density}{whether plot the 2D weighted kernel density, default is FALSE.}
+
+\item{grid.n}{number of grid points in the two directions to estimate 2D
+weighted kernel density, default is 400.}
 
 \item{...}{additional parameters pass to 'scattermore::geom_scattermore()'}
 }

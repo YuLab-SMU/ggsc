@@ -18,6 +18,9 @@
 ##' if your just view the issue image, default is FALSE.
 ##' @param mapping aesthetic mapping, default is NULL.
 ##' @param ncol integer number of facet columns if 'length(features) > 1', default is 6.
+##' @param density whether plot the 2D weighted kernel density, default is FALSE.
+##' @param grid.n number of grid points in the two directions to estimate 2D
+##' weighted kernel density, default is 400.
 ##' @param ... additional parameters.
 ##' @return ggplot object
 ##' @importFrom grid rasterGrob unit
@@ -27,7 +30,7 @@
 ##' @importFrom Seurat DefaultAssay
 ##' @export
 ##' @examples
-##' \donttest{
+##' \dontrun{
 ##' library(STexampleData)
 ##' # create ExperimentHub instance
 ##' eh <- ExperimentHub()
@@ -51,6 +54,8 @@ setGeneric('sc_spatial', function(object, features = NULL,
                                   remove.point = FALSE,
                                   mapping = NULL,
                                   ncol = 6,
+                                  density = FALSE,
+                                  grid.n = 400,
                                   ...) 
            standardGeneric('sc_spatial')
 )
@@ -63,7 +68,7 @@ setMethod("sc_spatial", 'Seurat',
           function(object, features = NULL, slot = "data", image.plot = TRUE,
                    image.first.operation = 'rotate', image.rotate.degree = NULL, 
                    image.mirror.axis = 'v', remove.point = FALSE, mapping = NULL, 
-                   ncol = 6, ...) {
+                   ncol = 6, density=FALSE, grid.n = 400, ...) {
     images <- SeuratObject::Images(object = object, 
                     assay = Seurat::DefaultAssay(object = object)
                 )
@@ -71,7 +76,13 @@ setMethod("sc_spatial", 'Seurat',
     
     coord <- SeuratObject::GetTissueCoordinates(object = object[[images]])
     
-    d <- get_dim_data(object = object, features = features, dims = NULL)
+    d <- get_dim_data(object = object, features = features, dims = NULL, density = density, grid.n = grid.n, sp.coords=coord)
+
+    if (density){
+       valnm <- 'density'
+    }else{
+       valnm <- slot
+    }
 
     d <- cbind(coord, d)
 
@@ -84,7 +95,7 @@ setMethod("sc_spatial", 'Seurat',
                names_to = 'features'
              )
         d$features <- factor(d$features, levels=features)
-        default_mapping <- modifyList(default_mapping, aes_string(color = "value"))
+        default_mapping <- modifyList(default_mapping, aes_string(color = valnm))
     }
 
     if (!is.null(mapping)){
@@ -143,6 +154,8 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
                                                          remove.point = FALSE,
                                                          mapping = NULL,
                                                          ncol = 6,
+                                                         density = FALSE,
+                                                         grid.n = 400,
                                                          ...
                                                         ){
     if (!"imgData" %in% names(int_metadata(object))){
@@ -157,19 +170,31 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
         features <- rownames(object)[features]
     }
 
-    features.da <- .extract_sce_data(object, features = features, dims = NULL, cells = NULL, slot = slot)
+    features.da <- .extract_sce_data(object, features = features, dims = NULL, 
+                                     cells = NULL, slot = slot, 
+                                     density=density, grid.n = grid.n, sp.coords = coords.da)
 
     d <- merge(coords.da, features.da, by = 0)
     rownames(d) <- d$Row.names
     d$Row.names <- NULL
-    
+
     default_mapping <- aes_string(x = colnames(coords.da)[2], y = colnames(coords.da)[1])
     if (!is.null(features)){
+
+        if (density){
+           valnm <- 'density'
+        }else{
+           if (is.numeric(slot)){
+               slot <- SummarizedExperiment::assayNames(object)[slot]
+           }
+           valnm <- slot
+        }
+        
         d <- tidyr::pivot_longer(d, 
                                  seq(ncol(d) - length(features) + 1, ncol(d)), 
-                                 names_to = 'features')
+                                 names_to = 'features', values_to = valnm)
         d$features <- factor(d$features, levels=features)
-        default_mapping <- modifyList(default_mapping, aes_string(color = "value"))
+        default_mapping <- modifyList(default_mapping, aes_string(color = valnm))
     }
 
     if (!is.null(mapping)){
