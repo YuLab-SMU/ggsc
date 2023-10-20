@@ -36,13 +36,13 @@ uvec findIntervalCpp(arma::vec x, arma::vec breaks) {
   return (out - 1);
 }
 
-arma::vec extractDensity(arma::mat x, arma::vec gx, arma::vec gy, arma::mat z){
-  arma::uvec newx = findIntervalCpp(x.col(0), gx);
-  arma::uvec newy = findIntervalCpp(x.col(1), gy);
-  arma::mat sz = z.submat(newx, newy);
-  arma::vec res = sz.diag();
-  return (res);
-}
+//arma::vec extractDensity(arma::mat x, arma::vec gx, arma::vec gy, arma::mat z){
+//  arma::uvec newx = findIntervalCpp(x.col(0), gx);
+//  arma::uvec newy = findIntervalCpp(x.col(1), gy);
+//  arma::mat sz = z.submat(newx, newy);
+//  arma::vec res = sz.diag();
+//  return (res);
+//}
 
 double BandwidthNrdCpp(arma::vec x){
     NumericVector p = {0.25, 0.75};
@@ -58,7 +58,9 @@ arma::vec Kde2dWeightedCpp(arma::mat x,
                    arma::rowvec w,
                    arma::vec gx,
                    arma::vec gy,
-                   arma::vec h
+                   arma::vec h,
+                   arma::uvec indx,
+                   arma::uvec indy
                    ){
 
     int nx = x.n_rows;
@@ -75,7 +77,7 @@ arma::vec Kde2dWeightedCpp(arma::mat x,
     NumericVector v = rep_each(as<NumericVector>(wrap(w)), n);
     NumericVector dax = Rcpp::dnorm(as<NumericVector>(ax));
 
-    NumericVector day = Rcpp::dnorm(as<NumericVector>(ay));
+    NumericVector day = Rcpp::dnorm(as<NumericVector>(ay)) * v;
     day.attr("dim") = Dimension(n, nx);
     NumericMatrix daym = as<NumericMatrix>(day);
     daym = transpose(daym);
@@ -85,9 +87,11 @@ arma::vec Kde2dWeightedCpp(arma::mat x,
     vx.attr("dim") = Dimension(n, nx);
     NumericMatrix u = as<NumericMatrix>(vx);
 
-    arma::mat z = (as<arma::mat>(u) * as<arma::mat>(daym))/(sum(w) * h[0] * h[1]);
+    arma::mat z = (as<arma::mat>(u) * as<arma::mat>(daym))/(sum(v) * h[0] * h[1]);
     
-    arma::vec res = extractDensity(x, gx, gy, z);
+    //arma::vec res = extractDensity(x, gx, gy, z);
+    arma::mat sz = z.submat(indx, indy);
+    arma::vec res = sz.diag();
     return (res);
 }
 
@@ -119,8 +123,12 @@ arma::mat CalWkdeCpp(arma::mat& x, arma::sp_mat& w, arma::vec& l, Nullable<Numer
     H = as<arma::vec>(h);
   }
 
+  //mapping to original coords
+  arma::uvec indx = findIntervalCpp(x.col(0), gx);
+  arma::uvec indy = findIntervalCpp(x.col(1), gy);
+
   for (uword i = 0; i < w.n_rows; i++){
-    result.col(i) = Kde2dWeightedCpp(x, wv.row(i), gx, gy, H);
+    result.col(i) = Kde2dWeightedCpp(x, wv.row(i), gx, gy, H, indx, indy);
   }
 
   return (result);
