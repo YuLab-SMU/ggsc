@@ -36,14 +36,6 @@ uvec findIntervalCpp(arma::vec x, arma::vec breaks) {
   return (out - 1);
 }
 
-//arma::vec extractDensity(arma::mat x, arma::vec gx, arma::vec gy, arma::mat z){
-//  arma::uvec newx = findIntervalCpp(x.col(0), gx);
-//  arma::uvec newy = findIntervalCpp(x.col(1), gy);
-//  arma::mat sz = z.submat(newx, newy);
-//  arma::vec res = sz.diag();
-//  return (res);
-//}
-
 double BandwidthNrdCpp(arma::vec x){
     NumericVector p = {0.25, 0.75};
     NumericVector r = Quantile(as<NumericVector>(wrap(x)), p);
@@ -89,7 +81,6 @@ arma::vec Kde2dWeightedCpp(arma::mat x,
 
     arma::mat z = (as<arma::mat>(u) * as<arma::mat>(daym))/(sum(v) * h[0] * h[1]);
     
-    //arma::vec res = extractDensity(x, gx, gy, z);
     arma::mat sz = z.submat(indx, indy);
     arma::vec res = sz.diag();
     return (res);
@@ -109,7 +100,7 @@ arma::mat CalWkdeCpp(arma::mat& x, arma::sp_mat& w, arma::vec& l, Nullable<Numer
 
   arma::mat wv = conv_to<arma::mat>::from(w);
 
-  arma::mat result(x.n_rows, w.n_rows);
+  arma::mat result(x.n_rows, wv.n_rows);
 
   arma::vec gx = arma::linspace(l[0], l[1], n);
   arma::vec gy = arma::linspace(l[2], l[3], n);
@@ -127,7 +118,7 @@ arma::mat CalWkdeCpp(arma::mat& x, arma::sp_mat& w, arma::vec& l, Nullable<Numer
   arma::uvec indx = findIntervalCpp(x.col(0), gx);
   arma::uvec indy = findIntervalCpp(x.col(1), gy);
 
-  for (uword i = 0; i < w.n_rows; i++){
+  for (uword i = 0; i < wv.n_rows; i++){
     result.col(i) = Kde2dWeightedCpp(x, wv.row(i), gx, gy, H, indx, indy);
   }
 

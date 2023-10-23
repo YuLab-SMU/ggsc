@@ -22,7 +22,9 @@ sc_spatial(
   mapping = NULL,
   ncol = 6,
   density = FALSE,
-  grid.n = 400,
+  grid.n = 100,
+  joint = FALSE,
+  joint.fun = prod,
   ...
 )
 
@@ -40,7 +42,9 @@ sc_spatial(
   mapping = NULL,
   ncol = 6,
   density = FALSE,
-  grid.n = 400,
+  grid.n = 100,
+  joint = FALSE,
+  joint.fun = prod,
   ...
 )
 
@@ -58,7 +62,9 @@ sc_spatial(
   mapping = NULL,
   ncol = 6,
   density = FALSE,
-  grid.n = 400,
+  grid.n = 100,
+  joint = FALSE,
+  joint.fun = prod,
   ...
 )
 }
@@ -97,6 +103,12 @@ if your just view the issue image, default is FALSE.}
 
 \item{grid.n}{number of grid points in the two directions to estimate 2D
 weighted kernel density, default is 400.}
+
+\item{joint}{whether joint the multiple features with \code{joint.fun},
+default is FALSE.}
+
+\item{joint.fun}{how to joint the multiple features if \code{joint = TRUE},
+default is prod.}
 
 \item{...}{additional parameters.}
 }

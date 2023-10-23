@@ -13,6 +13,10 @@
 ##' @param density whether plot the 2D weighted kernel density, default is FALSE.
 ##' @param grid.n number of grid points in the two directions to estimate 2D 
 ##' weighted kernel density, default is 400. 
+##' @param joint whether joint the multiple features with \code{joint.fun}, 
+##' default is FALSE.
+##' @param joint.fun how to joint the multiple features if \code{joint=TRUE},
+##' default is prod.
 ##' @param ... additional parameters pass to 'scattermore::geom_scattermore()'
 ##' @return dimension reduction plot colored by selected features
 ##' @importFrom ggplot2 theme
@@ -54,6 +58,8 @@ setGeneric('sc_feature', function(object,
                                   ncol = 3,
                                   density = FALSE,
                                   grid.n = 400, 
+                                  joint = FALSE,
+                                  joint.fun = prod,
                                   ...)
     standardGeneric('sc_feature')
 )
@@ -64,19 +70,29 @@ setGeneric('sc_feature', function(object,
 setMethod('sc_feature', 'Seurat', function(object, features, 
                     dims=c(1,2), reduction=NULL, 
                     cells=NULL, slot = "data", mapping=NULL, 
-                    ncol=3, density = FALSE, grid.n = 400, ...) {
+                    ncol=3, density = FALSE, grid.n = 400, joint = FALSE,
+                    joint.fun = prod, ...) {
     d <- get_dim_data(object = object, features = features,
                     dims = dims, reduction = reduction, 
                     cells = cells, slot = slot, density = density, 
-                    grid.n = grid.n)
+                    grid.n = grid.n, joint = joint, joint.fun = joint.fun)
 
+    nm.f <- length(features)
     if (density){
         valnm <- 'density'
+        if(joint){
+           valnm <- "joint"
+           nm.f <- nm.f + 1
+        }
     }else{
         valnm <- slot
     }
 
-    d2 <- tidyr::pivot_longer(d, 4:ncol(d), names_to = "features", values_to = valnm)
+    indx.f <- seq(ncol(d)-nm.f + 1, ncol(d))
+
+    features <- colnames(d)[indx.f]
+
+    d2 <- tidyr::pivot_longer(d, indx.f, names_to = "features", values_to = valnm)
     d2$features <- factor(d2$features, features)
 
     default_mapping <- aes_string(color=valnm)
@@ -99,32 +115,47 @@ setMethod('sc_feature', 'Seurat', function(object, features,
 setMethod("sc_feature", "SingleCellExperiment", 
           function(object, features, dims = c(1, 2), reduction = NULL, 
                    cells = NULL, slot = 'data', mapping = NULL, ncol = 3, 
-                   density = FALSE, grid.n = 400, ...){
-          
+                   density = FALSE, grid.n = 400, joint = FALSE, 
+                   joint.fun = prod, ...){
+    if (slot == 'data'){
+        if ('logcounts' %in% assayNames(object)){
+            slot <- 'logcounts'
+        }else{
+            slot <- 1
+        }
+    }
+              
     d <- .extract_sce_data(object = object, features = features, dims = dims, 
                            reduction = reduction, cells = cells, slot = slot,
-                           density = density, grid.n = grid.n
+                           density = density, grid.n = grid.n, joint = joint,
+                           joint.fun = joint.fun
          )
+
+    nm.f <- length(features)
 
     if (density){
        valnm <- 'density'
+       if (joint) {
+           valnm <- "joint"
+           nm.f <- nm.f + 1
+       }
     }else{
        if (is.numeric(slot)){
-           slot <- SummarizedExperiment::assayNames(object)[slot]
+           slot <- assayNames(object)[slot]
        }
        valnm <- slot
     }
+
+    indx.f <- seq(ncol(d) - nm.f + 1, ncol(d))
     
     d2 <- tidyr::pivot_longer(
             d, 
-            seq(ncol(d) - length(features) + 1, ncol(d)), 
+            indx.f, 
             names_to = 'features',
             values_to = valnm
           )
 
-    if (is.numeric(features)){
-        features <- rownames(object)[features]
-    }
+    features <- colnames(d)[indx.f]
 
     d2$features <- factor(d2$features, features)
     
