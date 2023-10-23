@@ -102,7 +102,7 @@ if your just view the issue image, default is FALSE.}
 \item{density}{whether plot the 2D weighted kernel density, default is FALSE.}
 
 \item{grid.n}{number of grid points in the two directions to estimate 2D
-weighted kernel density, default is 400.}
+weighted kernel density, default is 100.}
 
 \item{joint}{whether joint the multiple features with \code{joint.fun},
 default is FALSE.}

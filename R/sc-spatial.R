@@ -20,7 +20,7 @@
 ##' @param ncol integer number of facet columns if 'length(features) > 1', default is 6.
 ##' @param density whether plot the 2D weighted kernel density, default is FALSE.
 ##' @param grid.n number of grid points in the two directions to estimate 2D
-##' weighted kernel density, default is 400.
+##' weighted kernel density, default is 100.
 ##' @param joint whether joint the multiple features with \code{joint.fun},
 ##' default is FALSE.
 ##' @param joint.fun how to joint the multiple features if \code{joint = TRUE},
