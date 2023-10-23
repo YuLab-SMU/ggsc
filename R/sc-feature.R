@@ -12,7 +12,7 @@
 ##' @param ncol number of facet columns if 'length(features) > 1'
 ##' @param density whether plot the 2D weighted kernel density, default is FALSE.
 ##' @param grid.n number of grid points in the two directions to estimate 2D 
-##' weighted kernel density, default is 400. 
+##' weighted kernel density, default is 100. 
 ##' @param joint whether joint the multiple features with \code{joint.fun}, 
 ##' default is FALSE.
 ##' @param joint.fun how to joint the multiple features if \code{joint=TRUE},
@@ -57,7 +57,7 @@ setGeneric('sc_feature', function(object,
                                   mapping = NULL, 
                                   ncol = 3,
                                   density = FALSE,
-                                  grid.n = 400, 
+                                  grid.n = 100, 
                                   joint = FALSE,
                                   joint.fun = prod,
                                   ...)
@@ -70,7 +70,7 @@ setGeneric('sc_feature', function(object,
 setMethod('sc_feature', 'Seurat', function(object, features, 
                     dims=c(1,2), reduction=NULL, 
                     cells=NULL, slot = "data", mapping=NULL, 
-                    ncol=3, density = FALSE, grid.n = 400, joint = FALSE,
+                    ncol=3, density = FALSE, grid.n = 100, joint = FALSE,
                     joint.fun = prod, ...) {
     d <- get_dim_data(object = object, features = features,
                     dims = dims, reduction = reduction, 
@@ -115,7 +115,7 @@ setMethod('sc_feature', 'Seurat', function(object, features,
 setMethod("sc_feature", "SingleCellExperiment", 
           function(object, features, dims = c(1, 2), reduction = NULL, 
                    cells = NULL, slot = 'data', mapping = NULL, ncol = 3, 
-                   density = FALSE, grid.n = 400, joint = FALSE, 
+                   density = FALSE, grid.n = 100, joint = FALSE, 
                    joint.fun = prod, ...){
     if (slot == 'data'){
         if ('logcounts' %in% assayNames(object)){

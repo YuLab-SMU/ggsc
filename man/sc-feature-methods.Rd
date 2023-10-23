@@ -18,7 +18,7 @@ sc_feature(
   mapping = NULL,
   ncol = 3,
   density = FALSE,
-  grid.n = 400,
+  grid.n = 100,
   joint = FALSE,
   joint.fun = prod,
   ...
@@ -34,7 +34,7 @@ sc_feature(
   mapping = NULL,
   ncol = 3,
   density = FALSE,
-  grid.n = 400,
+  grid.n = 100,
   joint = FALSE,
   joint.fun = prod,
   ...
@@ -50,7 +50,7 @@ sc_feature(
   mapping = NULL,
   ncol = 3,
   density = FALSE,
-  grid.n = 400,
+  grid.n = 100,
   joint = FALSE,
   joint.fun = prod,
   ...
@@ -78,7 +78,7 @@ use the default setting store in the object}
 \item{density}{whether plot the 2D weighted kernel density, default is FALSE.}
 
 \item{grid.n}{number of grid points in the two directions to estimate 2D
-weighted kernel density, default is 400.}
+weighted kernel density, default is 100.}
 
 \item{joint}{whether joint the multiple features with \code{joint.fun},
 default is FALSE.}
