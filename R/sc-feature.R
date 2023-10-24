@@ -81,7 +81,7 @@ setMethod('sc_feature', 'Seurat', function(object, features,
     if (density){
         valnm <- 'density'
         if(joint){
-           valnm <- "joint"
+           valnm <- "joint density"
            nm.f <- nm.f + 1
         }
     }else{

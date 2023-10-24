@@ -92,7 +92,7 @@ setMethod("sc_spatial", 'Seurat',
     if (density){
        valnm <- 'density'
        if (joint){
-           valnm <- "joint"
+           valnm <- "joint density"
            nm.f <- nm.f + 1
        }
     }else{
@@ -205,7 +205,7 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
         if (density){
            valnm <- 'density'
            if (joint){
-               valnm <- "joint"
+               valnm <- "joint density"
                nm.f <- nm.f + 1
            }
         }else{
