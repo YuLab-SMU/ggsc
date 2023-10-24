@@ -19,6 +19,7 @@
 }
 
 .split.by.feature <- function(p, ncol){
+   rlang::check_installed('aplot', 'for split ggplot object by features.')
    p <- p$data |> dplyr::group_split(.data$features) |>
            lapply(function(i){
               p$data <-i
