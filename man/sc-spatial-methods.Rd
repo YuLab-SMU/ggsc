@@ -25,6 +25,7 @@ sc_spatial(
   grid.n = 100,
   joint = FALSE,
   joint.fun = prod,
+  common.legend = TRUE,
   ...
 )
 
@@ -45,6 +46,7 @@ sc_spatial(
   grid.n = 100,
   joint = FALSE,
   joint.fun = prod,
+  common.legend = TRUE,
   ...
 )
 
@@ -65,6 +67,7 @@ sc_spatial(
   grid.n = 100,
   joint = FALSE,
   joint.fun = prod,
+  common.legend = TRUE,
   ...
 )
 }
@@ -109,6 +112,9 @@ default is FALSE.}
 
 \item{joint.fun}{how to joint the multiple features if \code{joint = TRUE},
 default is prod.}
+
+\item{common.legend}{whether to use \code{facet_wrap} to display the multiple
+\code{features}, default is TRUE.}
 
 \item{...}{additional parameters.}
 }

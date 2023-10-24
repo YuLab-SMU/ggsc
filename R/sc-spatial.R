@@ -25,6 +25,8 @@
 ##' default is FALSE.
 ##' @param joint.fun how to joint the multiple features if \code{joint = TRUE},
 ##' default is prod.
+##' @param common.legend whether to use \code{facet_wrap} to display the multiple
+##' \code{features}, default is TRUE.
 ##' @param ... additional parameters.
 ##' @return ggplot object
 ##' @importFrom grid rasterGrob unit
@@ -62,6 +64,7 @@ setGeneric('sc_spatial', function(object, features = NULL,
                                   grid.n = 100,
                                   joint = FALSE,
                                   joint.fun = prod,
+                                  common.legend = TRUE,
                                   ...) 
            standardGeneric('sc_spatial')
 )
@@ -75,7 +78,7 @@ setMethod("sc_spatial", 'Seurat',
                    image.first.operation = 'rotate', image.rotate.degree = NULL, 
                    image.mirror.axis = 'v', remove.point = FALSE, mapping = NULL, 
                    ncol = 6, density=FALSE, grid.n = 100, joint = FALSE, 
-                   joint.fun = prod, ...) {
+                   joint.fun = prod, common.legend = TRUE, ...) {
     images <- SeuratObject::Images(object = object, 
                     assay = Seurat::DefaultAssay(object = object)
                 )
@@ -153,6 +156,9 @@ setMethod("sc_spatial", 'Seurat',
         }
     }     
 
+    if (!common.legend && length(features) > 1){
+        p <- .split.by.feature(p, ncol)
+    }    
     return(p)    
 })
 
@@ -176,6 +182,7 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
                                                          grid.n = 100,
                                                          joint = FALSE,
                                                          joint.fun = prod,
+                                                         common.legend = TRUE,
                                                          ...
                                                         ){
     if (!"imgData" %in% names(int_metadata(object))){
@@ -259,7 +266,11 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
         if (inherits(type.color.value, 'numeric')) {
             p <- p + scale_color_gradientn(colours = SpatialColors(n=100))
         }
-    }     
+    }
+
+    if (!common.legend && length(features) > 1){
+        p <- .split.by.feature(p, ncol)
+    }
     return(p)
 })
 

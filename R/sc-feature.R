@@ -17,6 +17,8 @@
 ##' default is FALSE.
 ##' @param joint.fun how to joint the multiple features if \code{joint=TRUE},
 ##' default is prod.
+##' @param common.legend whether to use \code{facet_wrap} to display the multiple 
+##' \code{features}, default is TRUE.
 ##' @param ... additional parameters pass to 'scattermore::geom_scattermore()'
 ##' @return dimension reduction plot colored by selected features
 ##' @importFrom ggplot2 theme
@@ -60,6 +62,7 @@ setGeneric('sc_feature', function(object,
                                   grid.n = 100, 
                                   joint = FALSE,
                                   joint.fun = prod,
+                                  common.legend = TRUE,
                                   ...)
     standardGeneric('sc_feature')
 )
@@ -71,7 +74,7 @@ setMethod('sc_feature', 'Seurat', function(object, features,
                     dims=c(1,2), reduction=NULL, 
                     cells=NULL, slot = "data", mapping=NULL, 
                     ncol=3, density = FALSE, grid.n = 100, joint = FALSE,
-                    joint.fun = prod, ...) {
+                    joint.fun = prod, common.legend = TRUE, ...) {
     d <- get_dim_data(object = object, features = features,
                     dims = dims, reduction = reduction, 
                     cells = cells, slot = slot, density = density, 
@@ -100,13 +103,18 @@ setMethod('sc_feature', 'Seurat', function(object, features,
         mapping <- default_mapping
     } else {
         mapping <- modifyList(default_mapping, mapping)
-    }               
+    }
 
     p <- sc_dim_internal(d2, mapping, ...) +
         scale_color_gradient(low='grey', high='blue')           
         #scale_color_gradient2(low='blue', mid='grey', high='red') + 
 
-    p + .feature_setting(features=features, ncol=ncol)
+    p <- p + .feature_setting(features=features, ncol=ncol)
+    
+    if (!common.legend && length(features) > 1){
+        p <- .split.by.feature(p, ncol)
+    }
+    return(p)
 })
 
 ##' @rdname sc-feature-methods
@@ -116,7 +124,7 @@ setMethod("sc_feature", "SingleCellExperiment",
           function(object, features, dims = c(1, 2), reduction = NULL, 
                    cells = NULL, slot = 'data', mapping = NULL, ncol = 3, 
                    density = FALSE, grid.n = 100, joint = FALSE, 
-                   joint.fun = prod, ...){
+                   joint.fun = prod, common.legend = TRUE, ...){
     if (slot == 'data'){
         if ('logcounts' %in% assayNames(object)){
             slot <- 'logcounts'
@@ -170,9 +178,12 @@ setMethod("sc_feature", "SingleCellExperiment",
         scale_color_gradient(low='grey', high='blue')
         #scale_color_gradient2(low='blue', mid='grey', high='red') +
 
-    p + .feature_setting(features=features, ncol=ncol)
+    p <- p + .feature_setting(features=features, ncol=ncol)
 
-          
+    if (!common.legend && length(features) > 1){
+        p <- .split.by.feature(p, ncol)
+    }
+    return(p)    
 })
 
 

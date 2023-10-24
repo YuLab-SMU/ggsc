@@ -17,3 +17,13 @@
    }
    return(res)
 }
+
+.split.by.feature <- function(p, ncol){
+   p <- p$data |> dplyr::group_split(.data$features) |>
+           lapply(function(i){
+              p$data <-i
+              return(p)
+            })
+   p <- aplot::plot_list(gglist = p, ncol = ncol)
+   return(p)
+}
