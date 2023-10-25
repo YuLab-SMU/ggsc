@@ -1,4 +1,8 @@
-# ggsc 0.98.11
+# ggsc 1.1.0.001
+
++ introduce `joint` to combine all features with `joint.fun` and speed up calculation of kde using RcppParallel (2023-10-25, Wed, #11)
+
+# ggsc 1.0.0
 
 + Bioconductor RELEASE_3_18 (2023-10-25, Wed)
 
