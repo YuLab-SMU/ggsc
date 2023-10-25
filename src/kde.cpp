@@ -94,10 +94,10 @@ struct CalWkde : public Worker{
   const arma::uvec& indx;
   const arma::uvec& indy;
 
-  mat& result;
+  arma::mat& result;
 
   CalWkde(const arma::mat& x, const arma::mat& w, const arma::mat& ax,
-         const arma::mat ay, const arma::vec& H, const arma::uvec& indx, 
+         const arma::mat& ay, const arma::vec& H, const arma::uvec& indx, 
          const arma::uvec& indy, mat& result)
   : x(x), w(w), ax(ax), ay(ay), H(H), indx(indx), indy(indy), result(result) { }
 
