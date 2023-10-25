@@ -22,7 +22,10 @@ sc_spatial(
   mapping = NULL,
   ncol = 6,
   density = FALSE,
-  grid.n = 400,
+  grid.n = 100,
+  joint = FALSE,
+  joint.fun = prod,
+  common.legend = TRUE,
   ...
 )
 
@@ -40,7 +43,10 @@ sc_spatial(
   mapping = NULL,
   ncol = 6,
   density = FALSE,
-  grid.n = 400,
+  grid.n = 100,
+  joint = FALSE,
+  joint.fun = prod,
+  common.legend = TRUE,
   ...
 )
 
@@ -58,7 +64,10 @@ sc_spatial(
   mapping = NULL,
   ncol = 6,
   density = FALSE,
-  grid.n = 400,
+  grid.n = 100,
+  joint = FALSE,
+  joint.fun = prod,
+  common.legend = TRUE,
   ...
 )
 }
@@ -96,7 +105,16 @@ if your just view the issue image, default is FALSE.}
 \item{density}{whether plot the 2D weighted kernel density, default is FALSE.}
 
 \item{grid.n}{number of grid points in the two directions to estimate 2D
-weighted kernel density, default is 400.}
+weighted kernel density, default is 100.}
+
+\item{joint}{whether joint the multiple features with \code{joint.fun},
+default is FALSE.}
+
+\item{joint.fun}{how to joint the multiple features if \code{joint = TRUE},
+default is prod.}
+
+\item{common.legend}{whether to use \code{facet_wrap} to display the multiple
+\code{features}, default is TRUE.}
 
 \item{...}{additional parameters.}
 }

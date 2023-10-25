@@ -20,7 +20,13 @@
 ##' @param ncol integer number of facet columns if 'length(features) > 1', default is 6.
 ##' @param density whether plot the 2D weighted kernel density, default is FALSE.
 ##' @param grid.n number of grid points in the two directions to estimate 2D
-##' weighted kernel density, default is 400.
+##' weighted kernel density, default is 100.
+##' @param joint whether joint the multiple features with \code{joint.fun},
+##' default is FALSE.
+##' @param joint.fun how to joint the multiple features if \code{joint = TRUE},
+##' default is prod.
+##' @param common.legend whether to use \code{facet_wrap} to display the multiple
+##' \code{features}, default is TRUE.
 ##' @param ... additional parameters.
 ##' @return ggplot object
 ##' @importFrom grid rasterGrob unit
@@ -55,7 +61,10 @@ setGeneric('sc_spatial', function(object, features = NULL,
                                   mapping = NULL,
                                   ncol = 6,
                                   density = FALSE,
-                                  grid.n = 400,
+                                  grid.n = 100,
+                                  joint = FALSE,
+                                  joint.fun = prod,
+                                  common.legend = TRUE,
                                   ...) 
            standardGeneric('sc_spatial')
 )
@@ -68,7 +77,8 @@ setMethod("sc_spatial", 'Seurat',
           function(object, features = NULL, slot = "data", image.plot = TRUE,
                    image.first.operation = 'rotate', image.rotate.degree = NULL, 
                    image.mirror.axis = 'v', remove.point = FALSE, mapping = NULL, 
-                   ncol = 6, density=FALSE, grid.n = 400, ...) {
+                   ncol = 6, density=FALSE, grid.n = 100, joint = FALSE, 
+                   joint.fun = prod, common.legend = TRUE, ...) {
     images <- SeuratObject::Images(object = object, 
                     assay = Seurat::DefaultAssay(object = object)
                 )
@@ -76,10 +86,18 @@ setMethod("sc_spatial", 'Seurat',
     
     coord <- SeuratObject::GetTissueCoordinates(object = object[[images]])
     
-    d <- get_dim_data(object = object, features = features, dims = NULL, density = density, grid.n = grid.n, sp.coords=coord)
+    d <- get_dim_data(object = object, features = features, dims = NULL, 
+                      density = density, grid.n = grid.n, joint = joint,
+                      joint.fun = joint.fun, sp.coords=coord)
+
+    nm.f <- length(features)
 
     if (density){
        valnm <- 'density'
+       if (joint){
+           valnm <- "joint density"
+           nm.f <- nm.f + 1
+       }
     }else{
        valnm <- slot
     }
@@ -89,9 +107,12 @@ setMethod("sc_spatial", 'Seurat',
     default_mapping <- aes_string(x = colnames(coord)[2], y = colnames(coord)[1])
 
     if (!is.null(features)){
+
+        indx.f <- seq(ncol(d) - nm.f + 1, ncol(d))
+        features <- colnames(d)[indx.f]
         d <- tidyr::pivot_longer(
                d, 
-               seq(ncol(d) - length(features) + 1, ncol(d)), 
+               indx.f, 
                names_to = 'features'
              )
         d$features <- factor(d$features, levels=features)
@@ -135,6 +156,9 @@ setMethod("sc_spatial", 'Seurat',
         }
     }     
 
+    if (!common.legend && length(features) > 1){
+        p <- .split.by.feature(p, ncol)
+    }    
     return(p)    
 })
 
@@ -155,7 +179,10 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
                                                          mapping = NULL,
                                                          ncol = 6,
                                                          density = FALSE,
-                                                         grid.n = 400,
+                                                         grid.n = 100,
+                                                         joint = FALSE,
+                                                         joint.fun = prod,
+                                                         common.legend = TRUE,
                                                          ...
                                                         ){
     if (!"imgData" %in% names(int_metadata(object))){
@@ -171,8 +198,9 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
     }
 
     features.da <- .extract_sce_data(object, features = features, dims = NULL, 
-                                     cells = NULL, slot = slot, 
-                                     density=density, grid.n = grid.n, sp.coords = coords.da)
+                                     cells = NULL, slot = slot, density=density, 
+                                     grid.n = grid.n, joint = joint, joint.fun = joint.fun, 
+                                     sp.coords = coords.da)
 
     d <- merge(coords.da, features.da, by = 0)
     rownames(d) <- d$Row.names
@@ -180,18 +208,24 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
 
     default_mapping <- aes_string(x = colnames(coords.da)[2], y = colnames(coords.da)[1])
     if (!is.null(features)){
-
+        nm.f <- length(features)
         if (density){
            valnm <- 'density'
+           if (joint){
+               valnm <- "joint density"
+               nm.f <- nm.f + 1
+           }
         }else{
            if (is.numeric(slot)){
-               slot <- SummarizedExperiment::assayNames(object)[slot]
+               slot <- assayNames(object)[slot]
            }
            valnm <- slot
         }
+
+        indx.f <- seq(ncol(d)- nm.f + 1, ncol(d))
+        features <- colnames(d)[indx.f]
         
-        d <- tidyr::pivot_longer(d, 
-                                 seq(ncol(d) - length(features) + 1, ncol(d)), 
+        d <- tidyr::pivot_longer(d, indx.f, 
                                  names_to = 'features', values_to = valnm)
         d$features <- factor(d$features, levels=features)
         default_mapping <- modifyList(default_mapping, aes_string(color = valnm))
@@ -232,7 +266,11 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
         if (inherits(type.color.value, 'numeric')) {
             p <- p + scale_color_gradientn(colours = SpatialColors(n=100))
         }
-    }     
+    }
+
+    if (!common.legend && length(features) > 1){
+        p <- .split.by.feature(p, ncol)
+    }
     return(p)
 })
 

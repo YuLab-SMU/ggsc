@@ -86,7 +86,8 @@ setMethod('sc_dim', 'SingleCellExperiment',
 ##' @importFrom cli cli_abort
 .extract_sce_data <- function(object, features = NULL, dims = c(1, 2), 
                               reduction = NULL, cells = NULL, slot = 1, 
-                              density=FALSE, grid.n = 400, sp.coords=NULL){
+                              density=FALSE, grid.n = 400, joint = FALSE, 
+                              joint.fun = prod, sp.coords=NULL){
     if (!is.null(cells)){
         object <- object[, cells]
     }
@@ -120,9 +121,11 @@ setMethod('sc_dim', 'SingleCellExperiment',
         tmp <- tmp[features, ,drop=FALSE] 
 
         if (density && !is.null(reduced.dat)){
-          tmp <- .buildWkde(w = tmp, coords = reduced.dat, n = grid.n) 
+          tmp <- .buildWkde(w = tmp, coords = reduced.dat, n = grid.n, 
+                            joint = joint, joint.fun = joint.fun) 
         }else if (density && !is.null(sp.coords)){
-          tmp <- .buildWkde(w = tmp, coords = sp.coords, n = grid.n)
+          tmp <- .buildWkde(w = tmp, coords = sp.coords, n = grid.n,
+                            joint = joint, joint.fun = joint.fun)
         }else{
           tmp <- tmp |> 
                  as('matrix') |> 
@@ -149,6 +152,7 @@ get_dim_data <- function(object, features = NULL,
                     dims=c(1,2), reduction=NULL, 
                     cells=NULL, slot = "data", 
                     density = FALSE, grid.n = 400, 
+                    joint = FALSE, joint.fun = prod,
                     sp.coords = NULL
                     ) {
     rlang::check_installed('SeuratObject', 'for the internal function `get_dim_data()`.')
@@ -168,10 +172,10 @@ get_dim_data <- function(object, features = NULL,
     if (!is.null(features)){
         tmp <- SeuratObject::FetchData(object, vars = features, cells = cells, slot = slot)
         if (density && !is.null(reduced.dat)){
-            tmp <- .buildWkde(t(tmp), reduced.dat, grid.n)
+            tmp <- .buildWkde(t(tmp), reduced.dat, grid.n, joint, joint.fun)
             xx <- cbind(reduced.dat, xx, tmp)
         }else if(density && !is.null(sp.coords)){
-            tmp <- .buildWkde(t(tmp), sp.coords, grid.n)
+            tmp <- .buildWkde(t(tmp), sp.coords, grid.n, joint, joint.fun)
             xx <- cbind(xx, tmp)
         }else{
             xx <- cbind(xx, tmp)

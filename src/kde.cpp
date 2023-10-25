@@ -1,14 +1,16 @@
 #include <RcppArmadillo.h>
+#include <RcppParallel.h>
+using namespace RcppParallel;
 using namespace Rcpp;
 using namespace arma;
 using namespace std;
 
-Rcpp::NumericVector Quantile(Rcpp::NumericVector x, Rcpp::NumericVector probs) {
-  const size_t n=x.size(), np=probs.size();
+arma::vec Quantile(arma::vec x, arma::vec probs) {
+  const size_t n=x.n_elem, np=probs.n_elem;
   if (n==0) return x;
   if (np==0) return probs;
-  Rcpp::NumericVector index = (n-1.)*probs, y=x.sort(), x_hi(np), qs(np);
-  Rcpp::NumericVector lo = Rcpp::floor(index), hi = Rcpp::ceiling(index);
+  arma::vec index = (n-1.0)*probs, y=sort(x), x_hi(np), qs(np);
+  arma::vec lo = arma::floor(index), hi = arma::ceil(index);
 
   for (size_t i=0; i<np; ++i) {
     qs[i] = y[lo[i]];
@@ -36,17 +38,9 @@ uvec findIntervalCpp(arma::vec x, arma::vec breaks) {
   return (out - 1);
 }
 
-arma::vec extractDensity(arma::mat x, arma::vec gx, arma::vec gy, arma::mat z){
-  arma::uvec newx = findIntervalCpp(x.col(0), gx);
-  arma::uvec newy = findIntervalCpp(x.col(1), gy);
-  arma::mat sz = z.submat(newx, newy);
-  arma::vec res = sz.diag();
-  return (res);
-}
-
 double BandwidthNrdCpp(arma::vec x){
-    NumericVector p = {0.25, 0.75};
-    NumericVector r = Quantile(as<NumericVector>(wrap(x)), p);
+    arma::vec p = {0.25, 0.75};
+    arma::vec r = Quantile(x, p);
     double h = (r[1] - r[0])/1.349;
     double w = pow(x.n_elem, -0.2);
     double s = sqrt(var(x));
@@ -56,40 +50,64 @@ double BandwidthNrdCpp(arma::vec x){
 
 arma::vec Kde2dWeightedCpp(arma::mat x,
                    arma::rowvec w,
-                   arma::vec gx,
-                   arma::vec gy,
-                   arma::vec h
+                   arma::mat ax,
+                   arma::mat ay,
+                   arma::vec h,
+                   arma::uvec indx,
+                   arma::uvec indy
                    ){
-
-    int nx = x.n_rows;
-    int n = gx.n_elem;
+    int n = ax.n_rows;
 
     w = w/sum(w) * w.n_elem;
-
-    NumericMatrix ax = outer(as<NumericVector>(wrap(gx)), as<NumericVector>(wrap(x.col(0))), std::minus<double>());
-    NumericMatrix ay = outer(as<NumericVector>(wrap(gy)), as<NumericVector>(wrap(x.col(1))), std::minus<double>());
 
     ax = ax / h[0];
     ay = ay / h[1];
 
-    NumericVector v = rep_each(as<NumericVector>(wrap(w)), n);
-    NumericVector dax = Rcpp::dnorm(as<NumericVector>(ax));
+    arma::mat v = repelem(w, n, 1);
+    arma::mat u = arma::normpdf(ax) % v;
+    arma::mat day = arma::normpdf(ay) % v;
+    arma::mat daym = day.t();
 
-    NumericVector day = Rcpp::dnorm(as<NumericVector>(ay));
-    day.attr("dim") = Dimension(n, nx);
-    NumericMatrix daym = as<NumericMatrix>(day);
-    daym = transpose(daym);
-
-
-    NumericVector vx = dax * v;
-    vx.attr("dim") = Dimension(n, nx);
-    NumericMatrix u = as<NumericMatrix>(vx);
-
-    arma::mat z = (as<arma::mat>(u) * as<arma::mat>(daym))/(sum(w) * h[0] * h[1]);
+    arma::mat z = (u * daym)/(accu(v) * h[0] * h[1]);
     
-    arma::vec res = extractDensity(x, gx, gy, z);
+    arma::mat sz = z.submat(indx, indy);
+    arma::vec res = sz.diag();
     return (res);
 }
+
+arma::mat outergrid(arma::vec grid, arma::vec x){
+    arma::mat gxm = repelem(grid, 1, x.n_elem);
+    arma::mat xm = repelem(x, 1, grid.n_elem);
+
+    arma::mat ax = gxm - xm.t();
+    
+    return(ax);
+}
+
+
+struct CalWkde : public Worker{
+  const arma::mat& x;
+  const arma::mat& w;
+  const arma::mat& ax;
+  const arma::mat& ay;
+  const arma::vec& H;
+  const arma::uvec& indx;
+  const arma::uvec& indy;
+
+  arma::mat& result;
+
+  CalWkde(const arma::mat& x, const arma::mat& w, const arma::mat& ax,
+         const arma::mat& ay, const arma::vec& H, const arma::uvec& indx, 
+         const arma::uvec& indy, mat& result)
+  : x(x), w(w), ax(ax), ay(ay), H(H), indx(indx), indy(indy), result(result) { }
+
+  void operator()(std::size_t begin, std::size_t end){
+    for (uword i = begin; i < end; i++){
+        result.col(i) = Kde2dWeightedCpp(x, w.row(i), ax, ay, H, indx, indy);
+    }
+  }
+};
+
 
 //' Two-Dimensional Weighted Kernel Density Estimation And Mapping the Result To Original Dimension
 //' @param x The 2-D coordinate matrix
@@ -119,9 +137,16 @@ arma::mat CalWkdeCpp(arma::mat& x, arma::sp_mat& w, arma::vec& l, Nullable<Numer
     H = as<arma::vec>(h);
   }
 
-  for (uword i = 0; i < w.n_rows; i++){
-    result.col(i) = Kde2dWeightedCpp(x, wv.row(i), gx, gy, H);
-  }
+  //mapping to original coords
+  arma::uvec indx = findIntervalCpp(x.col(0), gx);
+  arma::uvec indy = findIntervalCpp(x.col(1), gy);
+  
+  arma::mat ax = outergrid(gx, x.col(0));
+  arma::mat ay = outergrid(gy, x.col(1));
+
+  uword num = wv.n_rows;
+  CalWkde calWkde(x, wv, ax, ay, H, indx, indy, result);
+  parallelFor(0, num, calWkde);
 
   return (result);
 }
