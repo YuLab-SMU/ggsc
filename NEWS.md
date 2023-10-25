@@ -1,3 +1,7 @@
+# ggsc 0.98.11
+
++ Bioconductor RELEASE_3_18 (2023-10-25, Wed)
+
 # ggsc 0.99.11
 
 + support density visualization for single and spatial transcriptomic data (2023-10-18, Wed)
