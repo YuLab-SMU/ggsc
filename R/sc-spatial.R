@@ -27,6 +27,7 @@
 ##' default is prod.
 ##' @param common.legend whether to use \code{facet_wrap} to display the multiple
 ##' \code{features}, default is TRUE.
+##' @param point.size the size of point, default is 5.
 ##' @param ... additional parameters.
 ##' @return ggplot object
 ##' @importFrom grid rasterGrob unit
@@ -65,6 +66,7 @@ setGeneric('sc_spatial', function(object, features = NULL,
                                   joint = FALSE,
                                   joint.fun = prod,
                                   common.legend = TRUE,
+                                  point.size = 5,
                                   ...) 
            standardGeneric('sc_spatial')
 )
@@ -78,7 +80,7 @@ setMethod("sc_spatial", 'Seurat',
                    image.first.operation = 'rotate', image.rotate.degree = NULL, 
                    image.mirror.axis = 'v', remove.point = FALSE, mapping = NULL, 
                    ncol = 6, density=FALSE, grid.n = 100, joint = FALSE, 
-                   joint.fun = prod, common.legend = TRUE, ...) {
+                   joint.fun = prod, common.legend = TRUE, point.size = 5, ...) {
     images <- SeuratObject::Images(object = object, 
                     assay = Seurat::DefaultAssay(object = object)
                 )
@@ -136,8 +138,8 @@ setMethod("sc_spatial", 'Seurat',
         p <- p + img.annot
     }
 
-    if (!remove.point || !(is.null(features) || missing(features))){
-        p <- p + sc_geom_point()
+    if (!remove.point && !(is.null(features) || missing(features))){
+        p <- p + sc_geom_point(pointsize = point.size, ...)
     }else{
         p <- p + geom_blank()
     }
@@ -248,8 +250,8 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
         p <- p + img.annot
     }
 
-    if (!remove.point || !(is.null(features) || missing(features))){
-        p <- p + sc_geom_point() 
+    if (!remove.point && !(is.null(features) || missing(features))){
+        p <- p + sc_geom_point(pointsize = point.size, ...) 
     }else{
         p <- p + geom_blank()
     }
