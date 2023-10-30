@@ -31,7 +31,7 @@
 ##' @return ggplot object
 ##' @importFrom grid rasterGrob unit
 ##' @importFrom ggplot2 facet_grid annotation_custom
-##' @importFrom ggplot2 geom_point xlab ylab geom_blank coord_fixed 
+##' @importFrom ggplot2 xlab ylab geom_blank coord_fixed 
 ##' @importFrom ggplot2 scale_color_gradientn
 ##' @importFrom Seurat DefaultAssay
 ##' @export
@@ -137,7 +137,7 @@ setMethod("sc_spatial", 'Seurat',
     }
 
     if (!remove.point || !(is.null(features) || missing(features))){
-        p <- p + geom_point()
+        p <- p + sc_geom_point()
     }else{
         p <- p + geom_blank()
     }
@@ -249,7 +249,7 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
     }
 
     if (!remove.point || !(is.null(features) || missing(features))){
-        p <- p + geom_point() 
+        p <- p + sc_geom_point() 
     }else{
         p <- p + geom_blank()
     }
@@ -296,10 +296,12 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
 
 .extract_coords <- function(x, image.da){
     if (is.null(image.da)){
-        return(x)
+        scaleFactor <- 1.0
+    }else{
+        scaleFactor <- image.da$scaleFactor
     }
     x <- int_colData(x)
-    x <- x[['spatialCoords']] * image.da$scaleFactor
+    x <- x[['spatialCoords']] * scaleFactor
     return(x)
 }
 
