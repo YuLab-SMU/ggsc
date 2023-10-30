@@ -82,7 +82,8 @@ setMethod("sc_spatial", 'Seurat',
     images <- SeuratObject::Images(object = object, 
                     assay = Seurat::DefaultAssay(object = object)
                 )
-    img <- object@images[[images]]@image |> as.raster()
+    img <- object@images[[images]]@image 
+    if (!is.null(img)) img <- as.raster(img)
     
     coord <- SeuratObject::GetTissueCoordinates(object = object[[images]])
     
@@ -127,7 +128,7 @@ setMethod("sc_spatial", 'Seurat',
 
     p <- ggplot(d, mapping)
 
-    if (image.plot){
+    if (image.plot && !is.null(img)){
         img.annot <- .build_img_annot_layer(img, 
                                             image.first.operation, 
                                             image.rotate.degree, 
@@ -239,7 +240,7 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
 
     p <- ggplot(d, mapping) 
 
-    if (image.plot){
+    if (image.plot && !is.null(img.da)){
         img.annot <- .build_img_annot_layer(img.da, 
                                             image.first.operation, 
                                             image.rotate.degree, 
@@ -277,6 +278,9 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
 #' @importFrom SingleCellExperiment int_metadata int_colData
 .extract_img_data <- function(x, sample.id = NULL, image.id = NULL){
     img.da <- int_metadata(x)[['imgData']]
+    if (nrow(img.da)==0){
+        return(NULL)
+    }    
     if (is.null(sample.id)){
         sample.id <- unique(img.da$sample_id)[1]
     }
@@ -291,6 +295,9 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
 }
 
 .extract_coords <- function(x, image.da){
+    if (is.null(image.da)){
+        return(x)
+    }
     x <- int_colData(x)
     x <- x[['spatialCoords']] * image.da$scaleFactor
     return(x)
