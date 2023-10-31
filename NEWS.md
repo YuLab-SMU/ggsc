@@ -1,3 +1,7 @@
+# ggsc 1.1.1.001
+
++ bug fixed for Seurat object (2023-10-31, Tue, #12, #13)
+
 # ggsc 1.1.1
 
 + ignore the tissue section when image is not exist (2023-10-31, Tue, #12)
