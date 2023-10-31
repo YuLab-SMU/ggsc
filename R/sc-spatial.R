@@ -98,14 +98,13 @@ setMethod("sc_spatial", 'Seurat',
     if (density){
        valnm <- 'density'
        if (joint){
-           valnm <- "joint density"
+           #valnm <- "joint_density"
            nm.f <- nm.f + 1
        }
     }else{
        valnm <- slot
+       d <- cbind(coord, d)
     }
-
-    d <- cbind(coord, d)
 
     default_mapping <- aes_string(x = colnames(coord)[2], y = colnames(coord)[1])
 
@@ -161,7 +160,8 @@ setMethod("sc_spatial", 'Seurat',
     }     
 
     if (!common.legend && length(features) > 1){
-        p <- .split.by.feature(p, ncol)
+        ncol <- min(length(features), ncol)
+        p <- .split.by.feature(p, ncol, joint)
     }    
     return(p)    
 })
@@ -216,7 +216,7 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
         if (density){
            valnm <- 'density'
            if (joint){
-               valnm <- "joint density"
+               #valnm <- "joint_density"
                nm.f <- nm.f + 1
            }
         }else{
@@ -273,7 +273,8 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
     }
 
     if (!common.legend && length(features) > 1){
-        p <- .split.by.feature(p, ncol)
+        ncol <- min(length(features), ncol)
+        p <- .split.by.feature(p, ncol, joint)
     }
     return(p)
 })
