@@ -1,9 +1,0 @@
-Makefile
-gh-pages
-^vignettes/*.html$
-^vignettes/*.R$
-^README\.md$
-^README\.Rmd$
-^CONDUCT\.md$
-^\.Rproj\.user$
-^\.Rproj$

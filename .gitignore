@@ -1,4 +1,4 @@
+_bookdown_files
+.vscode
+pkgdocs_cache
 gh-pages
-inst/doc
-vignettes/*.html
-vignettes/*.R

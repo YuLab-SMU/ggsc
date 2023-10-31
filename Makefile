@@ -1,82 +1,15 @@
-PKGNAME := $(shell sed -n "s/Package: *\([^ ]*\)/\1/p" DESCRIPTION)
-PKGVERS := $(shell sed -n "s/Version: *\([^ ]*\)/\1/p" DESCRIPTION)
-PKGSRC  := $(shell basename `pwd`)
-BIOCVER := RELEASE_3_18
+bs4book:
+	Rscript -e 'library(bookdown); render_book("index.Rmd", "bs4_book")'
 
-all: rd check clean
+pdfbook:
+	Rscript -e 'library(bookdown); render_book("index.Rmd", "pdf_book")'
 
-alldocs: rd readme mkdocs
-
-crd:
-	Rscript -e 'Rcpp::compileAttributes()'
-
-rd: crd
-	Rscript -e 'roxygen2::roxygenise(".")'
-
-readme:
-	Rscript -e 'rmarkdown::render("README.Rmd")'
-
-readme2:
-	Rscript -e 'rmarkdown::render("README.Rmd", "html_document")'
-
-build:
-	#cd ..;\
-	#R CMD build $(PKGSRC)
-	Rscript -e 'devtools::build()'
-	
-build2:
-	cd ..;\
-	R CMD build --no-build-vignettes $(PKGSRC)
-
-install:
-	cd ..;\
-	R CMD INSTALL $(PKGNAME)_$(PKGVERS).tar.gz
-
-check: #build
-	#cd ..;\
-	#Rscript -e 'rcmdcheck::rcmdcheck("$(PKGNAME)_$(PKGVERS).tar.gz")'
-	Rscript -e 'devtools::check()'
-
-check2: build
-	cd ..;\
-	R CMD check $(PKGNAME)_$(PKGVERS).tar.gz
-
-bioccheck:
-	cd ..;\
-	Rscript -e 'BiocCheck::BiocCheck("$(PKGNAME)_$(PKGVERS).tar.gz")'
-
-rmrelease:
-	git branch -D $(BIOCVER)
-
-release:
-	git checkout $(BIOCVER);\
-	git fetch --all
-
+epub:
+	Rscript -e 'library(bookdown); render_book("index.Rmd", "epub_book")'
 
 clean:
-	cd ..;\
-	$(RM) -r $(PKGNAME).Rcheck/
+	Rscript -e 'bookdown::clean_book()';\
+	rm -rf _bookdown_files
 
-update:
-	git fetch --all;\
-	git checkout devel;\
-	git merge upstream/devel;\
-	git merge origin/devel
-
-
-push:
-	git push upstream devel;\
-	git push origin devel
-
-
-pages:
-	Rscript -e 'rmarkdown::render("gh-pages/index.Rmd")'
-
-publish:
-	cd gh-pages;\
-	git add .; git commit -m 'update'; git push
-
-
-
-
-
+cover:
+	Rscript -e 'source("book-cover.R")'

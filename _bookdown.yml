@@ -1,0 +1,6 @@
+book_filename: "ggsc"
+chapter_name: ""
+output_dir: gh-pages
+delete_merged_file: true
+rmd_files: ["index.Rmd",
+  "single-cell.Rmd"]
