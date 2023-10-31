@@ -1,5 +1,6 @@
-# ggsc 1.1.0.001
+# ggsc 1.1.1
 
++ ignore the tissue section when image is not exist (2023-10-31, Tue, #12)
 + introduce `joint` to combine all features with `joint.fun` and speed up calculation of kde using RcppParallel (2023-10-25, Wed, #11)
 
 # ggsc 1.0.0
