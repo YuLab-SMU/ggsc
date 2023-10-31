@@ -176,9 +176,13 @@ get_dim_data <- function(object, features = NULL,
             xx <- cbind(reduced.dat, xx, tmp)
         }else if(density && !is.null(sp.coords)){
             tmp <- .buildWkde(t(tmp), sp.coords, grid.n, joint, joint.fun)
-            xx <- cbind(xx, tmp)
-        }else{
-            xx <- cbind(xx, tmp)
+            xx <- cbind(sp.coords, xx, tmp)
+        }else if (!is.null(reduced.dat) && !density){
+            xx <- cbind(reduced.dat, xx, tmp)
+        }
+    }else{
+        if (!is.null(reduced.dat)){
+            xx <- cbind(reduced.dat, xx)
         }
     }
     #SeuratObject::FetchData(object, vars = c(dims, "ident", 

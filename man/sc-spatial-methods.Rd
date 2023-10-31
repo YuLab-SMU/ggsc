@@ -26,6 +26,7 @@ sc_spatial(
   joint = FALSE,
   joint.fun = prod,
   common.legend = TRUE,
+  point.size = 5,
   ...
 )
 
@@ -47,6 +48,7 @@ sc_spatial(
   joint = FALSE,
   joint.fun = prod,
   common.legend = TRUE,
+  point.size = 5,
   ...
 )
 
@@ -55,11 +57,11 @@ sc_spatial(
   features = NULL,
   sample.id = NULL,
   image.id = NULL,
-  slot = 1,
+  slot = "data",
   image.plot = TRUE,
   image.first.operation = "rotate",
   image.rotate.degree = NULL,
-  image.mirror.axis = "v",
+  image.mirror.axis = NULL,
   remove.point = FALSE,
   mapping = NULL,
   ncol = 6,
@@ -68,6 +70,7 @@ sc_spatial(
   joint = FALSE,
   joint.fun = prod,
   common.legend = TRUE,
+  point.size = 5,
   ...
 )
 }
@@ -115,6 +118,8 @@ default is prod.}
 
 \item{common.legend}{whether to use \code{facet_wrap} to display the multiple
 \code{features}, default is TRUE.}
+
+\item{point.size}{the size of point, default is 5.}
 
 \item{...}{additional parameters.}
 }
