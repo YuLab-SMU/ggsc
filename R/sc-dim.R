@@ -179,14 +179,14 @@ get_dim_data <- function(object, features = NULL,
             xx <- cbind(sp.coords, xx, tmp)
         }else if (!is.null(reduced.dat) && !density){
             xx <- cbind(reduced.dat, xx, tmp)
+        }else{
+            xx <- cbind(xx, tmp)
         }
     }else{
         if (!is.null(reduced.dat)){
             xx <- cbind(reduced.dat, xx)
         }
     }
-    #SeuratObject::FetchData(object, vars = c(dims, "ident", 
-    #    features), cells = cells, slot = slot)
 
     return(xx)
 }
