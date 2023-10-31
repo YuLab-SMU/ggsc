@@ -8,7 +8,7 @@ date: "`r Sys.Date()`"
 knit: "bookdown::render_book"
 site: bookdown::bookdown_site
 output:
-  bookdown::gitbook:
+  bookdown::bs4_book:
   bookdown::pdf_book:
     dev: "cairo_pdf"
     latex_engine: xelatex
@@ -31,7 +31,7 @@ geometry: "left=35mm,right=35mm,top=25mm,bottom=25mm"
 ---
 
 
-```{r include=FALSE}
+```{r load-libs, include=FALSE}
 library(conflicted)
 library(yulab.utils)
 library(Seurat)
@@ -41,7 +41,17 @@ library(ggsc)
 options(width=60)
 
 library(knitr)
-opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE, echo=TRUE, cache=TRUE)
+knitr::opts_chunk$set(tidy = FALSE,
+                      warning = FALSE,
+                      message = FALSE, 
+                      eval=TRUE, 
+                      echo=TRUE, 
+                      cache=TRUE,
+                      fig.width = 9,
+                      fig.height = 6,
+                      out.width="100%"
+    )
+
 ```
 
 

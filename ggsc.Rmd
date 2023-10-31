@@ -8,7 +8,7 @@ date: "`r Sys.Date()`"
 knit: "bookdown::render_book"
 site: bookdown::bookdown_site
 output:
-  bookdown::gitbook:
+  bookdown::bs4_book:
   bookdown::pdf_book:
     dev: "cairo_pdf"
     latex_engine: xelatex
@@ -30,26 +30,10 @@ highlight_bw: yes
 geometry: "left=35mm,right=35mm,top=25mm,bottom=25mm"
 ---
 
-
-```{r include=FALSE}
-library(conflicted)
-library(yulab.utils)
-library(Seurat)
-library(ggplot2)
-library(ggsc)
-
-options(width=60)
-
-library(knitr)
-opts_chunk$set(message=FALSE, warning=FALSE, eval=TRUE, echo=TRUE, cache=TRUE)
-```
-
-
-
-
 # Preface {-}
 
-hello world
+Placeholder
+
 
 
 <!--chapter:end:index.Rmd-->
@@ -57,62 +41,57 @@ hello world
 
 # Visualizing Seurat objects
 
-```{r style, echo=FALSE, results="asis", message=FALSE}
-knitr::opts_chunk$set(tidy = FALSE,
-                      warning = FALSE,
-                      message = FALSE, 
-                      fig.width = 9,
-                      fig.height = 6)
-library(Seurat)
-library(ggplot2)
-library(ggsc)                      
-```
 
 
-```{r}
+```{r pbmc-create}
 library(Seurat)
 dir = "data/filtered_gene_bc_matrices/hg19"
 
 pbmc.data <- Read10X(data.dir = dir)
-pbmc <- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k", min.cells=3, min.features=200)
+pbmc <- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k", 
+                          min.cells=3, min.features=200)
 pbmc
+```
 
-## Normalizing the data
-pbmc <- NormalizeData(pbmc, normalization.method = "LogNormalize", 
+```{r pbmc-qc}
+pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^MT-")
+pbmc <- subset(pbmc,
+  subset = nFeature_RNA > 200 & nFeature_RNA < 2500 & percent.mt < 5
+)
+```
+
+```{r pbmc-normalize}
+pbmc <- NormalizeData(pbmc, normalization.method = "LogNormalize",
                       scale.factor = 10000)
+pbmc <- ScaleData(pbmc)
+```
 
-pbmc <- NormalizeData(pbmc)
+```{r pbmc-dimension-reduction}
+pbmc <- FindVariableFeatures(pbmc, selection.method = "vst",
+                             nfeatures = 2000)
+pbmc <- RunPCA(pbmc, features = VariableFeatures(object = pbmc))
+pbmc <- RunUMAP(pbmc, dims = 1:10)
+```
 
-## Identify the 2000 most highly variable genes
-pbmc <- FindVariableFeatures(pbmc, selection.method = "vst", nfeatures = 2000)
-
-## In addition we scale the data
-all.genes <- rownames(pbmc)
-pbmc <- ScaleData(pbmc, features = all.genes)
-
-pbmc <- RunPCA(pbmc, features = VariableFeatures(object = pbmc), 
-               verbose = FALSE)
-pbmc <- FindNeighbors(pbmc, dims = 1:10, verbose = FALSE)
-pbmc <- FindClusters(pbmc, resolution = 0.5, verbose = FALSE)
-pbmc <- RunUMAP(pbmc, dims = 1:10, umap.method = "uwot", metric = "cosine")
-
-## Run tSNE 
-pbmc <- RunTSNE(pbmc, reduction = "pca", dims=1:5, tsne.method = "Rtsne")
+```{r pbmc-clusters}
+pbmc <- FindNeighbors(pbmc, dims = 1:10)
+pbmc <- FindClusters(pbmc, resolution = 0.5)
 
 ## Assigning cell type identity to clusters
-new.cluster.ids <- c("Naive CD4 T", "CD14+ Mono", "Memory CD4 T", "B", "CD8 T",
-                     "FCGR3A+ Mono", "NK", "DC", "Platelet")
-names(new.cluster.ids) <- levels(pbmc)
-pbmc <- RenameIdents(pbmc, new.cluster.ids)
+cluster.ids <- c("Naive CD4 T", "CD14+ Mono", "Memory CD4 T", 
+            "B", "CD8 T", "FCGR3A+ Mono", "NK", "DC", "Platelet")
+names(cluster.ids) <- levels(pbmc)
+pbmc <- RenameIdents(pbmc, cluster.ids)
 ```
 
 ## Dimensional reduction plot
-```{r fig.width=9, fig.height=6}
-DimPlot(pbmc, reduction = "umap",
-        label = TRUE, pt.size = 0.5) 
+```{r dimplot, fig.width=9, fig.height=6}
+# DimPlot(pbmc, reduction = "umap",
+#        label = TRUE, pt.size = 0.5) 
 
 library(ggplot2)
 library(ggsc)
+
 sc_dim(pbmc) + sc_dim_geom_label()
 
 
@@ -127,13 +106,14 @@ sc_dim(pbmc) +
 features = c("MS4A1", "GNLY", "CD3E", 
             "CD14", "FCER1A", "FCGR3A", 
             "LYZ", "PPBP", "CD8A")
-FeaturePlot(pbmc,'CD4')
-FeaturePlot(pbmc, features)
 
-
+# FeaturePlot(pbmc,'CD4')
 sc_feature(pbmc, 'CD4')
+
+# FeaturePlot(pbmc, features)
 sc_feature(pbmc, features)
 ```
+
 
 Here is the real 'features' on dimensional plot
 
@@ -147,10 +127,10 @@ sc_dim(pbmc, alpha=.3) +
     sc_dim_geom_feature(pbmc, features, mapping=aes(color=features)) +
     scale_color_viridis_d()
 
-sc_dim(pbmc, reduction = 'tsne') +
+sc_dim(pbmc) +
     sc_dim_geom_feature(pbmc, 'CD4', color='black')
 
-sc_dim(pbmc, alpha=.3, reduction = 'tsne') +
+sc_dim(pbmc, alpha=.3) +
     ggnewscale::new_scale_color() +
     sc_dim_geom_feature(pbmc, features, mapping=aes(color=features)) +
     scale_color_viridis_d()
@@ -211,7 +191,7 @@ sc_violin(pbmc, features) +
 
 ## Spatial features
 
-```{r}
+```{r eval=FALSE}
 library(SeuratData)
 # InstallData("stxBrain")
 brain <- LoadData("stxBrain", type = "anterior1")

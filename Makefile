@@ -11,5 +11,5 @@ clean:
 	Rscript -e 'bookdown::clean_book()';\
 	rm -rf _bookdown_files
 
-cover:
-	Rscript -e 'source("book-cover.R")'
+serve:
+	Rscript -e 'library(bookdown); serve_book()'
