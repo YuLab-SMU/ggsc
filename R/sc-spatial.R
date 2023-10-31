@@ -116,7 +116,8 @@ setMethod("sc_spatial", 'Seurat',
         d <- tidyr::pivot_longer(
                d, 
                indx.f, 
-               names_to = 'features'
+               names_to = 'features',
+               values_to = valnm
              )
         d$features <- factor(d$features, levels=features)
         default_mapping <- modifyList(default_mapping, aes_string(color = valnm))
