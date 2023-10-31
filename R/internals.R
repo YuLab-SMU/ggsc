@@ -18,13 +18,20 @@
    return(res)
 }
 
-.split.by.feature <- function(p, ncol){
+.split.by.feature <- function(p, ncol, joint = FALSE){
    rlang::check_installed('aplot', 'for split ggplot object by features.')
    p <- p$data |> dplyr::group_split(.data$features) |>
            lapply(function(i){
-              p$data <-i
+              p$data <- i
               return(p)
             })
+
+   indx <- length(p)
+   
+   if (joint){
+      p[[indx]] <- p[[indx]] + ggplot2::labs(colour = 'joint_density')
+   }
+   
    p <- aplot::plot_list(gglist = p, ncol = ncol)
    return(p)
 }
