@@ -13,3 +13,10 @@ clean:
 
 serve:
 	Rscript -e 'library(bookdown); serve_book()'
+
+publish:
+	cd gh-pages;\
+	git add .;\
+	git commit -m 'update';\
+	git push
+	

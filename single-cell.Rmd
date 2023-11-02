@@ -164,6 +164,6 @@ brain <- LoadData("stxBrain", type = "anterior1")
 brain <- SCTransform(brain, assay = "Spatial", verbose = FALSE)
 
 ## SpatialFeaturePlot(brain, features = c("Hpca", "Ttr"))\
-sc_spatial(brain, features = c("Hpca", "Ttr"))
+sc_spatial(brain, features = c("Hpca", "Ttr"), image.mirror.axis = 'v')
 ```
 
