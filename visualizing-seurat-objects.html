@@ -17,9 +17,9 @@
     
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   </style>
-<meta name="description" content='library(Seurat) dir = "data/filtered_gene_bc_matrices/hg19" pbmc.data &lt;- Read10X(data.dir = dir) pbmc &lt;- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k", min.cells=3, min.features=200)...'>
-<meta property="og:description" content='library(Seurat) dir = "data/filtered_gene_bc_matrices/hg19" pbmc.data &lt;- Read10X(data.dir = dir) pbmc &lt;- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k", min.cells=3, min.features=200)...'>
-<meta name="twitter:description" content='library(Seurat) dir = "data/filtered_gene_bc_matrices/hg19" pbmc.data &lt;- Read10X(data.dir = dir) pbmc &lt;- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k", min.cells=3, min.features=200)...'>
+<meta name="description" content='library(Seurat) dir = "data/filtered_gene_bc_matrices/hg19" pbmc.data &lt;- Read10X(data.dir = dir) pbmc &lt;- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k",              min.cells=3,...'>
+<meta property="og:description" content='library(Seurat) dir = "data/filtered_gene_bc_matrices/hg19" pbmc.data &lt;- Read10X(data.dir = dir) pbmc &lt;- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k",              min.cells=3,...'>
+<meta name="twitter:description" content='library(Seurat) dir = "data/filtered_gene_bc_matrices/hg19" pbmc.data &lt;- Read10X(data.dir = dir) pbmc &lt;- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k",              min.cells=3,...'>
 </head>
 <body data-spy="scroll" data-target="#toc">
 
@@ -59,173 +59,171 @@
 <span><span class="va">dir</span> <span class="op">=</span> <span class="st">"data/filtered_gene_bc_matrices/hg19"</span></span>
 <span></span>
 <span><span class="va">pbmc.data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/Read10X.html">Read10X</a></span><span class="op">(</span>data.dir <span class="op">=</span> <span class="va">dir</span><span class="op">)</span></span>
-<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://mojaveazure.github.io/seurat-object/reference/CreateSeuratObject.html">CreateSeuratObject</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="va">pbmc.data</span>, project <span class="op">=</span> <span class="st">"pbmc3k"</span>, min.cells<span class="op">=</span><span class="fl">3</span>, min.features<span class="op">=</span><span class="fl">200</span><span class="op">)</span></span>
+<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://mojaveazure.github.io/seurat-object/reference/CreateSeuratObject.html">CreateSeuratObject</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="va">pbmc.data</span>, project <span class="op">=</span> <span class="st">"pbmc3k"</span>, </span>
+<span>                          min.cells<span class="op">=</span><span class="fl">3</span>, min.features<span class="op">=</span><span class="fl">200</span><span class="op">)</span></span>
 <span><span class="va">pbmc</span></span></code></pre></div>
 <pre><code>## An object of class Seurat 
 ## 13714 features across 2700 samples within 1 assay 
 ## Active assay: RNA (13714 features, 0 variable features)</code></pre>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">## Normalizing the data</span></span>
-<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html">NormalizeData</a></span><span class="op">(</span><span class="va">pbmc</span>, normalization.method <span class="op">=</span> <span class="st">"LogNormalize"</span>, </span>
+<code class="sourceCode R"><span><span class="va">pbmc</span><span class="op">[[</span><span class="st">"percent.mt"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/PercentageFeatureSet.html">PercentageFeatureSet</a></span><span class="op">(</span><span class="va">pbmc</span>, pattern <span class="op">=</span> <span class="st">"^MT-"</span><span class="op">)</span></span>
+<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span><span class="op">(</span><span class="va">pbmc</span>,</span>
+<span>  subset <span class="op">=</span> <span class="va">nFeature_RNA</span> <span class="op">&gt;</span> <span class="fl">200</span> <span class="op">&amp;</span> <span class="va">nFeature_RNA</span> <span class="op">&lt;</span> <span class="fl">2500</span> <span class="op">&amp;</span> <span class="va">percent.mt</span> <span class="op">&lt;</span> <span class="fl">5</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html">NormalizeData</a></span><span class="op">(</span><span class="va">pbmc</span>, normalization.method <span class="op">=</span> <span class="st">"LogNormalize"</span>,</span>
 <span>                      scale.factor <span class="op">=</span> <span class="fl">10000</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html">NormalizeData</a></span><span class="op">(</span><span class="va">pbmc</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">## Identify the 2000 most highly variable genes</span></span>
-<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html">FindVariableFeatures</a></span><span class="op">(</span><span class="va">pbmc</span>, selection.method <span class="op">=</span> <span class="st">"vst"</span>, nfeatures <span class="op">=</span> <span class="fl">2000</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">## In addition we scale the data</span></span>
-<span><span class="va">all.genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">pbmc</span><span class="op">)</span></span>
-<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/ScaleData.html">ScaleData</a></span><span class="op">(</span><span class="va">pbmc</span>, features <span class="op">=</span> <span class="va">all.genes</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunPCA.html">RunPCA</a></span><span class="op">(</span><span class="va">pbmc</span>, features <span class="op">=</span> <span class="fu"><a href="https://mojaveazure.github.io/seurat-object/reference/VariableFeatures.html">VariableFeatures</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pbmc</span><span class="op">)</span>, </span>
-<span>               verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindNeighbors.html">FindNeighbors</a></span><span class="op">(</span><span class="va">pbmc</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindClusters.html">FindClusters</a></span><span class="op">(</span><span class="va">pbmc</span>, resolution <span class="op">=</span> <span class="fl">0.5</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunUMAP.html">RunUMAP</a></span><span class="op">(</span><span class="va">pbmc</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, umap.method <span class="op">=</span> <span class="st">"uwot"</span>, metric <span class="op">=</span> <span class="st">"cosine"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">## Run tSNE </span></span>
-<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunTSNE.html">RunTSNE</a></span><span class="op">(</span><span class="va">pbmc</span>, reduction <span class="op">=</span> <span class="st">"pca"</span>, dims<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, tsne.method <span class="op">=</span> <span class="st">"Rtsne"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">## Assigning cell type identity to clusters</span></span>
-<span><span class="va">new.cluster.ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Naive CD4 T"</span>, <span class="st">"CD14+ Mono"</span>, <span class="st">"Memory CD4 T"</span>, <span class="st">"B"</span>, <span class="st">"CD8 T"</span>,</span>
-<span>                     <span class="st">"FCGR3A+ Mono"</span>, <span class="st">"NK"</span>, <span class="st">"DC"</span>, <span class="st">"Platelet"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">new.cluster.ids</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span><span class="op">(</span><span class="va">pbmc</span><span class="op">)</span></span>
-<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://mojaveazure.github.io/seurat-object/reference/Idents.html">RenameIdents</a></span><span class="op">(</span><span class="va">pbmc</span>, <span class="va">new.cluster.ids</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/ScaleData.html">ScaleData</a></span><span class="op">(</span><span class="va">pbmc</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html">FindVariableFeatures</a></span><span class="op">(</span><span class="va">pbmc</span>, selection.method <span class="op">=</span> <span class="st">"vst"</span>,</span>
+<span>                             nfeatures <span class="op">=</span> <span class="fl">2000</span><span class="op">)</span></span>
+<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunPCA.html">RunPCA</a></span><span class="op">(</span><span class="va">pbmc</span>, features <span class="op">=</span> <span class="fu"><a href="https://mojaveazure.github.io/seurat-object/reference/VariableFeatures.html">VariableFeatures</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pbmc</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunUMAP.html">RunUMAP</a></span><span class="op">(</span><span class="va">pbmc</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindNeighbors.html">FindNeighbors</a></span><span class="op">(</span><span class="va">pbmc</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></span>
+<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindClusters.html">FindClusters</a></span><span class="op">(</span><span class="va">pbmc</span>, resolution <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></code></pre></div>
+<pre><code>## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+## 
+## Number of nodes: 2638
+## Number of edges: 95927
+## 
+## Running Louvain algorithm...
+## Maximum modularity in 10 random starts: 0.8728
+## Number of communities: 9
+## Elapsed time: 0 seconds</code></pre>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## Assigning cell type identity to clusters</span></span>
+<span><span class="va">cluster.ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Naive CD4 T"</span>, <span class="st">"CD14+ Mono"</span>, <span class="st">"Memory CD4 T"</span>, </span>
+<span>            <span class="st">"B"</span>, <span class="st">"CD8 T"</span>, <span class="st">"FCGR3A+ Mono"</span>, <span class="st">"NK"</span>, <span class="st">"DC"</span>, <span class="st">"Platelet"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">cluster.ids</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span><span class="op">(</span><span class="va">pbmc</span><span class="op">)</span></span>
+<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://mojaveazure.github.io/seurat-object/reference/Idents.html">RenameIdents</a></span><span class="op">(</span><span class="va">pbmc</span>, <span class="va">cluster.ids</span><span class="op">)</span></span></code></pre></div>
 <div id="dimensional-reduction-plot" class="section level2" number="1.1">
 <h2>
 <span class="header-section-number">1.1</span> Dimensional reduction plot<a class="anchor" aria-label="anchor" href="#dimensional-reduction-plot"><i class="fas fa-link"></i></a>
 </h2>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/DimPlot.html">DimPlot</a></span><span class="op">(</span><span class="va">pbmc</span>, reduction <span class="op">=</span> <span class="st">"umap"</span>,</span>
-<span>        label <span class="op">=</span> <span class="cn">TRUE</span>, pt.size <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> </span></code></pre></div>
-<div class="inline-figure"><img src="ggsc_files/figure-html/unnamed-chunk-3-1.png" width="864"></div>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># DimPlot(pbmc, reduction = "umap",</span></span>
+<span><span class="co">#        label = TRUE, pt.size = 0.5) </span></span>
+<span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/YuLab-SMU/ggsc">ggsc</a></span><span class="op">)</span></span>
+<span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-methods.html">sc_dim</a></span><span class="op">(</span><span class="va">pbmc</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-geom-label.html">sc_dim_geom_label</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<div class="inline-figure"><img src="ggsc_files/figure-html/unnamed-chunk-3-2.png" width="864"></div>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="inline-figure"><img src="ggsc_files/figure-html/dimplot-1.png" width="100%"></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-methods.html">sc_dim</a></span><span class="op">(</span><span class="va">pbmc</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>    <span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-geom-label.html">sc_dim_geom_label</a></span><span class="op">(</span>geom <span class="op">=</span> <span class="fu">shadowtext</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/shadowtext/man/geom_shadowtext.html">geom_shadowtext</a></span>, </span>
 <span>            color<span class="op">=</span><span class="st">'black'</span>, bg.color<span class="op">=</span><span class="st">'white'</span><span class="op">)</span></span></code></pre></div>
-<div class="inline-figure"><img src="ggsc_files/figure-html/unnamed-chunk-3-3.png" width="864"></div>
+<div class="inline-figure"><img src="ggsc_files/figure-html/dimplot-2.png" width="100%"></div>
 </div>
 <div id="visualize-features-on-a-dimensional-reduction-plot" class="section level2" number="1.2">
 <h2>
 <span class="header-section-number">1.2</span> Visualize ‘features’ on a dimensional reduction plot<a class="anchor" aria-label="anchor" href="#visualize-features-on-a-dimensional-reduction-plot"><i class="fas fa-link"></i></a>
 </h2>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">features</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"MS4A1"</span>, <span class="st">"GNLY"</span>, <span class="st">"CD3E"</span>, </span>
 <span>            <span class="st">"CD14"</span>, <span class="st">"FCER1A"</span>, <span class="st">"FCGR3A"</span>, </span>
 <span>            <span class="st">"LYZ"</span>, <span class="st">"PPBP"</span>, <span class="st">"CD8A"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://satijalab.org/seurat/reference/FeaturePlot.html">FeaturePlot</a></span><span class="op">(</span><span class="va">pbmc</span>,<span class="st">'CD4'</span><span class="op">)</span></span></code></pre></div>
-<div class="inline-figure"><img src="ggsc_files/figure-html/unnamed-chunk-4-1.png" width="672"></div>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/FeaturePlot.html">FeaturePlot</a></span><span class="op">(</span><span class="va">pbmc</span>, <span class="va">features</span><span class="op">)</span></span></code></pre></div>
-<div class="inline-figure"><img src="ggsc_files/figure-html/unnamed-chunk-4-2.png" width="672"></div>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-feature-methods.html">sc_feature</a></span><span class="op">(</span><span class="va">pbmc</span>, <span class="st">'CD4'</span><span class="op">)</span></span></code></pre></div>
-<div class="inline-figure"><img src="ggsc_files/figure-html/unnamed-chunk-4-3.png" width="672"></div>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<span></span>
+<span><span class="co"># FeaturePlot(pbmc,'CD4')</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-feature-methods.html">sc_feature</a></span><span class="op">(</span><span class="va">pbmc</span>, <span class="st">'CD4'</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="ggsc_files/figure-html/feature-plot-1.png" width="100%"></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-feature-methods.html">sc_feature</a></span><span class="op">(</span><span class="va">pbmc</span>, <span class="va">features</span><span class="op">)</span></span></code></pre></div>
-<div class="inline-figure"><img src="ggsc_files/figure-html/unnamed-chunk-4-4.png" width="672"></div>
+<div class="inline-figure"><img src="ggsc_files/figure-html/feature-plot-multi-1.png" width="100%"></div>
 <p>Here is the real ‘features’ on dimensional plot</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-methods.html">sc_dim</a></span><span class="op">(</span><span class="va">pbmc</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>   <span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-geom-feature.html">sc_dim_geom_feature</a></span><span class="op">(</span><span class="va">pbmc</span>, <span class="st">'CD4'</span>, color<span class="op">=</span><span class="st">'black'</span><span class="op">)</span></span></code></pre></div>
-<div class="inline-figure"><img src="ggsc_files/figure-html/unnamed-chunk-5-1.png" width="672"></div>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="inline-figure"><img src="ggsc_files/figure-html/dim-feature-1.png" width="100%"></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-methods.html">sc_dim</a></span><span class="op">(</span><span class="va">pbmc</span>, alpha<span class="op">=</span><span class="fl">.3</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>    <span class="fu">ggnewscale</span><span class="fu">::</span><span class="fu"><a href="https://eliocamp.github.io/ggnewscale/reference/new_scale.html">new_scale_color</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>    <span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-geom-feature.html">sc_dim_geom_feature</a></span><span class="op">(</span><span class="va">pbmc</span>, <span class="va">features</span>, mapping<span class="op">=</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color<span class="op">=</span><span class="va">features</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_color_viridis_d</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<div class="inline-figure"><img src="ggsc_files/figure-html/unnamed-chunk-5-2.png" width="672"></div>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-methods.html">sc_dim</a></span><span class="op">(</span><span class="va">pbmc</span>, reduction <span class="op">=</span> <span class="st">'tsne'</span><span class="op">)</span> <span class="op">+</span></span>
+<div class="inline-figure"><img src="ggsc_files/figure-html/dim-feature-2.png" width="100%"></div>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-methods.html">sc_dim</a></span><span class="op">(</span><span class="va">pbmc</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-geom-feature.html">sc_dim_geom_feature</a></span><span class="op">(</span><span class="va">pbmc</span>, <span class="st">'CD4'</span>, color<span class="op">=</span><span class="st">'black'</span><span class="op">)</span></span></code></pre></div>
-<div class="inline-figure"><img src="ggsc_files/figure-html/unnamed-chunk-5-3.png" width="672"></div>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-methods.html">sc_dim</a></span><span class="op">(</span><span class="va">pbmc</span>, alpha<span class="op">=</span><span class="fl">.3</span>, reduction <span class="op">=</span> <span class="st">'tsne'</span><span class="op">)</span> <span class="op">+</span></span>
+<div class="inline-figure"><img src="ggsc_files/figure-html/dim-feature-3.png" width="100%"></div>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-methods.html">sc_dim</a></span><span class="op">(</span><span class="va">pbmc</span>, alpha<span class="op">=</span><span class="fl">.3</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu">ggnewscale</span><span class="fu">::</span><span class="fu"><a href="https://eliocamp.github.io/ggnewscale/reference/new_scale.html">new_scale_color</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-geom-feature.html">sc_dim_geom_feature</a></span><span class="op">(</span><span class="va">pbmc</span>, <span class="va">features</span>, mapping<span class="op">=</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color<span class="op">=</span><span class="va">features</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_color_viridis_d</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<div class="inline-figure"><img src="ggsc_files/figure-html/unnamed-chunk-5-4.png" width="672"></div>
+<div class="inline-figure"><img src="ggsc_files/figure-html/dim-feature-4.png" width="100%"></div>
 </div>
 <div id="visualize-ellipse-on-a-dimensional-reduction-plot" class="section level2" number="1.3">
 <h2>
 <span class="header-section-number">1.3</span> Visualize ellipse on a dimensional reduction plot<a class="anchor" aria-label="anchor" href="#visualize-ellipse-on-a-dimensional-reduction-plot"><i class="fas fa-link"></i></a>
 </h2>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-methods.html">sc_dim</a></span><span class="op">(</span><span class="va">pbmc</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-geom-ellipse.html">sc_dim_geom_ellipse</a></span><span class="op">(</span>level<span class="op">=</span><span class="fl">0.95</span><span class="op">)</span></span></code></pre></div>
-<div class="inline-figure"><img src="ggsc_files/figure-html/unnamed-chunk-6-1.png" width="672"></div>
+<div class="inline-figure"><img src="ggsc_files/figure-html/dim-ellipse-1.png" width="100%"></div>
 </div>
 <div id="visualize-selected-clusters" class="section level2" number="1.4">
 <h2>
 <span class="header-section-number">1.4</span> Visualize selected clusters<a class="anchor" aria-label="anchor" href="#visualize-selected-clusters"><i class="fas fa-link"></i></a>
 </h2>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">selected</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Naive CD4 T"</span>, <span class="st">"NK"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-methods.html">sc_dim</a></span><span class="op">(</span><span class="va">pbmc</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-sub.html">sc_dim_sub</a></span><span class="op">(</span>subset<span class="op">=</span><span class="va">selected</span><span class="op">)</span></span></code></pre></div>
-<div class="inline-figure"><img src="ggsc_files/figure-html/unnamed-chunk-7-1.png" width="672"></div>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="inline-figure"><img src="ggsc_files/figure-html/dim-sub-1.png" width="100%"></div>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-methods.html">sc_dim</a></span><span class="op">(</span><span class="va">pbmc</span>, color<span class="op">=</span><span class="st">'grey'</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-geom-subset.html">sc_dim_geom_sub</a></span><span class="op">(</span>subset<span class="op">=</span><span class="va">selected</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>    <span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-geom-label.html">sc_dim_geom_label</a></span><span class="op">(</span>geom <span class="op">=</span> <span class="fu">shadowtext</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/shadowtext/man/geom_shadowtext.html">geom_shadowtext</a></span>, </span>
 <span>          mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>subset <span class="op">=</span> <span class="va">ident</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">selected</span><span class="op">)</span>,</span>
 <span>            color<span class="op">=</span><span class="st">'black'</span>, bg.color<span class="op">=</span><span class="st">'white'</span><span class="op">)</span></span></code></pre></div>
-<div class="inline-figure"><img src="ggsc_files/figure-html/unnamed-chunk-8-1.png" width="672"></div>
+<div class="inline-figure"><img src="ggsc_files/figure-html/dim-sub-label-1.png" width="100%"></div>
+<!-- 
+## Dot plot
+
+``` r eval=FALSE
+DotPlot(pbmc, features = c("MS4A1", "GNLY", "CD3E", 
+                           "CD14", "FCER1A", "FCGR3A", 
+                           "LYZ", "PPBP", "CD8A"),
+        group.by = 'seurat_clusters')
+```        
+
+-->
 </div>
-<div id="dot-plot" class="section level2" number="1.5">
+<div id="violin-plot-of-gene-expression" class="section level2" number="1.5">
 <h2>
-<span class="header-section-number">1.5</span> Dot plot<a class="anchor" aria-label="anchor" href="#dot-plot"><i class="fas fa-link"></i></a>
+<span class="header-section-number">1.5</span> Violin plot of gene expression<a class="anchor" aria-label="anchor" href="#violin-plot-of-gene-expression"><i class="fas fa-link"></i></a>
 </h2>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/DotPlot.html">DotPlot</a></span><span class="op">(</span><span class="va">pbmc</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"MS4A1"</span>, <span class="st">"GNLY"</span>, <span class="st">"CD3E"</span>, </span>
-<span>                           <span class="st">"CD14"</span>, <span class="st">"FCER1A"</span>, <span class="st">"FCGR3A"</span>, </span>
-<span>                           <span class="st">"LYZ"</span>, <span class="st">"PPBP"</span>, <span class="st">"CD8A"</span><span class="op">)</span>,</span>
-<span>        group.by <span class="op">=</span> <span class="st">'seurat_clusters'</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div id="violin-plot-of-gene-expression" class="section level2" number="1.6">
-<h2>
-<span class="header-section-number">1.6</span> Violin plot of gene expression<a class="anchor" aria-label="anchor" href="#violin-plot-of-gene-expression"><i class="fas fa-link"></i></a>
-</h2>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/VlnPlot.html">VlnPlot</a></span><span class="op">(</span><span class="va">pbmc</span>,<span class="st">'CD4'</span><span class="op">)</span></span></code></pre></div>
-<div class="inline-figure"><img src="ggsc_files/figure-html/unnamed-chunk-10-1.png" width="672"></div>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-violin-methods.html">sc_violin</a></span><span class="op">(</span><span class="va">pbmc</span>, <span class="st">'CD4'</span><span class="op">)</span></span></code></pre></div>
-<div class="inline-figure"><img src="ggsc_files/figure-html/unnamed-chunk-10-2.png" width="672"></div>
+<code class="sourceCode R"><span><span class="co"># VlnPlot(pbmc,'CD4')</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-violin-methods.html">sc_violin</a></span><span class="op">(</span><span class="va">pbmc</span>, <span class="st">'CD4'</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="ggsc_files/figure-html/sc-violin-1.png" width="100%"></div>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## allows applying an user-defined function to transform/filter the data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-violin-methods.html">sc_violin</a></span><span class="op">(</span><span class="va">pbmc</span>, <span class="st">'CD4'</span>, .fun<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">d</span>, <span class="va">value</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">ggforce</span><span class="fu">::</span><span class="fu"><a href="https://ggforce.data-imaginist.com/reference/geom_sina.html">geom_sina</a></span><span class="op">(</span>size<span class="op">=</span><span class="fl">.1</span><span class="op">)</span></span></code></pre></div>
-<div class="inline-figure"><img src="ggsc_files/figure-html/unnamed-chunk-10-3.png" width="672"></div>
+<div class="inline-figure"><img src="ggsc_files/figure-html/sc-violin-2.png" width="100%"></div>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://satijalab.org/seurat/reference/VlnPlot.html">VlnPlot</a></span><span class="op">(</span><span class="va">pbmc</span>, <span class="va">features</span><span class="op">)</span></span></code></pre></div>
-<div class="inline-figure"><img src="ggsc_files/figure-html/unnamed-chunk-11-1.png" width="672"></div>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-violin-methods.html">sc_violin</a></span><span class="op">(</span><span class="va">pbmc</span>, <span class="va">features</span><span class="op">)</span> <span class="op">+</span> </span>
+<code class="sourceCode R"><span><span class="co">#VlnPlot(pbmc, features)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-violin-methods.html">sc_violin</a></span><span class="op">(</span><span class="va">pbmc</span>, <span class="va">features</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_text</a></span><span class="op">(</span>angle<span class="op">=</span><span class="fl">45</span>, hjust<span class="op">=</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div class="inline-figure"><img src="ggsc_files/figure-html/unnamed-chunk-11-2.png" width="672"></div>
+<div class="inline-figure"><img src="ggsc_files/figure-html/sc-violin-multi-1.png" width="100%"></div>
 </div>
-<div id="spatial-features" class="section level2" number="1.7">
+<div id="spatial-features" class="section level2" number="1.6">
 <h2>
-<span class="header-section-number">1.7</span> Spatial features<a class="anchor" aria-label="anchor" href="#spatial-features"><i class="fas fa-link"></i></a>
+<span class="header-section-number">1.6</span> Spatial features<a class="anchor" aria-label="anchor" href="#spatial-features"><i class="fas fa-link"></i></a>
 </h2>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://www.satijalab.org/seurat">SeuratData</a></span><span class="op">)</span></span>
 <span><span class="co"># InstallData("stxBrain")</span></span>
 <span><span class="va">brain</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/LoadData.html">LoadData</a></span><span class="op">(</span><span class="st">"stxBrain"</span>, type <span class="op">=</span> <span class="st">"anterior1"</span><span class="op">)</span></span>
 <span><span class="co"># Normalization </span></span>
 <span><span class="va">brain</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/SCTransform.html">SCTransform</a></span><span class="op">(</span><span class="va">brain</span>, assay <span class="op">=</span> <span class="st">"Spatial"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://satijalab.org/seurat/reference/SpatialPlot.html">SpatialFeaturePlot</a></span><span class="op">(</span><span class="va">brain</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Hpca"</span>, <span class="st">"Ttr"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div class="inline-figure"><img src="ggsc_files/figure-html/unnamed-chunk-12-1.png" width="672"></div>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-spatial-methods.html">sc_spatial</a></span><span class="op">(</span><span class="va">brain</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Hpca"</span>, <span class="st">"Ttr"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div class="inline-figure"><img src="ggsc_files/figure-html/unnamed-chunk-12-2.png" width="672"></div>
+<span></span>
+<span><span class="co">## SpatialFeaturePlot(brain, features = c("Hpca", "Ttr"))\</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-spatial-methods.html">sc_spatial</a></span><span class="op">(</span><span class="va">brain</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Hpca"</span>, <span class="st">"Ttr"</span><span class="op">)</span>, image.mirror.axis <span class="op">=</span> <span class="st">'v'</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="ggsc_files/figure-html/sc_spatial-1.png" width="100%"></div>
 
 </div>
 </div>
@@ -240,9 +238,8 @@
 <li><a class="nav-link" href="#visualize-features-on-a-dimensional-reduction-plot"><span class="header-section-number">1.2</span> Visualize ‘features’ on a dimensional reduction plot</a></li>
 <li><a class="nav-link" href="#visualize-ellipse-on-a-dimensional-reduction-plot"><span class="header-section-number">1.3</span> Visualize ellipse on a dimensional reduction plot</a></li>
 <li><a class="nav-link" href="#visualize-selected-clusters"><span class="header-section-number">1.4</span> Visualize selected clusters</a></li>
-<li><a class="nav-link" href="#dot-plot"><span class="header-section-number">1.5</span> Dot plot</a></li>
-<li><a class="nav-link" href="#violin-plot-of-gene-expression"><span class="header-section-number">1.6</span> Violin plot of gene expression</a></li>
-<li><a class="nav-link" href="#spatial-features"><span class="header-section-number">1.7</span> Spatial features</a></li>
+<li><a class="nav-link" href="#violin-plot-of-gene-expression"><span class="header-section-number">1.5</span> Violin plot of gene expression</a></li>
+<li><a class="nav-link" href="#spatial-features"><span class="header-section-number">1.6</span> Spatial features</a></li>
 </ul>
 
       <div class="book-extra">
@@ -259,7 +256,7 @@
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Visualizing single cell data</strong>" was written by true. It was last built on 2023-11-01.</p>
+    <p>"<strong>Visualizing single cell data</strong>" was written by true. It was last built on 2023-11-02.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">
