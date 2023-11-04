@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>2 Visualizing SingleCellExperiment or SpatialExperiment objects | Visualizing single cell data</title>
+<meta name="generator" content="bookdown 0.36 with bs4_book()">
+<meta property="og:title" content="2 Visualizing SingleCellExperiment or SpatialExperiment objects | Visualizing single cell data">
+<meta property="og:type" content="book">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="2 Visualizing SingleCellExperiment or SpatialExperiment objects | Visualizing single cell data">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.5.1/transition.js"></script><script src="libs/bs3compat-0.5.1/tabs.js"></script><script src="libs/bs3compat-0.5.1/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<meta name="description" content="library(BiocParallel) library(STexampleData) library(scater) library(scran) library(ggplot2) Here we use an example data from a single sample (sample 151673) of human brain dorsolateral prefrontal...">
+<meta property="og:description" content="library(BiocParallel) library(STexampleData) library(scater) library(scran) library(ggplot2) Here we use an example data from a single sample (sample 151673) of human brain dorsolateral prefrontal...">
+<meta name="twitter:description" content="library(BiocParallel) library(STexampleData) library(scater) library(scran) library(ggplot2) Here we use an example data from a single sample (sample 151673) of human brain dorsolateral prefrontal...">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">Visualizing single cell data</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">Preface</a></li>
+<li><a class="" href="visualizing-seurat-objects.html"><span class="header-section-number">1</span> Visualizing Seurat objects</a></li>
+<li><a class="active" href="visualizing-singlecellexperiment-or-spatialexperiment-objects.html"><span class="header-section-number">2</span> Visualizing SingleCellExperiment or SpatialExperiment objects</a></li>
+</ul>
+
+        <div class="book-extra">
+          
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="visualizing-singlecellexperiment-or-spatialexperiment-objects" class="section level1" number="2">
+<h1>
+<span class="header-section-number">2</span> Visualizing SingleCellExperiment or SpatialExperiment objects<a class="anchor" aria-label="anchor" href="#visualizing-singlecellexperiment-or-spatialexperiment-objects"><i class="fas fa-link"></i></a>
+</h1>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Bioconductor/BiocParallel">BiocParallel</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/lmweber/STexampleData">STexampleData</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://bioconductor.org/packages/scater/">scater</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">scran</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span></code></pre></div>
+<p>Here we use an example data from a single sample (sample 151673) of human brain dorsolateral prefrontal cortex (DLPFC) in the human brain, measured using the 10x Genomics Visium platform. First, a brief/standard data pre-processing were done with the <code>scater</code> and <code>scran</code> packages.</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## create ExperimentHub instance</span></span>
+<span><span class="co"># eh &lt;- ExperimentHub()</span></span>
+<span></span>
+<span><span class="co">## query STexampleData datasets</span></span>
+<span><span class="co"># myfiles &lt;- query(eh, "STexampleData")</span></span>
+<span><span class="co"># spe &lt;- myfiles[["EH7538"]]</span></span>
+<span></span>
+<span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span><span class="op">(</span><span class="st">"data/Visium_humanDLPFC.rds"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scuttle/man/addPerCellQCMetrics.html">addPerCellQC</a></span><span class="op">(</span><span class="va">spe</span>, subsets<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>Mito<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html">grep</a></span><span class="op">(</span><span class="st">"^MT-"</span>, <span class="fu">rowData</span><span class="op">(</span><span class="va">spe</span><span class="op">)</span><span class="op">$</span><span class="va">gene_name</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">colData</span><span class="op">(</span><span class="va">spe</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre><code>## DataFrame with 6 rows and 13 columns
+##                            barcode_id     sample_id
+##                           &lt;character&gt;   &lt;character&gt;
+## AAACAACGAATAGTTC-1 AAACAACGAATAGTTC-1 sample_151673
+## AAACAAGTATCTCCCA-1 AAACAAGTATCTCCCA-1 sample_151673
+## AAACAATCTACTAGCA-1 AAACAATCTACTAGCA-1 sample_151673
+## AAACACCAATAACTGC-1 AAACACCAATAACTGC-1 sample_151673
+## AAACAGAGCGACTCCT-1 AAACAGAGCGACTCCT-1 sample_151673
+## AAACAGCTTTCAGAAG-1 AAACAGCTTTCAGAAG-1 sample_151673
+##                    in_tissue array_row array_col
+##                    &lt;integer&gt; &lt;integer&gt; &lt;integer&gt;
+## AAACAACGAATAGTTC-1         0         0        16
+## AAACAAGTATCTCCCA-1         1        50       102
+## AAACAATCTACTAGCA-1         1         3        43
+## AAACACCAATAACTGC-1         1        59        19
+## AAACAGAGCGACTCCT-1         1        14        94
+## AAACAGCTTTCAGAAG-1         1        43         9
+##                    ground_truth cell_count       sum
+##                     &lt;character&gt;  &lt;integer&gt; &lt;numeric&gt;
+## AAACAACGAATAGTTC-1           NA         NA       622
+## AAACAAGTATCTCCCA-1       Layer3          6      8458
+## AAACAATCTACTAGCA-1       Layer1         16      1667
+## AAACACCAATAACTGC-1           WM          5      3769
+## AAACAGAGCGACTCCT-1       Layer3          2      5433
+## AAACAGCTTTCAGAAG-1       Layer5          4      4278
+##                     detected subsets_Mito_sum
+##                    &lt;numeric&gt;        &lt;numeric&gt;
+## AAACAACGAATAGTTC-1       526               37
+## AAACAAGTATCTCCCA-1      3586             1407
+## AAACAATCTACTAGCA-1      1150              204
+## AAACACCAATAACTGC-1      1960              430
+## AAACAGAGCGACTCCT-1      2424             1316
+## AAACAGCTTTCAGAAG-1      2264              651
+##                    subsets_Mito_detected
+##                                &lt;numeric&gt;
+## AAACAACGAATAGTTC-1                     9
+## AAACAAGTATCTCCCA-1                    13
+## AAACAATCTACTAGCA-1                    11
+## AAACACCAATAACTGC-1                    13
+## AAACAGAGCGACTCCT-1                    13
+## AAACAGCTTTCAGAAG-1                    12
+##                    subsets_Mito_percent     total
+##                               &lt;numeric&gt; &lt;numeric&gt;
+## AAACAACGAATAGTTC-1              5.94855       622
+## AAACAAGTATCTCCCA-1             16.63514      8458
+## AAACAATCTACTAGCA-1             12.23755      1667
+## AAACACCAATAACTGC-1             11.40886      3769
+## AAACAGAGCGACTCCT-1             24.22234      5433
+## AAACAGCTTTCAGAAG-1             15.21739      4278</code></pre>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">colData</span><span class="op">(</span><span class="va">spe</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">sum</span>, y <span class="op">=</span> <span class="va">detected</span>, colour <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">in_tissue</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span> </span></code></pre></div>
+<div class="inline-figure"><img src="ggsc_files/figure-html/setup.preprocess-1.png" width="100%"></div>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/scater/man/plotColData.html">plotColData</a></span><span class="op">(</span><span class="va">spe</span>, x<span class="op">=</span><span class="st">'sum'</span>, y <span class="op">=</span> <span class="st">'subsets_Mito_percent'</span>, other_fields<span class="op">=</span><span class="st">"in_tissue"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">in_tissue</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="ggsc_files/figure-html/setup.preprocess-2.png" width="100%"></div>
+<p>Firstly, we filter the data to retain the cells that are in the tissue. Then cell-specific biases are normalized using the <code>computeSumFactors</code> method.</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="va">spe</span><span class="op">[</span>, <span class="va">spe</span><span class="op">$</span><span class="va">in_tissue</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span></span>
+<span></span>
+<span><span class="va">clusters</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scran/man/quickCluster.html">quickCluster</a></span><span class="op">(</span></span>
+<span>              <span class="va">spe</span>, </span>
+<span>              BPPARAM <span class="op">=</span> <span class="fu">BiocParallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/MulticoreParam-class.html">MulticoreParam</a></span><span class="op">(</span>workers<span class="op">=</span><span class="fl">2</span><span class="op">)</span>, </span>
+<span>              block.BPPARAM <span class="op">=</span> <span class="fu">BiocParallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/MulticoreParam-class.html">MulticoreParam</a></span><span class="op">(</span>workers<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
+<span>            <span class="op">)</span></span>
+<span></span>
+<span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scran/man/computeSumFactors.html">computeSumFactors</a></span><span class="op">(</span><span class="va">spe</span>, clusters <span class="op">=</span> <span class="va">clusters</span>, BPPARAM <span class="op">=</span> <span class="fu">BiocParallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/MulticoreParam-class.html">MulticoreParam</a></span><span class="op">(</span>workers<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scuttle/man/logNormCounts.html">logNormCounts</a></span><span class="op">(</span><span class="va">spe</span><span class="op">)</span></span></code></pre></div>
+<p>Next, we use the Graph-based clustering method to do the reduction with the <code>runPCA</code> and <code>runTSNE</code> functions provided in the <code>scater</code> package.</p>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># identify genes that drive biological heterogeneity in the data set by </span></span>
+<span><span class="co"># modelling the per-gene variance</span></span>
+<span><span class="va">dec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scran/man/modelGeneVar.html">modelGeneVar</a></span><span class="op">(</span><span class="va">spe</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Get the top 15% genes.</span></span>
+<span><span class="va">top.hvgs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scran/man/getTopHVGs.html">getTopHVGs</a></span><span class="op">(</span><span class="va">dec</span>, prop<span class="op">=</span><span class="fl">0.15</span><span class="op">)</span></span>
+<span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocSingular/man/runPCA.html">runPCA</a></span><span class="op">(</span><span class="va">spe</span>, subset_row<span class="op">=</span><span class="va">top.hvgs</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scran/man/getClusteredPCs.html">getClusteredPCs</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/reducedDims.html">reducedDim</a></span><span class="op">(</span><span class="va">spe</span><span class="op">)</span>, BPPARAM <span class="op">=</span> <span class="fu">BiocParallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/MulticoreParam-class.html">MulticoreParam</a></span><span class="op">(</span>workers<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">npcs</span> <span class="op">&lt;-</span> <span class="fu">metadata</span><span class="op">(</span><span class="va">output</span><span class="op">)</span><span class="op">$</span><span class="va">chosen</span></span>
+<span><span class="va">npcs</span></span></code></pre></div>
+<pre><code>## [1] 13</code></pre>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/reducedDims.html">reducedDim</a></span><span class="op">(</span><span class="va">spe</span>, <span class="st">"PCAsub"</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/reducedDims.html">reducedDim</a></span><span class="op">(</span><span class="va">spe</span>, <span class="st">"PCA"</span><span class="op">)</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="va">npcs</span>,drop<span class="op">=</span><span class="cn">FALSE</span><span class="op">]</span></span>
+<span></span>
+<span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scran/man/buildSNNGraph.html">buildSNNGraph</a></span><span class="op">(</span><span class="va">spe</span>, use.dimred<span class="op">=</span><span class="st">"PCAsub"</span>, BPPARAM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/MulticoreParam-class.html">MulticoreParam</a></span><span class="op">(</span>workers<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">cluster</span> <span class="op">&lt;-</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/cluster_walktrap.html">cluster_walktrap</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">$</span><span class="va">membership</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/colLabels.html">colLabels</a></span><span class="op">(</span><span class="va">spe</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">cluster</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scater/man/runTSNE.html">runTSNE</a></span><span class="op">(</span><span class="va">spe</span>, dimred<span class="op">=</span><span class="st">"PCAsub"</span>, BPPARAM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/MulticoreParam-class.html">MulticoreParam</a></span><span class="op">(</span>workers<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div id="dimensional-reduction-plot-1" class="section level2" number="2.1">
+<h2>
+<span class="header-section-number">2.1</span> Dimensional reduction plot<a class="anchor" aria-label="anchor" href="#dimensional-reduction-plot-1"><i class="fas fa-link"></i></a>
+</h2>
+<p>Here, we used the <code>sc_dim</code> function provided in the <code>ggsc</code> package to visualize the <code>TSNE</code> reduction result. Unlike other packages, <code>ggsc</code> implemented the <code>ggplot2</code> graphic of grammar syntax and visual elements are overlaid through the combinations of graphic layers. The <code>sc_dim_geom_label</code> layer is designed to add cell cluster labels to a dimensional reduction plot, and can utilized different implementation of text geoms, such as <code>geom_shadowtext</code> in the <code>shadowtext</code> package and <code>geom_text</code> in the <code>ggplot2</code> package (default) through the <code>geom</code> argument.</p>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/YuLab-SMU/ggsc">ggsc</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-methods.html">sc_dim</a></span><span class="op">(</span><span class="va">spe</span>, reduction <span class="op">=</span> <span class="st">'TSNE'</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-geom-label.html">sc_dim_geom_label</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="ggsc_files/figure-html/sce-dimplot-1.png" width="100%"></div>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-methods.html">sc_dim</a></span><span class="op">(</span><span class="va">spe</span>, reduction <span class="op">=</span> <span class="st">'TSNE'</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-geom-label.html">sc_dim_geom_label</a></span><span class="op">(</span></span>
+<span>    geom <span class="op">=</span> <span class="fu">shadowtext</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/shadowtext/man/geom_shadowtext.html">geom_shadowtext</a></span>,</span>
+<span>    color<span class="op">=</span><span class="st">'black'</span>, </span>
+<span>    bg.color<span class="op">=</span><span class="st">'white'</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="ggsc_files/figure-html/sce-dimplot-2.png" width="100%"></div>
+</div>
+<div id="visualize-features-on-a-dimensional-reduction-plot-1" class="section level2" number="2.2">
+<h2>
+<span class="header-section-number">2.2</span> Visualize ‘features’ on a dimensional reduction plot<a class="anchor" aria-label="anchor" href="#visualize-features-on-a-dimensional-reduction-plot-1"><i class="fas fa-link"></i></a>
+</h2>
+<p>To visualize the gene expression of cells in the result of reduction, <code>ggsc</code> provides <code>sc_feature</code> function to highlight on a dimensional reduction plot.</p>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'MOBP'</span>, <span class="st">'PCP4'</span>, <span class="st">'SNAP25'</span>, <span class="st">'HBB'</span>, <span class="st">'IGKC'</span>, <span class="st">'NPY'</span><span class="op">)</span></span>
+<span><span class="va">target.features</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">spe</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span><span class="op">(</span><span class="va">genes</span>, <span class="fu">rowData</span><span class="op">(</span><span class="va">spe</span><span class="op">)</span><span class="op">$</span><span class="va">gene_name</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-feature-methods.html">sc_feature</a></span><span class="op">(</span><span class="va">spe</span>, <span class="va">target.features</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, slot<span class="op">=</span><span class="st">'logcounts'</span>, reduction <span class="op">=</span> <span class="st">'TSNE'</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="ggsc_files/figure-html/sce-feature-1.png" width="100%"></div>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-feature-methods.html">sc_feature</a></span><span class="op">(</span><span class="va">spe</span>, <span class="va">target.features</span>, slot<span class="op">=</span><span class="st">'logcounts'</span>, reduction <span class="op">=</span> <span class="st">'TSNE'</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="ggsc_files/figure-html/sce-feature-2.png" width="100%"></div>
+<p>In addition, it provides <code>sc_dim_geom_feature</code> layer working with <code>sc_dim</code> function to visualize the cells expressed the gene and the cell clusters information simultaneously.</p>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-methods.html">sc_dim</a></span><span class="op">(</span><span class="va">spe</span>, slot<span class="op">=</span><span class="st">'logcounts'</span>, reduction <span class="op">=</span> <span class="st">'TSNE'</span><span class="op">)</span> <span class="op">+</span></span>
+<span>   <span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-geom-feature.html">sc_dim_geom_feature</a></span><span class="op">(</span><span class="va">spe</span>, <span class="va">target.features</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, color<span class="op">=</span><span class="st">'black'</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="ggsc_files/figure-html/sce-feature-layers-1.png" width="100%"></div>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-methods.html">sc_dim</a></span><span class="op">(</span><span class="va">spe</span>, alpha<span class="op">=</span><span class="fl">.3</span>, slot<span class="op">=</span><span class="st">'logcounts'</span>, reduction <span class="op">=</span> <span class="st">'TSNE'</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu">ggnewscale</span><span class="fu">::</span><span class="fu"><a href="https://eliocamp.github.io/ggnewscale/reference/new_scale.html">new_scale_color</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-geom-feature.html">sc_dim_geom_feature</a></span><span class="op">(</span><span class="va">spe</span>, <span class="va">target.features</span>, mapping<span class="op">=</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color<span class="op">=</span><span class="va">features</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_color_viridis_d</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="ggsc_files/figure-html/sce-feature-layers-2.png" width="100%"></div>
+<p>It also provides <code>sc_dim_geom_ellipse</code> to add confidence levels of the the cluster result, and <code>sc_dim_geom_sub</code> to select and highlight a specific cluster of cells.</p>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-methods.html">sc_dim</a></span><span class="op">(</span><span class="va">spe</span>, reduction <span class="op">=</span> <span class="st">'TSNE'</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-geom-ellipse.html">sc_dim_geom_ellipse</a></span><span class="op">(</span>level<span class="op">=</span><span class="fl">0.95</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="ggsc_files/figure-html/sce-ellipse-1.png" width="100%"></div>
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">selected.cluster</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span>, <span class="fl">8</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-methods.html">sc_dim</a></span><span class="op">(</span><span class="va">spe</span>, reduction <span class="op">=</span> <span class="st">'TSNE'</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-sub.html">sc_dim_sub</a></span><span class="op">(</span>subset<span class="op">=</span><span class="va">selected.cluster</span>, .column <span class="op">=</span> <span class="st">'label'</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="ggsc_files/figure-html/sce-ellipse-2.png" width="100%"></div>
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-methods.html">sc_dim</a></span><span class="op">(</span><span class="va">spe</span>, color<span class="op">=</span><span class="st">'grey'</span>, reduction <span class="op">=</span> <span class="st">'TSNE'</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-geom-subset.html">sc_dim_geom_sub</a></span><span class="op">(</span>subset<span class="op">=</span><span class="va">selected.cluster</span>, .column <span class="op">=</span> <span class="st">'label'</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-dim-geom-label.html">sc_dim_geom_label</a></span><span class="op">(</span>geom <span class="op">=</span> <span class="fu">shadowtext</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/shadowtext/man/geom_shadowtext.html">geom_shadowtext</a></span>, </span>
+<span>          mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>subset <span class="op">=</span> <span class="va">label</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">selected.cluster</span><span class="op">)</span>,</span>
+<span>            color<span class="op">=</span><span class="st">'black'</span>, bg.color<span class="op">=</span><span class="st">'white'</span><span class="op">)</span>  </span></code></pre></div>
+<div class="inline-figure"><img src="ggsc_files/figure-html/sce-ellipse-3.png" width="100%"></div>
+</div>
+<div id="violin-plot-of-gene-expression-1" class="section level2" number="2.3">
+<h2>
+<span class="header-section-number">2.3</span> Violin plot of gene expression<a class="anchor" aria-label="anchor" href="#violin-plot-of-gene-expression-1"><i class="fas fa-link"></i></a>
+</h2>
+<p><code>ggsc</code> provides <code>sc_violin</code> to visualize the expression information of specific genes using the violin layer with common legend, the genes can be compared more intuitively.</p>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-violin-methods.html">sc_violin</a></span><span class="op">(</span><span class="va">spe</span>, <span class="va">target.features</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, slot <span class="op">=</span> <span class="st">'logcounts'</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="ggsc_files/figure-html/sce-violin-1.png" width="100%"></div>
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-violin-methods.html">sc_violin</a></span><span class="op">(</span><span class="va">spe</span>, <span class="va">target.features</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, slot <span class="op">=</span> <span class="st">'logcounts'</span>, </span>
+<span>     .fun<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">d</span>, <span class="va">value</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span>     <span class="op">)</span> <span class="op">+</span> </span>
+<span>     <span class="fu">ggforce</span><span class="fu">::</span><span class="fu"><a href="https://ggforce.data-imaginist.com/reference/geom_sina.html">geom_sina</a></span><span class="op">(</span>size<span class="op">=</span><span class="fl">.1</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="ggsc_files/figure-html/sce-violin-2.png" width="100%"></div>
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-violin-methods.html">sc_violin</a></span><span class="op">(</span><span class="va">spe</span>, <span class="va">target.features</span>, slot <span class="op">=</span> <span class="st">'logcounts'</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_text</a></span><span class="op">(</span>angle<span class="op">=</span><span class="fl">45</span>, hjust<span class="op">=</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="ggsc_files/figure-html/sce-violin-3.png" width="100%"></div>
+</div>
+<div id="spatial-features-1" class="section level2" number="2.4">
+<h2>
+<span class="header-section-number">2.4</span> Spatial features<a class="anchor" aria-label="anchor" href="#spatial-features-1"><i class="fas fa-link"></i></a>
+</h2>
+<p>To visualize the spatial pattern of gene, <code>ggsc</code> provides <code>sc_spatial</code> to visualize specific features/genes with image information.</p>
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/YuLab-SMU/aplot">aplot</a></span><span class="op">)</span></span>
+<span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-spatial-methods.html">sc_spatial</a></span><span class="op">(</span><span class="va">spe</span>, features <span class="op">=</span> <span class="va">target.features</span>, </span>
+<span>           slot <span class="op">=</span> <span class="st">'logcounts'</span>, ncol <span class="op">=</span> <span class="fl">3</span>, </span>
+<span>           image.mirror.axis <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>           image.rotate.degree <span class="op">=</span> <span class="op">-</span><span class="fl">90</span></span>
+<span>           <span class="op">)</span></span>
+<span></span>
+<span><span class="va">f</span></span></code></pre></div>
+<div class="inline-figure"><img src="ggsc_files/figure-html/sce-spatial-1.png" width="100%"></div>
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">target.features</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggsc/man/sc-spatial-methods.html">sc_spatial</a></span><span class="op">(</span><span class="va">spe</span>, features <span class="op">=</span> <span class="va">i</span>, slot <span class="op">=</span> <span class="st">'logcounts'</span>, image.rotate.degree <span class="op">=</span> <span class="op">-</span><span class="fl">90</span>, image.mirror.axis <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">aplot</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/aplot/man/plot_list.html">plot_list</a></span><span class="op">(</span>gglist <span class="op">=</span> <span class="va">pp</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="ggsc_files/figure-html/sce-spatial-2.png" width="100%"></div>
+
+</div>
+</div>
+  <div class="chapter-nav">
+<div class="prev"><a href="visualizing-seurat-objects.html"><span class="header-section-number">1</span> Visualizing Seurat objects</a></div>
+<div class="empty"></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#visualizing-singlecellexperiment-or-spatialexperiment-objects"><span class="header-section-number">2</span> Visualizing SingleCellExperiment or SpatialExperiment objects</a></li>
+<li><a class="nav-link" href="#dimensional-reduction-plot-1"><span class="header-section-number">2.1</span> Dimensional reduction plot</a></li>
+<li><a class="nav-link" href="#visualize-features-on-a-dimensional-reduction-plot-1"><span class="header-section-number">2.2</span> Visualize ‘features’ on a dimensional reduction plot</a></li>
+<li><a class="nav-link" href="#violin-plot-of-gene-expression-1"><span class="header-section-number">2.3</span> Violin plot of gene expression</a></li>
+<li><a class="nav-link" href="#spatial-features-1"><span class="header-section-number">2.4</span> Spatial features</a></li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+          
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>Visualizing single cell data</strong>" was written by true. It was last built on 2023-11-03.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+</body>
+</html>

@@ -5,3 +5,8 @@ visualize-ellipse-on-a-dimensional-reduction-plot
 visualize-selected-clusters
 violin-plot-of-gene-expression
 spatial-features
+visualizing-singlecellexperiment-or-spatialexperiment-objects
+dimensional-reduction-plot-1
+visualize-features-on-a-dimensional-reduction-plot-1
+violin-plot-of-gene-expression-1
+spatial-features-1
