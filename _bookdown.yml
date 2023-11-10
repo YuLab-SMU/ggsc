@@ -3,4 +3,5 @@ chapter_name: ""
 output_dir: gh-pages
 delete_merged_file: true
 rmd_files: ["index.Rmd",
-  "single-cell.Rmd"]
+  "01-seurat.Rmd",
+  "02-single-cell-spatial-experiment.Rmd"]

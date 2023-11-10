@@ -1,3 +1,6 @@
+gitbook:
+	Rscript -e 'library(bookdown); render_book("index.Rmd", "gitbook")'
+
 bs4book:
 	Rscript -e 'library(bookdown); render_book("index.Rmd", "bs4_book")'
 

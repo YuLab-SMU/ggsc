@@ -59,5 +59,7 @@ knitr::opts_chunk$set(tidy = FALSE,
 
 # Preface {-}
 
-hello world
+Single-cell RNA sequencing (scRNA-seq) and Spatial RNA sequencing are widely used techniques for profiling gene expression in individual cells with their locations in the histological sections. These allow molecular biology to be studied at a resolution that cannot be matched by bulk sequencing of cell populations. To better visualize the result of reduction, spatial gene expression pattern in single cell or spatial experiment data, `ggsc` provides some layer functions based on the `ggplot2` grammar. It can work with the `SingleCellExperiment` class or `Seurat` class, which are the widely used classes for storing data from single cell experiment.
+
+
 
