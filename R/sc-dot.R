@@ -3,15 +3,18 @@
 ##' @param object Seurat object
 ##' @param features selected features
 ##' @param group.by grouping factor
+##' @param additional split factor
 ##' @param slot slot to pull expression data from (e.g., 'count' or 'data')
 ##' @param .fun user defined function that will be applied to selected features (default is NULL and there is no data operation)
 ##' @param mapping aesthetic mapping
-##' @param ... additional parameters pass to 'ggplot2::geom_dot()'
+##' @param ... additional parameters pass to 'ggplot2::geom_point()'
+##' @seealso
+##'  [DotPlot][Seurat::DotPlot]; 
 ##' @return dot plot to visualize feature expression distribution
 ##' @importFrom utils modifyList
 ##' @importFrom ggplot2 aes_string
 ##' @importFrom ggplot2 ggplot
-##' @importFrom ggplot2 geom_violin
+##' @importFrom ggplot2 geom_point
 ##' @importFrom ggplot2 facet_wrap
 ##' @importFrom tidyr pivot_longer
 ##' @export
@@ -22,18 +25,10 @@
 ##' library(ggplot2)
 ##' sce <- mockSCE()
 ##' sce <- logNormCounts(sce)
-##' clusters <- clusterCells(sce, assay.type = 'logcounts')
-##' colLabels(sce) <- clusters
-##' sce <- runUMAP(sce, assay.type = 'logcounts')
 ##' set.seed(123)
 ##' genes <- rownames(sce) |> sample(6) 
-##' sc_violin(sce, genes[1], slot = 'logcounts')
-##' sc_violin(sce, genes[1], slot = 'logcounts',
-##'      .fun=function(d) dplyr::filter(d, value > 0)
-##'      ) +
-##'      ggforce::geom_sina(size=.1)
-##' sc_violin(sce, genes, slot = 'logcounts') +
-##'   theme(axis.text.x = element_text(angle=45, hjust=1))
+##' sc_dot(sce, genes[1:5], "Treatment", slot = 'logcounts')
+##' 
 setGeneric('sc_dot', function(object, features, group.by, split.by = NULL,
 	                             cols = c("lightgrey", "blue"),
 	                             col.min = -2.5, col.max = 2.5,
@@ -65,7 +60,7 @@ setMethod("sc_dot", 'Seurat', function(object, features,
     }
     return(.ReturnDotPlot(d, features, group.by, split.by, cols,
 	col.min, col.max, dot.min, dot.scale, mapping, scale, scale.by,
-	scale.min, scale.max))
+	scale.min, scale.max, ...))
 })
 
 ##' @rdname sc-dot-methods
@@ -93,13 +88,13 @@ setMethod('sc_dot', 'SingleCellExperiment',
     }
     return(.ReturnDotPlot(d, features, group.by, split.by, cols,
 	col.min, col.max, dot.min, dot.scale, mapping, scale, scale.by,
-	scale.min, scale.max))
+	scale.min, scale.max, ...))
 })
 
 
 .ReturnDotPlot <- function(d, features, group.by, split.by, cols,
 	col.min, col.max, dot.min, dot.scale, mapping, scale, scale.by,
-	scale.min, scale.max) {
+	scale.min, scale.max, ...) {
     feature.groups <- NULL
     split.colors <- !is.null(split.by) && !any(cols %in% rownames(RColorBrewer::brewer.pal.info))
 	scale.func <- switch(
@@ -201,7 +196,7 @@ setMethod('sc_dot', 'SingleCellExperiment',
         mapping <- modifyList(default_mapping, mapping)
     }
 	p <- ggplot(avg.exp, aes(x=features, y=.data[[group.by]])) +
-    	geom_point(mapping)+
+    	geom_point(mapping, ...)+
     	scale.func(range = c(0, dot.scale), limits = c(scale.min, scale.max))+
         theme(axis.title.x = element_blank(), axis.title.y = element_blank()) +
         guides(size = guide_legend(title = 'Percent Expressed')) +
