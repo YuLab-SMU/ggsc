@@ -34,12 +34,14 @@
 ##'      ggforce::geom_sina(size=.1)
 ##' sc_violin(sce, genes, slot = 'logcounts') +
 ##'   theme(axis.text.x = element_text(angle=45, hjust=1))
-setGeneric('sc_dot', function(object, features, group.by,
+setGeneric('sc_dot', function(object, features, group.by, split.by = NULL,
 	                             cols = c("lightgrey", "blue"),
 	                             col.min = -2.5, col.max = 2.5,
 	                             dot.min = 0, dot.scale = 6,
                                  slot = "data", .fun = NULL, mapping = NULL,
-                                 split.by=NULL, ...)
+                                 scale = TRUE, scale.by = 'radius',
+                                 scale.min = NA, scale.max = NA,
+                                 ...)
     standardGeneric('sc_dot')
 )
 
@@ -47,11 +49,14 @@ setGeneric('sc_dot', function(object, features, group.by,
 ##' @aliases sc_dot,Seurat
 ##' @exportMethod sc_dot
 setMethod("sc_dot", 'Seurat', function(object, features, 
-                    group.by, cols = c("lightgrey", "blue"),
+                    group.by, split.by = NULL, cols = c("lightgrey", "blue"),
                     col.min = -2.5, col.max = 2.5,
                     dot.min = 0, dot.scale = 6,
                     slot = "data", .fun = NULL,
-                    mapping = NULL, split.by=NULL, ...) {
+                    mapping = NULL,
+                    scale = TRUE, scale.by = 'radius',
+                    scale.min = NA, scale.max = NA,
+                    ...) {
     d <- get_dim_data(object, dims=NULL, features=features)
     d <- tidyr::pivot_longer(d, 2:ncol(d), names_to = "features")
     d$features <- factor(d$features, levels = features)
@@ -79,34 +84,58 @@ setMethod("sc_dot", 'Seurat', function(object, features,
 ##' @exportMethod sc_dot
 setMethod('sc_dot', 'SingleCellExperiment', 
           function(
-             object, features, group.by,
+             object, features, group.by, split.by = NULL,
              cols = c("lightgrey", "blue"),
              col.min=-2.5, col.max=2.5, dot.min=0, dot.scale=6,
              slot = 'data', .fun = NULL, mapping = NULL, ncol = 3,
-             split.by = NULL, ...){
-    split.colors <- !is.null(x = split.by) && !any(cols %in% rownames(x = brewer.pal.info))
+             scale = TRUE, scale.by = 'radius',
+             scale.min = NA, scale.max = NA,
+             ...){
+    #From Seurat::DotPlot
+    split.colors <- !is.null(split.by) && !any(cols %in% rownames(RColorBrewer::brewer.pal.info))
+	scale.func <- switch(
+	    EXPR = scale.by,
+	    'size' = scale_size,
+	    'radius' = scale_radius,
+	    stop("'scale.by' must be either 'size' or 'radius'")
+	)
     d <- .extract_sce_data(object, dims = NULL, features = features)
     d <- tidyr::pivot_longer(d, seq(ncol(d) - length(features) + 1, ncol(d)), names_to = "features")
     if (is.numeric(features)){
         features <- rownames(object)[features]
     }
-
     d$features <- factor(d$features, levels = features)
     if (!is.null(.fun)) {
         d <- .fun(d)
     }
-    avg.exp <- d %>% group_by(.data[[group.by]], features) %>%
-        summarise(avg.exp=mean(value),
+    id.levels <- levels(d[[group.by]])
+    if (!is.null(split.by)) {
+    	splits <- d[[split.by]]
+        if (split.colors) {
+            if (length(unique(splits)) > length(cols)) {
+                stop(paste0("Need to specify at least ", length(unique(splits)), " colors using the cols parameter"))
+            }
+	        cols <- cols[1:length(unique(splits))]
+	        names(cols) <- unique(splits)
+        }
+        d[[group.by]] <- paste(d[[group.by]], splits, sep = '_')
+        unique.splits <- unique(splits)
+        id.levels <- paste0(rep(x = id.levels, each = length(x = unique.splits)),
+        	"_", rep(x = unique(x = splits), times = length(x = id.levels)))
+    }
+    avg.exp <- d %>% 
+        dplyr::group_by(.data[[group.by]], features) %>%
+        dplyr::summarise(avg.exp=mean(value),
         	      pct.exp=.PercentAbove(value, 0))
 
-    default_mapping <- aes_string(color="mean")
+    default_mapping <- aes_string(color="avg.exp", size="pct.exp")
     if (is.null(mapping)) {
         mapping <- default_mapping
     } else {
         mapping <- modifyList(default_mapping, mapping)
     }
 	p <- ggplot(avg.exp, aes(x=features, y=.data[[group.by]])) +
-    	geom_point(aes(size=pct.exp, color=avg.exp))+
+    	geom_point(mapping)+
 	    scale_color_gradient(low=cols[1],high=cols[2])+
 	    theme_minimal()
     return(p)    
