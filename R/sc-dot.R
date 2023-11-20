@@ -57,23 +57,15 @@ setMethod("sc_dot", 'Seurat', function(object, features,
                     scale = TRUE, scale.by = 'radius',
                     scale.min = NA, scale.max = NA,
                     ...) {
-    d <- get_dim_data(object, dims=NULL, features=features)
+    d <- get_dim_data(object, dims=NULL, features=features, slot=slot)
     d <- tidyr::pivot_longer(d, 2:ncol(d), names_to = "features")
     d$features <- factor(d$features, levels = features)
     if (!is.null(.fun)) {
         d <- .fun(d)
     }
-    default_mapping <- aes_string(fill="ident")
-    if (is.null(mapping)) {
-        mapping <- default_mapping
-    } else {
-        mapping <- modifyList(default_mapping, mapping)
-    }
-    p <- ggplot(d, aes_string("ident", "value")) + 
-        geom_violin(mapping, ...) #+ 
-        #ggforce::geom_sina(size=.1)
-    
-    return(p)
+    return(.ReturnDotPlot(d, features, group.by, split.by, cols,
+	col.min, col.max, dot.min, dot.scale, mapping, scale, scale.by,
+	scale.min, scale.max))
 })
 
 ##' @rdname sc-dot-methods
@@ -89,15 +81,7 @@ setMethod('sc_dot', 'SingleCellExperiment',
              scale.min = NA, scale.max = NA,
              ...){
     #Some parts in the script is adapted from Seurat::DotPlot
-    #Currently, no feature.groups and cluster.idents
-    feature.groups <- NULL
-    split.colors <- !is.null(split.by) && !any(cols %in% rownames(RColorBrewer::brewer.pal.info))
-	scale.func <- switch(
-	    EXPR = scale.by,
-	    'size' = scale_size,
-	    'radius' = scale_radius,
-	    stop("'scale.by' must be either 'size' or 'radius'")
-	)
+    #Currently, feature.groups and cluster.idents are not implemented
     d <- .extract_sce_data(object, dims = NULL, features = features, slot=slot)
     d <- tidyr::pivot_longer(d, seq(ncol(d) - length(features) + 1, ncol(d)), names_to = "features")
     if (is.numeric(features)){
@@ -107,6 +91,24 @@ setMethod('sc_dot', 'SingleCellExperiment',
     if (!is.null(.fun)) {
         d <- .fun(d)
     }
+    return(.ReturnDotPlot(d, features, group.by, split.by, cols,
+	col.min, col.max, dot.min, dot.scale, mapping, scale, scale.by,
+	scale.min, scale.max))
+})
+
+
+.ReturnDotPlot <- function(d, features, group.by, split.by, cols,
+	col.min, col.max, dot.min, dot.scale, mapping, scale, scale.by,
+	scale.min, scale.max) {
+    feature.groups <- NULL
+    split.colors <- !is.null(split.by) && !any(cols %in% rownames(RColorBrewer::brewer.pal.info))
+	scale.func <- switch(
+	    EXPR = scale.by,
+	    'size' = scale_size,
+	    'radius' = scale_radius,
+	    stop("'scale.by' must be either 'size' or 'radius'")
+	)
+	
     id.levels <- levels(d[[group.by]])
     if (!is.null(split.by)) {
     	splits <- d[[split.by]]
@@ -218,17 +220,16 @@ setMethod('sc_dot', 'SingleCellExperiment',
 	if (!split.colors) {
         p <- p + guides(color = guide_colorbar(title = 'Average Expression'))
     }
-    return(p)    
-
-})
+    return(p)
+}
 
 .PercentAbove <- function(x, threshold) {
     return(length(x = x[x > threshold]) / length(x = x))
 }
 
 .MinMax <- function(data, min, max) {
-  data2 <- data
-  data2[data2 > max] <- max
-  data2[data2 < min] <- min
-  return(data2)
+    data2 <- data
+    data2[data2 > max] <- max
+    data2[data2 < min] <- min
+    return(data2)
 }
