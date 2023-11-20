@@ -73,9 +73,6 @@ setMethod("sc_dot", 'Seurat', function(object, features,
         geom_violin(mapping, ...) #+ 
         #ggforce::geom_sina(size=.1)
     
-    if (length(features) > 1) {
-        p <- p + facet_wrap(~features, ncol=ncol)
-    }
     return(p)
 })
 
@@ -87,11 +84,13 @@ setMethod('sc_dot', 'SingleCellExperiment',
              object, features, group.by, split.by = NULL,
              cols = c("lightgrey", "blue"),
              col.min=-2.5, col.max=2.5, dot.min=0, dot.scale=6,
-             slot = 'data', .fun = NULL, mapping = NULL, ncol = 3,
+             slot = 'data', .fun = NULL, mapping = NULL,
              scale = TRUE, scale.by = 'radius',
              scale.min = NA, scale.max = NA,
              ...){
-    #From Seurat::DotPlot
+    #Some parts in the script is adapted from Seurat::DotPlot
+    #Currently, no feature.groups and cluster.idents
+    feature.groups <- NULL
     split.colors <- !is.null(split.by) && !any(cols %in% rownames(RColorBrewer::brewer.pal.info))
 	scale.func <- switch(
 	    EXPR = scale.by,
@@ -99,7 +98,7 @@ setMethod('sc_dot', 'SingleCellExperiment',
 	    'radius' = scale_radius,
 	    stop("'scale.by' must be either 'size' or 'radius'")
 	)
-    d <- .extract_sce_data(object, dims = NULL, features = features)
+    d <- .extract_sce_data(object, dims = NULL, features = features, slot=slot)
     d <- tidyr::pivot_longer(d, seq(ncol(d) - length(features) + 1, ncol(d)), names_to = "features")
     if (is.numeric(features)){
         features <- rownames(object)[features]
@@ -125,10 +124,75 @@ setMethod('sc_dot', 'SingleCellExperiment',
     }
     avg.exp <- d %>% 
         dplyr::group_by(.data[[group.by]], features) %>%
-        dplyr::summarise(avg.exp=mean(value),
+        dplyr::summarise(avg.exp=mean(expm1(value)),
         	      pct.exp=.PercentAbove(value, 0))
+    ngroup <- length(id.levels)
+    if (ngroup == 1) {
+        scale <- FALSE
+        warning(
+            "Only one identity present, the expression values will be not scaled",
+            call. = FALSE,
+            immediate. = TRUE
+        )
+    } else if (ngroup < 5 & scale) {
+        warning(
+            "Scaling data with a low number of groups may produce misleading results",
+            call. = FALSE,
+            immediate. = TRUE
+        )
+    }
+    
+    .scale.fun <- function(x) {
+    	if (scale) {
+    		scaled <- scale(log1p(x))
+    		scaled <- .MinMax(scaled, min=col.min, max=col.max)
+    	} else {
+    		scaled <- log1p(x)
+    	}
+    	return(scaled)
+    }
+    
+    avg.exp <- avg.exp %>% 
+        dplyr::group_by(features) %>%
+        dplyr::mutate(avg.exp.scaled=.scale.fun(avg.exp))
 
-    default_mapping <- aes_string(color="avg.exp", size="pct.exp")
+    if (split.colors) {
+        avg.exp <- avg.exp %>% 
+            dplyr::mutate(avg.exp.scaled=as.numeric(cut(avg.exp.scaled, breaks = 20)))
+    }
+    avg.exp$pct.exp[avg.exp$pct.exp < dot.min] <- NA
+    avg.exp$pct.exp <- avg.exp$pct.exp * 100
+
+    if (split.colors) {
+        splits.use <- unlist(x = lapply(
+            X = avg.exp[[group.by]],
+            FUN = function(x)
+                sub(
+                    paste0(".*_(",
+                        paste(sort(unique(x = splits), decreasing = TRUE),
+                            collapse = '|'
+                        ),")$"),
+                    "\\1", x
+                )
+            )
+        )
+        avg.exp$colors <- mapply(
+            FUN = function(color, value) {
+                return(colorRampPalette(colors = c('grey', color))(20)[value])
+            },
+            color = cols[splits.use],
+            value = avg.exp$avg.exp.scaled
+        )
+    }
+    color.by <- ifelse(test = split.colors, yes = 'colors', no = 'avg.exp.scaled')
+    if (!is.na(x = scale.min)) {
+        avg.exp[avg.exp$pct.exp < scale.min, 'pct.exp'] <- scale.min
+    }
+    if (!is.na(x = scale.max)) {
+        avg.exp[avg.exp$pct.exp > scale.max, 'pct.exp'] <- scale.max
+    }
+    
+    default_mapping <- aes_string(color=color.by, size="pct.exp")
     if (is.null(mapping)) {
         mapping <- default_mapping
     } else {
@@ -136,13 +200,35 @@ setMethod('sc_dot', 'SingleCellExperiment',
     }
 	p <- ggplot(avg.exp, aes(x=features, y=.data[[group.by]])) +
     	geom_point(mapping)+
-	    scale_color_gradient(low=cols[1],high=cols[2])+
+    	scale.func(range = c(0, dot.scale), limits = c(scale.min, scale.max))+
+        theme(axis.title.x = element_blank(), axis.title.y = element_blank()) +
+        guides(size = guide_legend(title = 'Percent Expressed')) +
+        labs(
+            x = 'Features',
+            y = ifelse(test = is.null(x = split.by), yes = 'Identity', no = 'Split Identity')
+        )+
 	    theme_minimal()
+    if (split.colors) {
+        p <- p + scale_color_identity()
+    } else if (length(x = cols) == 1) {
+        p <- p + scale_color_distiller(palette = cols)
+    } else {
+        p <- p + scale_color_gradient(low = cols[1], high = cols[2])
+    }
+	if (!split.colors) {
+        p <- p + guides(color = guide_colorbar(title = 'Average Expression'))
+    }
     return(p)    
 
 })
 
-
 .PercentAbove <- function(x, threshold) {
     return(length(x = x[x > threshold]) / length(x = x))
+}
+
+.MinMax <- function(data, min, max) {
+  data2 <- data
+  data2[data2 > max] <- max
+  data2[data2 < min] <- min
+  return(data2)
 }
