@@ -27,9 +27,9 @@
 ##' sce <- logNormCounts(sce)
 ##' set.seed(123)
 ##' genes <- rownames(sce) |> sample(6) 
-##' sc_dot(sce, genes[1:5], "Treatment", slot = 'logcounts')
+##' sc_dot(sce, genes[1:5], 'Treatment', slot = 'logcounts')
 ##' 
-setGeneric('sc_dot', function(object, features, group.by, split.by = NULL,
+setGeneric('sc_dot', function(object, features, group.by=NULL, split.by = NULL,
 	                             cols = c("lightgrey", "blue"),
 	                             col.min = -2.5, col.max = 2.5,
 	                             dot.min = 0, dot.scale = 6,
@@ -44,7 +44,7 @@ setGeneric('sc_dot', function(object, features, group.by, split.by = NULL,
 ##' @aliases sc_dot,Seurat
 ##' @exportMethod sc_dot
 setMethod("sc_dot", 'Seurat', function(object, features, 
-                    group.by, split.by = NULL, cols = c("lightgrey", "blue"),
+                    group.by=NULL, split.by = NULL, cols = c("lightgrey", "blue"),
                     col.min = -2.5, col.max = 2.5,
                     dot.min = 0, dot.scale = 6,
                     slot = "data", .fun = NULL,
@@ -58,6 +58,9 @@ setMethod("sc_dot", 'Seurat', function(object, features,
     if (!is.null(.fun)) {
         d <- .fun(d)
     }
+    if (is.null(group.by)) {
+    	group.by <- "ident"
+    }
     return(.ReturnDotPlot(d, features, group.by, split.by, cols,
 	col.min, col.max, dot.min, dot.scale, mapping, scale, scale.by,
 	scale.min, scale.max, ...))
@@ -68,16 +71,14 @@ setMethod("sc_dot", 'Seurat', function(object, features,
 ##' @exportMethod sc_dot
 setMethod('sc_dot', 'SingleCellExperiment', 
           function(
-             object, features, group.by, split.by = NULL,
+             object, features, group.by=NULL, split.by = NULL,
              cols = c("lightgrey", "blue"),
              col.min=-2.5, col.max=2.5, dot.min=0, dot.scale=6,
              slot = 'data', .fun = NULL, mapping = NULL,
              scale = TRUE, scale.by = 'radius',
              scale.min = NA, scale.max = NA,
              ...){
-    #Some parts in the script is adapted from Seurat::DotPlot
-    #Currently, feature.groups and cluster.idents are not implemented
-    d <- .extract_sce_data(object, dims = NULL, features = features, slot=slot)
+    d <- .extract_sce_data(object, dims = NULL, features = features, slot = slot)
     d <- tidyr::pivot_longer(d, seq(ncol(d) - length(features) + 1, ncol(d)), names_to = "features")
     if (is.numeric(features)){
         features <- rownames(object)[features]
@@ -85,6 +86,9 @@ setMethod('sc_dot', 'SingleCellExperiment',
     d$features <- factor(d$features, levels = features)
     if (!is.null(.fun)) {
         d <- .fun(d)
+    }
+    if (is.null(group.by)) {
+    	group.by <- "label"
     }
     return(.ReturnDotPlot(d, features, group.by, split.by, cols,
 	col.min, col.max, dot.min, dot.scale, mapping, scale, scale.by,
@@ -95,6 +99,8 @@ setMethod('sc_dot', 'SingleCellExperiment',
 .ReturnDotPlot <- function(d, features, group.by, split.by, cols,
 	col.min, col.max, dot.min, dot.scale, mapping, scale, scale.by,
 	scale.min, scale.max, ...) {
+    #Some parts in the script is adapted from Seurat::DotPlot
+    #Currently, feature.groups and cluster.idents are not implemented
     feature.groups <- NULL
     split.colors <- !is.null(split.by) && !any(cols %in% rownames(RColorBrewer::brewer.pal.info))
 	scale.func <- switch(
