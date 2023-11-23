@@ -1,9 +1,18 @@
 ##' @title sc_dot
 ##' @rdname sc-dot-methods
-##' @param object Seurat object
+##' @param object Seurat or SingleCellExperiment object
 ##' @param features selected features
 ##' @param group.by grouping factor
-##' @param additional split factor
+##' @param split.by additional split factor
+##' @param cols colors of the points
+##' @param col.min minimum scaled averaged expression threshold
+##' @param col.max maximum scaled averaged expression threshold
+##' @param dot.min the threshold of fraction of for the the smallest dot
+##' @param dot.scale Scaling factor for size of points
+##' @param scale whether to scale the expression value (default to TRUE)
+##' @param scale.by scale the size of the points by `size` or `radius`
+##' @param scale.min lower limit of scaling
+##' @param scale.max upper limit of scaling
 ##' @param slot slot to pull expression data from (e.g., 'count' or 'data')
 ##' @param .fun user defined function that will be applied to selected features (default is NULL and there is no data operation)
 ##' @param mapping aesthetic mapping
@@ -99,7 +108,7 @@ setMethod('sc_dot', 'SingleCellExperiment',
 .ReturnDotPlot <- function(d, features, group.by, split.by, cols,
 	col.min, col.max, dot.min, dot.scale, mapping, scale, scale.by,
 	scale.min, scale.max, ...) {
-    #Some parts in the script is adapted from Seurat::DotPlot
+    #Some parts in the function is adapted from Seurat::DotPlot
     #Currently, feature.groups and cluster.idents are not implemented
     feature.groups <- NULL
     split.colors <- !is.null(split.by) && !any(cols %in% rownames(RColorBrewer::brewer.pal.info))
