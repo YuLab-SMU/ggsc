@@ -7,7 +7,7 @@
 ##' @param cols colors of the points
 ##' @param col.min minimum scaled averaged expression threshold
 ##' @param col.max maximum scaled averaged expression threshold
-##' @param dot.min the threshold of fraction of for the the smallest dot
+##' @param dot.min the threshold of percentage of cells for the the smallest dot
 ##' @param dot.scale Scaling factor for size of points
 ##' @param scale whether to scale the expression value (default to TRUE)
 ##' @param scale.by scale the size of the points by `size` or `radius`
