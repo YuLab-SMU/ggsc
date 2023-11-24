@@ -83,7 +83,7 @@ sc_dot(
 
 \item{col.max}{maximum scaled averaged expression threshold}
 
-\item{dot.min}{the threshold of fraction of for the the smallest dot}
+\item{dot.min}{the threshold of percentage of cells for the the smallest dot}
 
 \item{dot.scale}{Scaling factor for size of points}
 

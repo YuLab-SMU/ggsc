@@ -105,6 +105,9 @@ setMethod('sc_dot', 'SingleCellExperiment',
 })
 
 
+##' @importFrom RColorBrewer brewer.pal.info
+##' @importFrom grDevices colorRampPalette
+##' @importFrom ggplot2 guides guide_legend labs scale_color_identity scale_color_distiller guide_colorbar
 .ReturnDotPlot <- function(d, features, group.by, split.by, cols,
 	col.min, col.max, dot.min, dot.scale, mapping, scale, scale.by,
 	scale.min, scale.max, ...) {
@@ -114,8 +117,8 @@ setMethod('sc_dot', 'SingleCellExperiment',
     split.colors <- !is.null(split.by) && !any(cols %in% rownames(RColorBrewer::brewer.pal.info))
 	scale.func <- switch(
 	    EXPR = scale.by,
-	    'size' = scale_size,
-	    'radius' = scale_radius,
+	    'size' = ggplot2::scale_size,
+	    'radius' = ggplot2::scale_radius,
 	    stop("'scale.by' must be either 'size' or 'radius'")
 	)
 	
@@ -134,10 +137,10 @@ setMethod('sc_dot', 'SingleCellExperiment',
         id.levels <- paste0(rep(x = id.levels, each = length(x = unique.splits)),
         	"_", rep(x = unique(x = splits), times = length(x = id.levels)))
     }
-    avg.exp <- d %>% 
-        dplyr::group_by(.data[[group.by]], features) %>%
-        dplyr::summarise(avg.exp=mean(expm1(value)),
-        	      pct.exp=.PercentAbove(value, 0))
+    avg.exp <- d |>
+        dplyr::group_by(.data[[group.by]], features) |>
+        dplyr::summarise(avg.exp=mean(expm1(.data$value)),
+        	      pct.exp=.PercentAbove(.data$value, 0))
     ngroup <- length(id.levels)
     if (ngroup == 1) {
         scale <- FALSE
@@ -164,13 +167,13 @@ setMethod('sc_dot', 'SingleCellExperiment',
     	return(scaled)
     }
     
-    avg.exp <- avg.exp %>% 
-        dplyr::group_by(features) %>%
+    avg.exp <- avg.exp |>
+        dplyr::group_by(features) |>
         dplyr::mutate(avg.exp.scaled=.scale.fun(avg.exp))
 
     if (split.colors) {
-        avg.exp <- avg.exp %>% 
-            dplyr::mutate(avg.exp.scaled=as.numeric(cut(avg.exp.scaled, breaks = 20)))
+        avg.exp <- avg.exp |>
+            dplyr::mutate(avg.exp.scaled=as.numeric(cut(.data$avg.exp.scaled, breaks = 20)))
     }
     avg.exp$pct.exp[avg.exp$pct.exp < dot.min] <- NA
     avg.exp$pct.exp <- avg.exp$pct.exp * 100

@@ -36,6 +36,7 @@ Imports:
   tidyr,
   tibble,
   utils,
+  RColorBrewer,
   yulab.utils
 Suggests:
   aplot,
