@@ -13,6 +13,7 @@
 ##' @param scale.by scale the size of the points by `size` or `radius`
 ##' @param scale.min lower limit of scaling
 ##' @param scale.max upper limit of scaling
+##' @param cluster.idents Order identities by hierarchical clusters based on average expression and perventage of expression (default is FALSE)
 ##' @param slot slot to pull expression data from (e.g., 'count' or 'data')
 ##' @param .fun user defined function that will be applied to selected features (default is NULL and there is no data operation)
 ##' @param mapping aesthetic mapping
@@ -45,6 +46,7 @@ setGeneric('sc_dot', function(object, features, group.by=NULL, split.by = NULL,
                                  slot = "data", .fun = NULL, mapping = NULL,
                                  scale = TRUE, scale.by = 'radius',
                                  scale.min = NA, scale.max = NA,
+                                 cluster.idents = FALSE,
                                  ...)
     standardGeneric('sc_dot')
 )
@@ -60,10 +62,19 @@ setMethod("sc_dot", 'Seurat', function(object, features,
                     mapping = NULL,
                     scale = TRUE, scale.by = 'radius',
                     scale.min = NA, scale.max = NA,
+                    cluster.idents = FALSE,
                     ...) {
+    feature_group <- NULL
+    if (is.list(features)) {
+        feature_group <- lapply(names(features), function(feat_name) {
+            rep(feat_name, length(features[[feat_name]])) |> setNames(features[[feat_name]])
+        }) |> unlist();
+        features <- unlist(features)
+    }
     d <- get_dim_data(object, dims=NULL, features=features, slot=slot)
     d <- tidyr::pivot_longer(d, 2:ncol(d), names_to = "features")
-    d$features <- factor(d$features, levels = features)
+    d$features <- factor(d$features, levels = features)        
+
     if (!is.null(.fun)) {
         d <- .fun(d)
     }
@@ -72,7 +83,7 @@ setMethod("sc_dot", 'Seurat', function(object, features,
     }
     return(.ReturnDotPlot(d, features, group.by, split.by, cols,
 	col.min, col.max, dot.min, dot.scale, mapping, scale, scale.by,
-	scale.min, scale.max, ...))
+	scale.min, scale.max, cluster.idents, feature_group, ...))
 })
 
 ##' @rdname sc-dot-methods
@@ -86,7 +97,15 @@ setMethod('sc_dot', 'SingleCellExperiment',
              slot = 'data', .fun = NULL, mapping = NULL,
              scale = TRUE, scale.by = 'radius',
              scale.min = NA, scale.max = NA,
+             cluster.idents = FALSE,
              ...){
+    feature_group <- NULL
+    if (is.list(features)) {
+        feature_group <- lapply(names(features), function(feat_name) {
+            rep(feat_name, length(features[[feat_name]])) |> setNames(features[[feat_name]])
+        }) |> unlist();
+        features <- unlist(features)
+    }
     d <- .extract_sce_data(object, dims = NULL, features = features, slot = slot)
     d <- tidyr::pivot_longer(d, seq(ncol(d) - length(features) + 1, ncol(d)), names_to = "features")
     if (is.numeric(features)){
@@ -101,19 +120,18 @@ setMethod('sc_dot', 'SingleCellExperiment',
     }
     return(.ReturnDotPlot(d, features, group.by, split.by, cols,
 	col.min, col.max, dot.min, dot.scale, mapping, scale, scale.by,
-	scale.min, scale.max, ...))
+	scale.min, scale.max, cluster.idents, feature_group, ...))
 })
 
 
 ##' @importFrom RColorBrewer brewer.pal.info
 ##' @importFrom grDevices colorRampPalette
+##' @importFrom stats hclust dist
 ##' @importFrom ggplot2 guides guide_legend labs scale_color_identity scale_color_distiller guide_colorbar
 .ReturnDotPlot <- function(d, features, group.by, split.by, cols,
 	col.min, col.max, dot.min, dot.scale, mapping, scale, scale.by,
-	scale.min, scale.max, ...) {
+	scale.min, scale.max, cluster.idents, feature_group, ...) {
     #Some parts in the function is adapted from Seurat::DotPlot
-    #Currently, feature.groups and cluster.idents are not implemented
-    feature.groups <- NULL
     split.colors <- !is.null(split.by) && !any(cols %in% rownames(RColorBrewer::brewer.pal.info))
 	scale.func <- switch(
 	    EXPR = scale.by,
@@ -141,6 +159,18 @@ setMethod('sc_dot', 'SingleCellExperiment',
         dplyr::group_by(.data[[group.by]], features) |>
         dplyr::summarise(avg.exp=mean(expm1(.data$value)),
         	      pct.exp=.PercentAbove(.data$value, 0))
+
+    if (cluster.idents) {
+        mat <- avg.exp |> 
+            tidyr::pivot_wider(names_from=.data$features, values_from=c(.data$avg.exp, .data$pct.exp))
+        mat[[group.by]] <- NULL
+        mat <- scale(mat)
+        id.levels <- id.levels[hclust(dist(mat))$order]
+    }
+    if (!is.null(id.levels)) {
+        avg.exp[[group.by]] <- factor(avg.exp[[group.by]], levels = id.levels)
+    }
+    
     ngroup <- length(id.levels)
     if (ngroup == 1) {
         scale <- FALSE
@@ -213,6 +243,9 @@ setMethod('sc_dot', 'SingleCellExperiment',
     } else {
         mapping <- modifyList(default_mapping, mapping)
     }
+    if (!is.null(feature_group)) {
+        avg.exp[["feat.group"]] <- feature_group[avg.exp[["features"]]]
+    }
 	p <- ggplot(avg.exp, aes(x=features, y=.data[[group.by]])) +
     	geom_point(mapping, ...)+
     	scale.func(range = c(0, dot.scale), limits = c(scale.min, scale.max))+
@@ -223,6 +256,18 @@ setMethod('sc_dot', 'SingleCellExperiment',
             y = ifelse(test = is.null(x = split.by), yes = 'Identity', no = 'Split Identity')
         )+
 	    theme_minimal()
+
+    if (!is.null(feature_group)) {
+        p <- p + facet_grid(
+            facets = ~feat.group,
+            scales = "free_x",
+            space = "free_x",
+            switch = "y"
+        ) + theme(
+            panel.spacing = unit(x = 1, units = "lines"),
+            strip.background = element_blank()
+        )
+    }
     if (split.colors) {
         p <- p + scale_color_identity()
     } else if (length(x = cols) == 1) {

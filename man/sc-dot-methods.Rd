@@ -25,6 +25,7 @@ sc_dot(
   scale.by = "radius",
   scale.min = NA,
   scale.max = NA,
+  cluster.idents = FALSE,
   ...
 )
 
@@ -45,6 +46,7 @@ sc_dot(
   scale.by = "radius",
   scale.min = NA,
   scale.max = NA,
+  cluster.idents = FALSE,
   ...
 )
 
@@ -65,6 +67,7 @@ sc_dot(
   scale.by = "radius",
   scale.min = NA,
   scale.max = NA,
+  cluster.idents = FALSE,
   ...
 )
 }
@@ -100,6 +103,8 @@ sc_dot(
 \item{scale.min}{lower limit of scaling}
 
 \item{scale.max}{upper limit of scaling}
+
+\item{cluster.idents}{Order identities by hierarchical clusters based on average expression and perventage of expression (default is FALSE)}
 
 \item{...}{additional parameters pass to 'ggplot2::geom_point()'}
 }
