@@ -157,16 +157,18 @@ get_dim_data <- function(object, features = NULL,
                     ) {
     rlang::check_installed('SeuratObject', 'for the internal function `get_dim_data()`.')
     reduced.dat <- NULL
-    xx <- SeuratObject::FetchData(object, vars='ident', cells = cells, slot = slot)
+    
     if (is.null(cells)) {
         cells <- colnames(object)
     }
+    xx <- data.frame(ident=SeuratObject::Idents(object)[cells])
+    
     if (!is.null(dims)) {
         if (is.null(reduction)) {
             reduction <- SeuratObject::DefaultDimReduc(object)
         }
         dims <- paste0(SeuratObject::Key(object = object[[reduction]]), dims)
-        reduced.dat <- SeuratObject::FetchData(object, vars = dims, cells, slot = slot)
+        reduced.dat <- as.data.frame(SeuratObject::Embeddings(object[[reduction]])[cells, dims])
     }
 
     if (!is.null(features)){
