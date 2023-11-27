@@ -1,5 +1,6 @@
-# ggsc 1.1.1.001
+# ggsc 1.1.1.002
 
++ optimization: retrieve embedding without `FetchData` (2023-11-27, Mon, #14)
 + bug fixed for Seurat object (2023-10-31, Tue, #12, #13)
 
 # ggsc 1.1.1
