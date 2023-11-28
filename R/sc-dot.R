@@ -156,7 +156,7 @@ setMethod('sc_dot', 'SingleCellExperiment',
         	"_", rep(x = unique(x = splits), times = length(x = id.levels)))
     }
     avg.exp <- d |>
-        dplyr::group_by(.data[[group.by]], features) |>
+        dplyr::group_by(.data[[group.by]], .data$features) |>
         dplyr::summarise(avg.exp=mean(expm1(.data$value)),
         	      pct.exp=.PercentAbove(.data$value, 0))
 
@@ -198,7 +198,7 @@ setMethod('sc_dot', 'SingleCellExperiment',
     }
     
     avg.exp <- avg.exp |>
-        dplyr::group_by(features) |>
+        dplyr::group_by(.data$features) |>
         dplyr::mutate(avg.exp.scaled=.scale.fun(avg.exp))
 
     if (split.colors) {
@@ -246,7 +246,7 @@ setMethod('sc_dot', 'SingleCellExperiment',
     if (!is.null(feature_group)) {
         avg.exp[["feat.group"]] <- feature_group[avg.exp[["features"]]]
     }
-	p <- ggplot(avg.exp, aes(x=features, y=.data[[group.by]])) +
+	p <- ggplot(avg.exp, aes(x=.data$features, y=.data[[group.by]])) +
     	geom_point(mapping, ...)+
     	scale.func(range = c(0, dot.scale), limits = c(scale.min, scale.max))+
         theme(axis.title.x = element_blank(), axis.title.y = element_blank()) +
