@@ -1,6 +1,6 @@
 Package: ggsc
 Title: Visualizing Single Cell Data
-Version: 1.1.1.002
+Version: 1.1.1.003
 Authors@R: c(
        person("Guangchuang", "Yu", 
               email = "guangchuangyu@gmail.com", 
@@ -60,7 +60,7 @@ Suggests:
   STexampleData,
   testthat (>= 3.0.0)
 BugReports: https://github.com/YuLab-SMU/ggsc/issues 
-URL: https://github.com/YuLab-SMU/ggsc
+URL: https://github.com/YuLab-SMU/ggsc (devel), https://yulab-smu.top/ggsc/ (docs)
 biocViews: DimensionReduction, GeneExpression, SingleCell, 
   Software, Spatial, Transcriptomics,Visualization
 VignetteBuilder: knitr

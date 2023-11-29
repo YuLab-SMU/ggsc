@@ -1,5 +1,8 @@
-# ggsc 1.1.1.002
+# ggsc 1.1.1.003
 
++ add `sc_dot()` method for 'Seurat' object (2023-11-29, Wed, #15)
++ update vignette to link to the online docs (<https://yulab-smu.top/ggsc>)
++ add `README.Rmd` and `README.md` in github repo
 + optimization: retrieve embedding without `FetchData` (2023-11-27, Mon, #14)
 + bug fixed for Seurat object (2023-10-31, Tue, #12, #13)
 
@@ -44,4 +47,10 @@
 
 # scplot 0.0.1
 
-+ `sc_dim`, `sc_dim_geom_feature`, `sc_dim_geom_label`, `sc_feature`, `sc_geom_point` and `sc_violin` functions (2022-11-09, Wed)
++ several functions implemented (2022-11-09, Wed)
+    - `sc_dim`
+    - `sc_dim_geom_feature`
+    - `sc_dim_geom_label`
+    - `sc_feature`
+    - `sc_geom_point`
+    - `sc_violin`
