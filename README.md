@@ -18,11 +18,11 @@ status](https://github.com/YuLab-SMU/ggsc/workflows/rworkflows/badge.svg)](https
 
 <!-- To modify Package/Title/Description/Authors fields, edit the DESCRIPTION file -->
 
-## `ggsc`: Visualizing Single Cell Data
+## `ggsc`: Visualizing Single Cell and Spatial Transcriptomics
 
 Useful functions to visualize single cell and spatial data. It supports
-both ‘SingleCellExperiment’ and ‘Seurat’ objects. It also supports
-visualizing the data using grammar of graphics implemented in ‘ggplot2’.
+visualizing ‘Seurat’, ‘SingleCellExperiment’ and ‘SpatialExperiment’
+objects through grammar of graphics syntax implemented in ‘ggplot2’.
 
 ## :writing_hand: Authors
 
