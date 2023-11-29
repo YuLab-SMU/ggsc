@@ -3,6 +3,7 @@ dimensional-reduction-plot
 visualize-features-on-a-dimensional-reduction-plot
 visualize-ellipse-on-a-dimensional-reduction-plot
 visualize-selected-clusters
+dot-plot
 violin-plot-of-gene-expression
 spatial-features
 visualizing-singlecellexperiment-or-spatialexperiment-objects
