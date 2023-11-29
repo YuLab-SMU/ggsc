@@ -3,7 +3,6 @@
 
 ```{r load-lib-2, message=FALSE}
 library(BiocParallel)
-library(STexampleData)
 library(scater)
 library(scran)
 library(ggplot2)
@@ -12,6 +11,8 @@ library(ggplot2)
 Here we use an example data from a single sample (sample 151673) of human brain dorsolateral prefrontal cortex (DLPFC) in the human brain, measured using the 10x Genomics Visium platform. First, a brief/standard data pre-processing were done with the `scater` and `scran` packages.
 
 ```{r setup.preprocess, message=FALSE}
+# library(STexampleData)
+#
 ## create ExperimentHub instance
 # eh <- ExperimentHub()
 

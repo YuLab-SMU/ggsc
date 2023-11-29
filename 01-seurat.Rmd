@@ -43,6 +43,11 @@ names(cluster.ids) <- levels(pbmc)
 pbmc <- RenameIdents(pbmc, cluster.ids)
 ```
 
+```{r pbmc-markers}
+pbmc.markers <- FindAllMarkers(pbmc, only.pos = TRUE)
+```
+
+
 ## Dimensional reduction plot
 
 ```{r dimplot, fig.width=9, fig.height=6}
@@ -55,10 +60,55 @@ library(ggsc)
 sc_dim(pbmc) + sc_dim_geom_label()
 
 
-sc_dim(pbmc) + 
+p <- sc_dim(pbmc) + 
     sc_dim_geom_label(geom = shadowtext::geom_shadowtext, 
             color='black', bg.color='white')
+p
 ```
+
+
+The number of cells in each clusters can be easily Visualized using `sc_dim_count()`. The colors of the bar plot is consistent with the dimensional reduction plot.
+
+```{r dimplot-cnt, fig.width=13, fig.height=6}
+p2 <- sc_dim_count(p)
+
+library(aplot)
+plot_list(p, p2, widths=c(1, .5))
+```
+
+
+```{r comparecluster-seurat-marker}
+library(dplyr)
+
+top20 <- pbmc.markers |>
+    group_by(cluster) |>
+    filter(avg_log2FC > 1) |>
+    slice_head(n = 20) |>
+    ungroup()
+
+library(clusterProfiler)
+library(enrichplot)
+
+gg <- bitr(top20$gene, 'SYMBOL', 'ENTREZID', 'org.Hs.eg.db') 
+top20 <- merge(top20, gg, by.x='gene', by.y = 'SYMBOL')
+
+kk <- compareCluster(ENTREZID~cluster, data = top20, fun=enrichKEGG)
+```
+
+```{r dimplot-cp-dotplot, fig.width=8, fig.height=13}
+g <- dotplot(kk, label_format=100) + 
+  aes(x=sub("\n.*", "", Cluster)) + 
+  xlab("Cell Clusters") +
+  ggtitle(NULL) +
+  theme(axis.text.x = element_text(angle=30, hjust=1))
+
+p3 <- p2 + coord_cartesian() + 
+  ggfun::theme_noxaxis() + 
+  xlab(NULL) 
+
+insert_top(g, p3, height=.2)
+```
+
 
 ## Visualize 'features' on a dimensional reduction plot
 
