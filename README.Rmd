@@ -18,7 +18,7 @@ html_preview: false
 [![R build status](https://github.com/YuLab-SMU/ggsc/workflows/rworkflows/badge.svg)](https://github.com/YuLab-SMU/ggsc/actions)
 [![](https://codecov.io/gh/YuLab-SMU/ggsc/branch/master/graph/badge.svg)](https://app.codecov.io/gh/YuLab-SMU/ggsc)
 <br>
-<a href="https://app.codecov.io/gh/YuLab-SMU/ggsc/tree/master" target='_blank'><img src="https://codecov.io/gh/YuLab-SMU/ggsc/branch/master/graphs/icicle.svg" title="Codecov icicle graph" width="200" height="50" style="vertical-align: top;"></a>
+
 
 
 <!-- To modify Package/Title/Description/Authors fields, edit the DESCRIPTION file -->
@@ -35,7 +35,7 @@ owner <- tolower(strsplit(URL,"/")[[1]][4])
 
 ## ``r pkg``: `r title`
 
-### `r description`
+`r description`
 
 
 ## :writing_hand: Authors
@@ -60,14 +60,18 @@ If you use ``r pkg``, please cite: -->
 ## :arrow_double_down: Installation 
 
 ```R
-if(!require("remotes")) install.packages("remotes")
+## release version
+if(!require("BiocManager")) install.packages("BiocManager")
+BiocManager::install("ggsc")
 
-remotes::install_github("`r URL`")
-library(`r pkg`)
+## devel version
+if(!require("remotes")) install.packages("remotes")
+remotes::install_github("yulab-smu/ggsc")
 ```
+
 ## Documentation 
 
-### [Website](https://yulab-smu.top/ggsc)
++ [Website](https://yulab-smu.top/ggsc)
 
 
 <br>

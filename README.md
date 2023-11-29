@@ -15,13 +15,14 @@ Artistic-2.0](https://img.shields.io/badge/license-Artistic--2.0-blue.svg)](http
 status](https://github.com/YuLab-SMU/ggsc/workflows/rworkflows/badge.svg)](https://github.com/YuLab-SMU/ggsc/actions)
 [![](https://codecov.io/gh/YuLab-SMU/ggsc/branch/master/graph/badge.svg)](https://app.codecov.io/gh/YuLab-SMU/ggsc)
 <br>
-<a href="https://app.codecov.io/gh/YuLab-SMU/ggsc/tree/master" target='_blank'><img src="https://codecov.io/gh/YuLab-SMU/ggsc/branch/master/graphs/icicle.svg" title="Codecov icicle graph" width="200" height="50" style="vertical-align: top;"></a>
 
 <!-- To modify Package/Title/Description/Authors fields, edit the DESCRIPTION file -->
 
 ## `ggsc`: Visualizing Single Cell Data
 
-### Useful functions to visualize single cell and spatial data. It supports both ‘SingleCellExperiment’ and ‘Seurat’ objects. It also supports visualizing the data using grammar of graphics implemented in ‘ggplot2’.
+Useful functions to visualize single cell and spatial data. It supports
+both ‘SingleCellExperiment’ and ‘Seurat’ objects. It also supports
+visualizing the data using grammar of graphics implemented in ‘ggplot2’.
 
 ## :writing_hand: Authors
 
@@ -41,14 +42,17 @@ If you use `ggsc`, please cite: -->
 ## :arrow_double_down: Installation
 
 ``` r
-if(!require("remotes")) install.packages("remotes")
+## release version
+if(!require("BiocManager")) install.packages("BiocManager")
+BiocManager::install("ggsc")
 
-remotes::install_github("https://github.com/YuLab-SMU/ggsc (devel), https://yulab-smu.top/ggsc/ (docs)")
-library(ggsc)
+## devel version
+if(!require("remotes")) install.packages("remotes")
+remotes::install_github("yulab-smu/ggsc")
 ```
 
 ## Documentation
 
-### [Website](https://yulab-smu.top/ggsc)
+- [Website](https://yulab-smu.top/ggsc)
 
 <br>
