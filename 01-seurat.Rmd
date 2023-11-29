@@ -171,17 +171,19 @@ sc_dim(pbmc, color='grey') +
             color='black', bg.color='white')
 ```
 
-<!-- 
-## Dot plot
 
-``` r eval=FALSE
-DotPlot(pbmc, features = c("MS4A1", "GNLY", "CD3E", 
-                           "CD14", "FCER1A", "FCGR3A", 
-                           "LYZ", "PPBP", "CD8A"),
-        group.by = 'seurat_clusters')
+## Dot plot for selected features
+
+```{r sc-dot}
+features = c("MS4A1", "GNLY", "CD3E", 
+            "CD14", "FCER1A", "FCGR3A", 
+            "LYZ", "PPBP", "CD8A")
+# DotPlot(pbmc, features = features,
+#        group.by = 'seurat_clusters')
+
+sc_dot(pbmc, features=features)
 ```        
 
--->
 
 
 ## Violin plot of gene expression
