@@ -1,6 +1,6 @@
 Package: ggsc
 Title: Visualizing Single Cell and Spatial Transcriptomics
-Version: 1.1.1.003
+Version: 1.1.2
 Authors@R: c(
        person("Guangchuang", "Yu", 
               email = "guangchuangyu@gmail.com", 
@@ -11,7 +11,10 @@ Authors@R: c(
               email = "xshuangbin@163.com",      
               role = "aut", 
               comment = c(ORCID="0000-0003-3513-5362")
-       )
+       ),
+       person("Noriaki", "Sato", 
+              email = "nori@hgc.jp", 
+              role = "cbt")
   )
 Description: Useful functions to visualize single cell and spatial 
   data. It supports visualizing 'Seurat', 'SingleCellExperiment' and 'SpatialExperiment' objects through grammar of graphics syntax implemented in 'ggplot2'.

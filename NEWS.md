@@ -1,6 +1,6 @@
-# ggsc 1.1.1.003
+# ggsc 1.1.2
 
-+ add `sc_dot()` method for 'Seurat' object (2023-11-29, Wed, #15)
++ add `sc_dot()` methods (2023-11-29, Wed, #15)
 + update vignette to link to the online docs (<https://yulab-smu.top/ggsc>)
 + add `README.Rmd` and `README.md` in github repo
 + optimization: retrieve embedding without `FetchData` (2023-11-27, Mon, #14)
