@@ -136,6 +136,16 @@ sc_dim(spe, color='grey', reduction = 'TSNE') +
             color='black', bg.color='white')  
 ```
 
+
+## Dot plot for selected features
+
+```{r sc-dot-spe}
+genes <- c('MOBP', 'PCP4', 'SNAP25', 'HBB', 'IGKC', 'NPY')
+target.features <- rownames(spe)[match(genes, rowData(spe)$gene_name)]
+sc_dot(spe, target.features, slot="logcounts")
+```        
+
+
 ## Violin plot of gene expression
 
 `ggsc` provides `sc_violin` to visualize the expression information of specific genes using the violin layer with common legend, the genes can be compared more intuitively.
