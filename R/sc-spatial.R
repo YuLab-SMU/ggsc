@@ -138,7 +138,7 @@ setMethod("sc_spatial", 'Seurat',
         p <- p + img.annot
     }
 
-    if (!remove.point && !(is.null(features) || missing(features))){
+    if ((!remove.point && (!is.null(features) || (any(names(mapping) %in% c('color', 'colour')) && is.null(features))))){
         p <- p + sc_geom_point(pointsize = point.size, ...)
     }else{
         p <- p + geom_blank()
@@ -251,7 +251,7 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
         p <- p + img.annot
     }
 
-    if (!remove.point && !(is.null(features) || missing(features))){
+    if ((!remove.point && (!is.null(features) || (any(names(mapping) %in% c('color', 'colour')) && is.null(features))))){
         p <- p + sc_geom_point(pointsize = point.size, ...) 
     }else{
         p <- p + geom_blank()
