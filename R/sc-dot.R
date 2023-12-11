@@ -72,7 +72,10 @@ setMethod("sc_dot", 'Seurat', function(object, features,
         features <- unlist(features)
     }
     d <- get_dim_data(object, dims=NULL, features=features, slot=slot)
-    d <- tidyr::pivot_longer(d, 2:ncol(d), names_to = "features")
+    
+    indx.f <- seq(ncol(d) - length(features) + 1, ncol(d))
+    d <- tidyr::pivot_longer(d, cols=indx.f, names_to = "features")
+
     d$features <- factor(d$features, levels = features)        
 
     if (!is.null(.fun)) {
