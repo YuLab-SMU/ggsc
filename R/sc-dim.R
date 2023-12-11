@@ -161,7 +161,8 @@ get_dim_data <- function(object, features = NULL,
     if (is.null(cells)) {
         cells <- colnames(object)
     }
-    xx <- data.frame(ident=SeuratObject::Idents(object)[cells])
+    #xx <- data.frame(ident=SeuratObject::Idents(object)[cells])
+    xx <- cbind(data.frame(ident = SeuratObject::Idents(object)[cells]), object@meta.data[cells,,drop=FALSE])
     
     if (!is.null(dims)) {
         if (is.null(reduction)) {

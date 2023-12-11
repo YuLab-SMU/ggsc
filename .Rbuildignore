@@ -8,3 +8,4 @@ gh-pages
 ^\.Rproj\.user$
 ^\.Rproj$
 docs
+^\.github
