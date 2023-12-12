@@ -123,7 +123,7 @@ setMethod("sc_spatial", 'Seurat',
         indx.f <- seq(ncol(d) - nm.f + 1, ncol(d))
         features <- colnames(d)[indx.f]
         if (plot.pie){
-            d <- d[rowSums(d[,features,drop=FALSE]) > 0,,drop=FALSE]
+            d <- d[rowSums(d[,features,drop=FALSE]) != 0,,drop=FALSE]
         }
         d <- tidyr::pivot_longer(
                d, 
