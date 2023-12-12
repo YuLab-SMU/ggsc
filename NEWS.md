@@ -1,3 +1,7 @@
+# ggsc 1.1.2.001
+
++ extract `meta.data` of Seurat object (2023-12-12, Tue, #17)
+
 # ggsc 1.1.2
 
 + add `sc_dot()` methods (2023-11-29, Wed, #15)
