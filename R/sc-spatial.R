@@ -247,7 +247,7 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
     default_mapping <- aes_string(x = colnames(coords.da)[2], y = colnames(coords.da)[1])
     if (!is.null(features)){
         if (plot.pie){
-            d <- d[rowSums(d[,features,drop=FALSE]) > 0,,drop=FALSE]
+            d <- d[rowSums(d[,features,drop=FALSE]) != 0,,drop=FALSE]
         }
         nm.f <- length(features)
         if (density){
