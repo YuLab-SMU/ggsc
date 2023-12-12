@@ -187,17 +187,21 @@ setMethod("sc_feature", "SingleCellExperiment",
 })
 
 
-.feature_setting <- function(features, ncol) {
+.feature_setting <- function(features, ncol, plot.pie=FALSE) {
     if (length(features) == 1) {
         res <- list(ggtitle(features),
             theme(plot.title=element_text(size=rel(1.5), face='bold'))
         ) 
     }else if(missing(features) || is.null(features)){
         res <- theme_bw2()
-    } else {
+    }else if(!plot.pie) {
         res <- list(facet_wrap(~features, ncol=ncol),
             theme_bw2()
         ) 
+    }else if(plot.pie){
+        res <- theme_bw2(legend.title=element_text(size = 16,face="bold"),
+                         legend.text=element_text(size = 15),
+                         legend.key.size = grid::unit(0.45, 'cm'))
     }
     return(res)
 }

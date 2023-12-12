@@ -14,6 +14,8 @@ sc_spatial(
   sample.id = NULL,
   image.id = NULL,
   slot = "data",
+  plot.pie = FALSE,
+  pie.radius.scale = 0.3,
   image.plot = TRUE,
   image.first.operation = "rotate",
   image.rotate.degree = NULL,
@@ -36,6 +38,8 @@ sc_spatial(
   sample.id = NULL,
   image.id = NULL,
   slot = "data",
+  plot.pie = FALSE,
+  pie.radius.scale = 0.3,
   image.plot = TRUE,
   image.first.operation = "rotate",
   image.rotate.degree = NULL,
@@ -58,6 +62,8 @@ sc_spatial(
   sample.id = NULL,
   image.id = NULL,
   slot = "data",
+  plot.pie = FALSE,
+  pie.radius.scale = 0.3,
   image.plot = TRUE,
   image.first.operation = "rotate",
   image.rotate.degree = NULL,
@@ -88,6 +94,11 @@ with SingleCellExperiment or SpatialExperiment.}
 \item{slot}{if plotting a feature, which data will be used
 (e.g., 'data', 'counts'), the assay name if object
 is SingleCellExperiment or SpatialExperiment.}
+
+\item{plot.pie}{logical whether plot the features with pie, default is \code{FALSE}.}
+
+\item{pie.radius.scale}{numeric scale to the radius of pie only work with \code{plot.pie=TRUE},
+default is 0.3.}
 
 \item{image.plot}{whether to display the issue image as background.}
 

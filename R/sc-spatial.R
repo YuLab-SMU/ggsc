@@ -9,6 +9,9 @@
 ##' @param slot if plotting a feature, which data will be used 
 ##' (e.g., 'data', 'counts'), the assay name if object
 ##' is SingleCellExperiment or SpatialExperiment.
+##' @param plot.pie logical whether plot the features with pie, default is \code{FALSE}.
+##' @param pie.radius.scale numeric scale to the radius of pie only work with \code{plot.pie=TRUE},
+##' default is 0.3.
 ##' @param image.plot whether to display the issue image as background.
 ##' @param image.first.operation character which the first operation to 
 ##' image, 'rotate' or 'mirror', default is 'rotate'.
@@ -52,9 +55,14 @@
 ##'                 image.mirror.axis = NULL, 
 ##'                 ncol = 3)
 ##' }
-setGeneric('sc_spatial', function(object, features = NULL, 
-                                  sample.id = NULL, image.id = NULL, 
-                                  slot = "data", image.plot = TRUE, 
+setGeneric('sc_spatial', function(object, 
+                                  features = NULL, 
+                                  sample.id = NULL, 
+                                  image.id = NULL, 
+                                  slot = "data", 
+                                  plot.pie = FALSE, 
+                                  pie.radius.scale = 0.3,
+                                  image.plot = TRUE, 
                                   image.first.operation = 'rotate',
                                   image.rotate.degree = NULL,
                                   image.mirror.axis = NULL,
@@ -76,10 +84,12 @@ setGeneric('sc_spatial', function(object, features = NULL,
 ##' @aliases sc_spatial,Seurat
 ##' @exportMethod sc_spatial
 setMethod("sc_spatial", 'Seurat', 
-          function(object, features = NULL, slot = "data", image.plot = TRUE,
-                   image.first.operation = 'rotate', image.rotate.degree = NULL, 
-                   image.mirror.axis = 'v', remove.point = FALSE, mapping = NULL, 
-                   ncol = 6, density=FALSE, grid.n = 100, joint = FALSE, 
+          function(object, features = NULL, slot = "data", 
+                   plot.pie = FALSE, pie.radius.scale = .3,
+                   image.plot = TRUE, image.first.operation = 'rotate', 
+                   image.rotate.degree = NULL, image.mirror.axis = 'v', 
+                   remove.point = FALSE, mapping = NULL, ncol = 6, 
+                   density=FALSE, grid.n = 100, joint = FALSE, 
                    joint.fun = prod, common.legend = TRUE, point.size = 5, ...) {
     images <- SeuratObject::Images(object = object, 
                     assay = Seurat::DefaultAssay(object = object)
@@ -87,11 +97,11 @@ setMethod("sc_spatial", 'Seurat',
     img <- object@images[[images]]@image 
     if (!is.null(img)) img <- as.raster(img)
     
-    coord <- SeuratObject::GetTissueCoordinates(object = object[[images]])
+    coords.da <- SeuratObject::GetTissueCoordinates(object = object[[images]])
     
     d <- get_dim_data(object = object, features = features, dims = NULL, 
                       density = density, grid.n = grid.n, joint = joint,
-                      joint.fun = joint.fun, sp.coords=coord)
+                      joint.fun = joint.fun, sp.coords=coords.da)
 
     nm.f <- length(features)
 
@@ -103,15 +113,18 @@ setMethod("sc_spatial", 'Seurat',
        }
     }else{
        valnm <- slot
-       d <- cbind(coord, d)
     }
+    d <- cbind(coords.da, d)
 
-    default_mapping <- aes_string(x = colnames(coord)[2], y = colnames(coord)[1])
+    default_mapping <- aes_string(x = colnames(coords.da)[2], y = colnames(coords.da)[1])
 
     if (!is.null(features)){
 
         indx.f <- seq(ncol(d) - nm.f + 1, ncol(d))
         features <- colnames(d)[indx.f]
+        if (plot.pie){
+            d <- d[rowSums(d[,features,drop=FALSE]) > 0,,drop=FALSE]
+        }
         d <- tidyr::pivot_longer(
                d, 
                indx.f, 
@@ -119,7 +132,11 @@ setMethod("sc_spatial", 'Seurat',
                values_to = valnm
              )
         d$features <- factor(d$features, levels=features)
-        default_mapping <- modifyList(default_mapping, aes_string(color = valnm))
+        if (!plot.pie){
+           default_mapping <- modifyList(default_mapping, aes_string(color = valnm))
+        }else{
+           colnames(d)[colnames(d) == valnm] <- 'value'
+        }
     }
 
     if (!is.null(mapping)){
@@ -128,7 +145,13 @@ setMethod("sc_spatial", 'Seurat',
         mapping <- default_mapping
     }
 
-    p <- ggplot(d, mapping)
+    ratio <- .cal_ratio(d, mapping)
+
+    if (!plot.pie){
+        p <- ggplot(d, mapping)
+    }else{
+        p <- ggplot()
+    }    
 
     if (image.plot && !is.null(img)){
         img.annot <- .build_img_annot_layer(img, 
@@ -138,17 +161,20 @@ setMethod("sc_spatial", 'Seurat',
         p <- p + img.annot
     }
 
-    if ((!remove.point && (!is.null(features) || (any(names(mapping) %in% c('color', 'colour')) && is.null(features))))){
+    if ((!remove.point && (!is.null(features) || (any(names(mapping) %in% c('color', 'colour')) && is.null(features))) && !plot.pie)){
         p <- p + sc_geom_point(pointsize = point.size, ...)
+    }else if (!remove.point && plot.pie){
+        rlang::check_installed('scatterpie', 'is required when `plot.pie=TRUE`')
+        p <- p + scatterpie::geom_scatterpie(data=d, mapping=mapping, cols='features', long_format=TRUE, pie_scale=pie.radius.scale, ...)
     }else{
         p <- p + geom_blank()
     }
 
     p <- p +
-         .feature_setting(features, ncol) +
+         .feature_setting(features, ncol, plot.pie) +
          ylab(NULL) +
          xlab(NULL) +
-         coord_fixed() +
+         coord_fixed(ratio=ratio) +
          theme_bw2() 
 
     color.aes <- .check_aes_exits(p$mapping, c('color', 'colour'))
@@ -157,9 +183,14 @@ setMethod("sc_spatial", 'Seurat',
         if (inherits(type.color.value, 'numeric')) {
             p <- p + scale_color_gradientn(colours = SpatialColors(n=100))
         }
-    }     
+    }
 
-    if (!common.legend && length(features) > 1){
+    if (plot.pie){
+        Type.cols <- .set_default_cols(length(features))
+        p <- p + scale_fill_manual(values=Type.cols, name='Type')
+    }    
+
+    if (!common.legend && length(features) > 1 && !plot.pie){
         ncol <- min(length(features), ncol)
         p <- .split.by.feature(p, ncol, joint)
     }    
@@ -167,6 +198,7 @@ setMethod("sc_spatial", 'Seurat',
 })
 
 #' @importFrom SingleCellExperiment int_metadata
+#' @importFrom ggplot2 scale_fill_manual
 #' @rdname sc-spatial-methods
 #' @aliases sc_spatial,SingleCellExperiment
 #' @exportMethod sc_spatial
@@ -175,6 +207,8 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
                                                          sample.id = NULL, 
                                                          image.id = NULL, 
                                                          slot = 1,
+                                                         plot.pie = FALSE,
+                                                         pie.radius.scale = .3,
                                                          image.plot = TRUE,
                                                          image.first.operation = 'rotate',
                                                          image.rotate.degree = NULL,
@@ -202,7 +236,7 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
     }
 
     features.da <- .extract_sce_data(object, features = features, dims = NULL, 
-                                     cells = NULL, slot = slot, density=density, 
+                                     cells = NULL, slot = slot, plot.pie = plot.pie, density=density, 
                                      grid.n = grid.n, joint = joint, joint.fun = joint.fun, 
                                      sp.coords = coords.da)
 
@@ -212,6 +246,9 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
 
     default_mapping <- aes_string(x = colnames(coords.da)[2], y = colnames(coords.da)[1])
     if (!is.null(features)){
+        if (plot.pie){
+            d <- d[rowSums(d[,features,drop=FALSE]) > 0,,drop=FALSE]
+        }
         nm.f <- length(features)
         if (density){
            valnm <- 'density'
@@ -232,7 +269,11 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
         d <- tidyr::pivot_longer(d, indx.f, 
                                  names_to = 'features', values_to = valnm)
         d$features <- factor(d$features, levels=features)
-        default_mapping <- modifyList(default_mapping, aes_string(color = valnm))
+        if (!plot.pie){
+           default_mapping <- modifyList(default_mapping, aes_string(color = valnm))
+        }else{
+           colnames(d)[colnames(d) == valnm] <- 'value' 
+        }
     }
 
     if (!is.null(mapping)){
@@ -241,7 +282,13 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
         mapping <- default_mapping
     }
 
-    p <- ggplot(d, mapping) 
+    ratio <- .cal_ratio(d, mapping)
+
+    if (!plot.pie){
+        p <- ggplot(d, mapping)
+    }else{
+        p <- ggplot()
+    }
 
     if (image.plot && !is.null(img.da)){
         img.annot <- .build_img_annot_layer(img.da, 
@@ -251,17 +298,20 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
         p <- p + img.annot
     }
 
-    if ((!remove.point && (!is.null(features) || (any(names(mapping) %in% c('color', 'colour')) && is.null(features))))){
+    if ((!remove.point && (!is.null(features) || (any(names(mapping) %in% c('color', 'colour')) && is.null(features))) && !plot.pie)){
         p <- p + sc_geom_point(pointsize = point.size, ...) 
+    }else if (!remove.point && plot.pie){
+        rlang::check_installed('scatterpie', 'is required when `plot.pie=TRUE`')
+        p <- p + scatterpie::geom_scatterpie(data=d, mapping=mapping, cols='features', long_format=TRUE, pie_scale = pie.radius.scale, ...)
     }else{
         p <- p + geom_blank()
     }
     
     p <- p +
-         .feature_setting(features, ncol) +
+         .feature_setting(features, ncol, plot.pie) +
          ylab(NULL) +
          xlab(NULL) +
-         coord_fixed() +
+         coord_fixed(ratio = ratio) +
          theme_bw2() 
 
     color.aes <- .check_aes_exits(p$mapping, c('color', 'colour'))
@@ -271,8 +321,12 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
             p <- p + scale_color_gradientn(colours = SpatialColors(n=100))
         }
     }
+    if (plot.pie){
+        Type.cols <- .set_default_cols(length(features)) 
+        p <- p + scale_fill_manual(values=Type.cols, name='Type')
+    }
 
-    if (!common.legend && length(features) > 1){
+    if (!common.legend && length(features) > 1 && !plot.pie){
         ncol <- min(length(features), ncol)
         p <- .split.by.feature(p, ncol, joint)
     }
