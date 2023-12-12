@@ -4,14 +4,15 @@
 \name{ggsc-package}
 \alias{ggsc}
 \alias{ggsc-package}
-\title{ggsc: Visualizing Single Cell Data}
+\title{ggsc: Visualizing Single Cell and Spatial Transcriptomics}
 \description{
-Useful functions to visualize single cell and spatial data. It supports both 'SingleCellExperiment' and 'Seurat' objects. It also supports visualizing the data using grammar of graphics implemented in 'ggplot2'.
+Useful functions to visualize single cell and spatial data. It supports visualizing 'Seurat', 'SingleCellExperiment' and 'SpatialExperiment' objects through grammar of graphics syntax implemented in 'ggplot2'.
 }
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/YuLab-SMU/ggsc}
+  \item \url{https://github.com/YuLab-SMU/ggsc (devel)}
+  \item \url{https://yulab-smu.top/ggsc/ (docs)}
   \item Report bugs at \url{https://github.com/YuLab-SMU/ggsc/issues}
 }
 
@@ -22,6 +23,11 @@ Useful links:
 Authors:
 \itemize{
   \item Shuangbin Xu \email{xshuangbin@163.com} (\href{https://orcid.org/0000-0003-3513-5362}{ORCID})
+}
+
+Other contributors:
+\itemize{
+  \item Noriaki Sato \email{nori@hgc.jp} [contributor]
 }
 
 }

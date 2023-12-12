@@ -14,7 +14,7 @@ Authors@R: c(
        ),
        person("Noriaki", "Sato", 
               email = "nori@hgc.jp", 
-              role = "cbt")
+              role = "ctb")
   )
 Description: Useful functions to visualize single cell and spatial 
   data. It supports visualizing 'Seurat', 'SingleCellExperiment' and 'SpatialExperiment' objects through grammar of graphics syntax implemented in 'ggplot2'.
