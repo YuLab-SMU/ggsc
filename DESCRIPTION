@@ -1,6 +1,6 @@
 Package: ggsc
 Title: Visualizing Single Cell and Spatial Transcriptomics
-Version: 1.1.2.001
+Version: 1.1.2.002
 Authors@R: c(
        person("Guangchuang", "Yu", 
               email = "guangchuangyu@gmail.com", 
@@ -23,6 +23,7 @@ Imports:
   RcppParallel,
   cli,
   dplyr,
+  ggfun,
   ggplot2,
   grDevices,
   grid,
@@ -38,8 +39,7 @@ Imports:
   tibble,
   utils,
   RColorBrewer,
-  yulab.utils,
-  ggfun
+  yulab.utils
 Suggests:
   aplot,
   BiocParallel,
@@ -54,14 +54,14 @@ Suggests:
   rmarkdown,
   scran,
   scater,
+  scatterpie,
   scuttle,
   shadowtext,
   sf,
   SeuratObject,
   SpatialExperiment,
   STexampleData,
-  testthat (>= 3.0.0),
-  scatterpie
+  testthat (>= 3.0.0)
 BugReports: https://github.com/YuLab-SMU/ggsc/issues 
 URL: https://github.com/YuLab-SMU/ggsc (devel), https://yulab-smu.top/ggsc/ (docs)
 biocViews: DimensionReduction, GeneExpression, SingleCell, 

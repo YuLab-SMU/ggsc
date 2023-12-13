@@ -9,3 +9,4 @@ gh-pages
 ^\.Rproj$
 docs
 ^\.github
+README.html
