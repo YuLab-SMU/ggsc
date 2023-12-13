@@ -148,6 +148,13 @@ sc_dim(pbmc, alpha=.3) +
     scale_color_viridis_d()
 ```
 
+```{r dim-feature-density, fig.width=14, fig.height=6}
+p1 <- sc_feature(pbmc, features='CD3E', density = FALSE) + scale_color_viridis_c()
+p2 <- sc_feature(pbmc, features='CD3E', density = TRUE) + scale_color_viridis_c()
+
+p1 | p2
+```
+
 ## Visualize ellipse on a dimensional reduction plot
 
 ```{r dim-ellipse}
@@ -208,14 +215,35 @@ sc_violin(pbmc, features) +
 
 ## Spatial features
 
-```{r sc_spatial}
+```{r sc_spatial-data}
 library(SeuratData)
 # InstallData("stxBrain")
 brain <- LoadData("stxBrain", type = "anterior1")
 # Normalization 
 brain <- SCTransform(brain, assay = "Spatial", verbose = FALSE)
-
-## SpatialFeaturePlot(brain, features = c("Hpca", "Ttr"))\
-sc_spatial(brain, features = c("Hpca", "Ttr"), image.mirror.axis = 'v')
 ```
+
+```{r sc_spatial, fig.width=10, fig.height=10}
+## SpatialFeaturePlot(brain, features = c("Hpca", "Ttr"))\
+f1 <- sc_spatial(brain, features = c("Hpca", "Ttr"), image.mirror.axis = 'v')
+f2 <- sc_spatial(brain, features=c("Hpca", "Ttr"), image.mirror.axis='v',  density=TRUE)
+plot_list(f1, f2, ncol=1)
+```
+
+
+```{r sc_spatial-density, fig.width=15, fig.height=10}
+f3 <- sc_spatial(brain, features=c("Hpca", "Ttr"), image.mirror.axis='v', 
+    density=TRUE, joint=TRUE)
+f4 <- sc_spatial(brain, features=c("Hpca", "Ttr"), image.mirror.axis='v', 
+    density=TRUE, joint=TRUE, common.legend=FALSE)
+plot_list(f3, f4, ncol=1)
+```
+
+```{r sc_spatial-pie}
+genes <- rownames(brain) |> sample(10)
+sc_spatial(brain, features=genes, plot.pie=TRUE, 
+        pie.radius.scale=.35, image.plot=FALSE)
+```
+
+
 

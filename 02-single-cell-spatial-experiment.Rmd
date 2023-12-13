@@ -177,8 +177,34 @@ f <- sc_spatial(spe, features = target.features,
 f
 
 pp <- lapply(target.features, function(i) {
-  sc_spatial(spe, features = i, slot = 'logcounts', image.rotate.degree = -90, image.mirror.axis = NULL)
+  sc_spatial(spe, features = i, slot = 'logcounts', 
+          image.rotate.degree = -90, image.mirror.axis = NULL)
 })
 
 aplot::plot_list(gglist = pp)
+```
+
+```{r sce_spatial-density, fig.width=10, fig.height=10}
+f1 <- sc_spatial(spe, features=target.features[1:2], image.rotate.degree=-90) 
+f2 <- sc_spatial(spe, features=target.features[1:2], image.rotate.degree=-90, density=TRUE) 
+
+plot_list(f1, f2, ncol=1)
+```
+
+
+```{r sce_spatial-density-join, fig.width=15, fig.height=10}
+
+f3 <- sc_spatial(spe, features=target.features[1:2], image.rotate.degree=-90, 
+              density=TRUE, joint=TRUE) 
+f4 <- sc_spatial(spe, features=target.features[1:2], image.rotate.degree=-90, 
+              density=TRUE, joint=TRUE, common.legend=FALSE)
+
+plot_list(f3, f4, ncol=1)
+```
+
+
+
+```{r sce-spatial-pie}
+sc_spatial(spe, features=target.features, plot.pie=TRUE, 
+        pie.radius.scale=.35, linewidth=0.1, image.plot=FALSE)
 ```
