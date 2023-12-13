@@ -86,8 +86,8 @@ setMethod('sc_dim', 'SingleCellExperiment',
 ##' @importFrom cli cli_abort
 .extract_sce_data <- function(object, features = NULL, dims = c(1, 2), 
                               reduction = NULL, cells = NULL, slot = 1, 
-                              density=FALSE, grid.n = 400, joint = FALSE, 
-                              joint.fun = prod, sp.coords=NULL){
+                              plot.pie = FALSE, density=FALSE, grid.n = 400, 
+                              joint = FALSE, joint.fun = prod, sp.coords=NULL){
     if (!is.null(cells)){
         object <- object[, cells]
     }
@@ -120,10 +120,10 @@ setMethod('sc_dim', 'SingleCellExperiment',
         tmp <- assay(object, slot)
         tmp <- tmp[features, ,drop=FALSE] 
 
-        if (density && !is.null(reduced.dat)){
+        if (density && !is.null(reduced.dat) && !plot.pie){
           tmp <- .buildWkde(w = tmp, coords = reduced.dat, n = grid.n, 
                             joint = joint, joint.fun = joint.fun) 
-        }else if (density && !is.null(sp.coords)){
+        }else if (density && !is.null(sp.coords) && !plot.pie){
           tmp <- .buildWkde(w = tmp, coords = sp.coords, n = grid.n,
                             joint = joint, joint.fun = joint.fun)
         }else{
@@ -151,9 +151,9 @@ sc_dim_internal <- function(data, mapping, ...) {
 get_dim_data <- function(object, features = NULL, 
                     dims=c(1,2), reduction=NULL, 
                     cells=NULL, slot = "data", 
-                    density = FALSE, grid.n = 400, 
-                    joint = FALSE, joint.fun = prod,
-                    sp.coords = NULL
+                    plot.pie=FALSE, density = FALSE, 
+                    grid.n = 400, joint = FALSE, 
+                    joint.fun = prod, sp.coords = NULL
                     ) {
     rlang::check_installed('SeuratObject', 'for the internal function `get_dim_data()`.')
     reduced.dat <- NULL
@@ -174,12 +174,12 @@ get_dim_data <- function(object, features = NULL,
 
     if (!is.null(features)){
         tmp <- SeuratObject::FetchData(object, vars = features, cells = cells, slot = slot)
-        if (density && !is.null(reduced.dat)){
+        if (density && !is.null(reduced.dat) && !plot.pie){
             tmp <- .buildWkde(t(tmp), reduced.dat, grid.n, joint, joint.fun)
             xx <- cbind(reduced.dat, xx, tmp)
-        }else if(density && !is.null(sp.coords)){
+        }else if(density && !is.null(sp.coords) && !plot.pie){
             tmp <- .buildWkde(t(tmp), sp.coords, grid.n, joint, joint.fun)
-            xx <- cbind(sp.coords, xx, tmp)
+            xx <- cbind(xx, tmp)
         }else if (!is.null(reduced.dat) && !density){
             xx <- cbind(reduced.dat, xx, tmp)
         }else{
