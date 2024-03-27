@@ -1,13 +1,17 @@
 ##' @title sc_dim
 ##' @rdname sc-dim-methods
-##' @param object Seurat object
+##' @param object Seurat object or SingleCellExperiment object
 ##' @param dims selected dimensions (must be a two-length vector) that 
 ##' are used in visualization
 ##' @param reduction reduction method, default is NULL and will use the 
 ##' default setting store in the object
 ##' @param cells selected cells to plot (default is all cells)
 ##' @param slot slot to pull expression data from (e.g., 'count' or 'data')
-##' @param mapping aesthetic mapping
+##' @param mapping aesthetic mapping, the \code{x} and \code{y} is set internally,
+##' other character of geometric layer, such as \code{color}, \code{size},
+##' \code{alpha} or (\code{shape} when geom = geom_point) can be set manually.
+##' @param geom the function of geometric layer, default is sc_geom_point,
+##' other geometric layer, such as geom_point also works.
 ##' @param ... additional parameters pass to 'scattermore::geom_scattermore()'
 ##' @return dimension reduction plot
 ##' @seealso
@@ -33,24 +37,39 @@
 ##'         bg.color='white'
 ##'       )
 setGeneric('sc_dim', 
-           function(object, dims=c(1,2), reduction=NULL, 
-                    cells=NULL, slot = "data", mapping = NULL, 
-                    ...)
-               standardGeneric('sc_dim')
+    function(object, 
+       dims=c(1,2), 
+       reduction=NULL, 
+       cells=NULL, 
+       slot = "data", 
+       mapping = NULL, 
+       geom = sc_geom_point,
+       ...)
+   standardGeneric('sc_dim')
 )
 
 #' @importFrom methods setMethod
 #' @rdname sc-dim-methods
 #' @aliases sc_dim,Seurat
 #' @exportMethod sc_dim
-setMethod("sc_dim", 'Seurat', function(object, 
-                    dims=c(1,2), reduction=NULL, 
-                    cells=NULL, slot = "data", mapping = NULL, ...) {
+setMethod("sc_dim", 
+  'Seurat', 
+  function(
+   object, 
+   dims=c(1,2), 
+   reduction=NULL, 
+   cells=NULL, 
+   slot = "data", 
+   mapping = NULL,
+   geom = sc_geom_point,
+   ...) 
+{
     d <- get_dim_data(object = object, features = NULL,
                     dims = dims, reduction = reduction, 
                     cells = cells, slot = slot)
+    
+    default_mapping <- .check_aes_nm(object, data = d, prefix = 'ident')
 
-    default_mapping <- aes(color=.data$ident)
     if (is.null(mapping)) {
         mapping <- default_mapping
     } else {
@@ -64,12 +83,21 @@ setMethod("sc_dim", 'Seurat', function(object,
 #' @aliases sc_dim,SingleCellExperiment
 #' @exportMethod sc_dim
 setMethod('sc_dim', 'SingleCellExperiment', 
-          function(object, dims = c(1, 2), reduction = NULL, 
-                  cells = NULL, slot = 'data', mapping = NULL, ...){
+    function(
+       object, 
+       dims = c(1, 2), 
+       reduction = NULL, 
+       cells = NULL, 
+       slot = 'data', 
+       mapping = NULL, 
+       geom = sc_geom_point,
+       ...)
+  {
     d <- .extract_sce_data(object = object, features = NULL, dims = dims, 
                       reduction = reduction, cells = cells, slot = slot)
     
-    default_mapping <- aes(color = .data$label)
+    default_mapping <- .check_aes_nm(object, data = d, prefix = 'label')
+
     if (is.null(mapping)){
         mapping <- default_mapping
     }else{
@@ -141,10 +169,10 @@ setMethod('sc_dim', 'SingleCellExperiment',
 }
 
 ##' @importFrom tidydr theme_dr
-sc_dim_internal <- function(data, mapping, ...) {
+sc_dim_internal <- function(data, mapping, geom = sc_geom_point, ...) {
     dims <- names(data)[seq_len(2)]
-    ggplot(data, aes(.data[[dims[1]]], .data[[dims[2]]])) + 
-        sc_geom_point(mapping, ...) + 
+    p <- ggplot(data, aes(.data[[dims[1]]], .data[[dims[2]]])) 
+    p + geom(mapping, ...) +
         theme_dr()
 } 
 
