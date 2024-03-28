@@ -55,14 +55,19 @@ setMethod("sc_violin", 'Seurat', function(object, features,
     if (!is.null(.fun)) {
         d <- .fun(d)
     }
-    default_mapping <- aes_string(fill="ident")
+
+    default_mapping <- .check_aes_nm(object, data= d, prefix = 'ident', aes.character = 'fill')
+
     if (is.null(mapping)) {
         mapping <- default_mapping
     } else {
         mapping <- modifyList(default_mapping, mapping)
     }
-    p <- ggplot(d, aes_string("ident", "value")) + 
-        geom_violin(mapping, ...) #+ 
+
+    mapping <- .add_aes(mapping, prefix = c('ident', 'value'), aes.character = c('x', 'y'))
+
+    p <- ggplot(d, mapping) + 
+        geom_violin(...) #+ 
         #ggforce::geom_sina(size=.1)
     
     if (length(features) > 1) {
@@ -91,14 +96,19 @@ setMethod('sc_violin', 'SingleCellExperiment',
     if (!is.null(.fun)) {
         d <- .fun(d)
     }
-    default_mapping <- aes_string(fill="label")
+    
+    default_mapping <- .check_aes_nm(object, data= d, prefix = 'label', aes.character = 'fill')
+
     if (is.null(mapping)) {
         mapping <- default_mapping
     } else {
         mapping <- modifyList(default_mapping, mapping)
     }
-    p <- ggplot(d, aes_string("label", "value")) +
-        geom_violin(mapping, ...) #+
+    
+    mapping <- .add_aes(mapping, prefix = c('label', 'value'), aes.character = c('x', 'y'))
+    
+    p <- ggplot(d, mapping) +
+        geom_violin(...) #+
         #ggforce::geom_sina(size=.1)
 
     if (length(features) > 1) {

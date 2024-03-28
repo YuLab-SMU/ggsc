@@ -15,6 +15,7 @@ sc_dim(
   cells = NULL,
   slot = "data",
   mapping = NULL,
+  geom = sc_geom_point,
   ...
 )
 
@@ -25,6 +26,7 @@ sc_dim(
   cells = NULL,
   slot = "data",
   mapping = NULL,
+  geom = sc_geom_point,
   ...
 )
 
@@ -35,11 +37,12 @@ sc_dim(
   cells = NULL,
   slot = "data",
   mapping = NULL,
+  geom = sc_geom_point,
   ...
 )
 }
 \arguments{
-\item{object}{Seurat object}
+\item{object}{Seurat object or SingleCellExperiment object}
 
 \item{dims}{selected dimensions (must be a two-length vector) that
 are used in visualization}
@@ -51,7 +54,12 @@ default setting store in the object}
 
 \item{slot}{slot to pull expression data from (e.g., 'count' or 'data')}
 
-\item{mapping}{aesthetic mapping}
+\item{mapping}{aesthetic mapping, the \code{x} and \code{y} is set internally,
+other character of geometric layer, such as \code{color}, \code{size},
+\code{alpha} or (\code{shape} when geom = geom_point) can be set manually.}
+
+\item{geom}{the function of geometric layer, default is sc_geom_point,
+other geometric layer, such as geom_point also works.}
 
 \item{...}{additional parameters pass to 'scattermore::geom_scattermore()'}
 }

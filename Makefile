@@ -37,6 +37,8 @@ check: #build
 	#Rscript -e 'rcmdcheck::rcmdcheck("$(PKGNAME)_$(PKGVERS).tar.gz")'
 	Rscript -e 'devtools::check()'
 
+debug: rd build2 install
+
 check2: build
 	cd ..;\
 	R CMD check $(PKGNAME)_$(PKGVERS).tar.gz
