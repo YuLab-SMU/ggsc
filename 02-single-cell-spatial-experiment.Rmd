@@ -165,7 +165,6 @@ sc_violin(spe, target.features, slot = 'logcounts') +
 
 To visualize the spatial pattern of gene, `ggsc` provides `sc_spatial` to visualize specific features/genes with image information.
 
-
 ```{r sce-spatial, fig.width = 14, fig.height = 10}
 library(aplot)
 f <- sc_spatial(spe, features = target.features, 
@@ -221,4 +220,9 @@ plot_list(f3, f4, ncol=1)
 ```{r sce-spatial-pie}
 sc_spatial(spe, features=target.features, plot.pie=TRUE, 
         pie.radius.scale=.35, linewidth=0.1, image.plot=FALSE, color=NA)
+```
+
+plot the spatial distribution of cell type.
+```{r sce-cell-spatial, fig.width = 14, fig.height = 10}
+sc_spatial(spe, mapping=aes(x=pxl_col_in_fullres,y=pxl_row_in_fullres,color = label))
 ```
