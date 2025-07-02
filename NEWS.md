@@ -1,3 +1,7 @@
+# ggsc 1.7.1
+
++ compatible with new ggplot2 > 3.5.2 (2025-07-02, Wed)
+
 # ggsc 1.6.0
 
 + Bioconductor RELEASE_3_21 (2025-04-17, Thu)
