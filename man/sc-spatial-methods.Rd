@@ -30,6 +30,8 @@ sc_spatial(
   common.legend = TRUE,
   pointsize = 5,
   geom = sc_geom_point,
+  reduction = NULL,
+  dims = NULL,
   ...
 )
 
@@ -55,6 +57,8 @@ sc_spatial(
   common.legend = TRUE,
   pointsize = 5,
   geom = sc_geom_point,
+  reduction = NULL,
+  dims = NULL,
   ...
 )
 
@@ -80,6 +84,8 @@ sc_spatial(
   common.legend = TRUE,
   pointsize = 5,
   geom = sc_geom_point,
+  reduction = NULL,
+  dims = NULL,
   ...
 )
 }
@@ -137,6 +143,12 @@ default is prod.}
 
 \item{geom}{the layer of point, default is \code{sc_geom_point}, other option is
 \code{geom_bgpoint}.}
+
+\item{reduction, }{reduction method name, default is NULL and will use the
+spatial coordinates.}
+
+\item{dims}{selected dimensions (must be a two-length vector) that
+are used in visualization, which works with \code{reduction} argument.}
 
 \item{...}{additional parameters, see also \code{geom_scattermore2()}.
 \itemize{

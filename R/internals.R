@@ -101,9 +101,14 @@
   return(res)
 }
 
+
+#' @importFrom ggplot2 ggplot_build
 .check_colour <- function(x, y){
-  lab.text <- x$labels$colour
-  flag1 <- is.numeric(x$data[[lab.text]])
+  gb <- ggplot_build(x)
+  flag1 <- gb$plot$scales$has_scale('colour')
+  if (flag1){
+     flag1 <- inherits(gb$plot$scales$get_scales("colour"), "ScaleContinuous")
+  }
   flag2 <- any(c("color", "colour") %in% names(y$mapping)) || any(c("color", "colour") %in% names(y))
   flag1 && !flag2
 }

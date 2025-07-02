@@ -49,7 +49,7 @@ sc_geom_annot <- function(
 #' @importFrom ggplot2 ggplot_add
 #' @method ggplot_add sc_geom_annot
 #' @export
-ggplot_add.sc_geom_annot <- function(object, plot, object_name){
+ggplot_add.sc_geom_annot <- function(object, plot, object_name, ...){
     object <- .check_layer_data(object, plot)
     params <- object$params
     object$params <- NULL
@@ -60,7 +60,7 @@ ggplot_add.sc_geom_annot <- function(object, plot, object_name){
         object$pixels <- NULL
     }
     ly <- do.call(geomfun, c(object, params))
-    ggplot_add(ly, plot, object_name)
+    ggplot_add(ly, plot, object_name, ...)
 }
 
 

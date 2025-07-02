@@ -18,6 +18,8 @@ Authors@R: c(
   )
 Description: Useful functions to visualize single cell and spatial 
   data. It supports visualizing 'Seurat', 'SingleCellExperiment' and 'SpatialExperiment' objects through grammar of graphics syntax implemented in 'ggplot2'.
+Depends:
+  R (>= 4.1.0)
 Imports:
   Rcpp,
   RcppParallel,

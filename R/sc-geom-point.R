@@ -24,7 +24,6 @@ sc_geom_point <- function(mapping=NULL, ...){
 #' @title geom_bgpoint
 #' @description
 #' this add the background color for \code{\link[ggplot2]{geom_point}}
-#' @eval rd_aesthetics("geom", "bgpoint")
 #' @inheritParams ggplot2::layer
 #' @param na.rm If \code{FALSE}, the default, missing values are removed 
 #' with a warning, if \code{TRUE}, missing values are silently removed.
@@ -38,8 +37,11 @@ sc_geom_point <- function(mapping=NULL, ...){
 #' @param pointsize numeric the size of point, default is NULL, will use the 
 #' internal size aesthetics of \code{geom_bgpoint}
 #' @param ... Other arguments passed on to \code{\link[ggplot2]{layer}}.
-#' @details
+#' @details Aesthetics \code{geom_bgpoint} understands the following aesthetics. Required
+#' aesthetics are displayed in bold and defaults are displayed for optional aesthetics:
 #'  \itemize{
+#'     \item \strong{\code{x}}.
+#'     \item \strong{\code{y}}.
 #'     \item \code{colour} the colour of point, default is \code{black}.
 #'     \item \code{bg_colour} the colour of background point, default is \code{NA}.
 #'     \item \code{alpha} the transparency of colour, default is 1.
@@ -94,7 +96,6 @@ geom_bgpoint <- function(
 #' @title geom_scattermore2
 #' @description
 #' this add the background colour for the \code{\link[scattermore]{geom_scattermore}} 
-#' @eval rd_aesthetics("geom", "scattermore2")
 #' @inheritParams ggplot2::layer
 #' @param na.rm If `FALSE`, the default, missing values are removed with
 #'     a warning. If `TRUE`, missing values are silently removed.
@@ -112,8 +113,11 @@ geom_bgpoint <- function(
 #' @param gap_line_width numeric the line width of gap between the background and 
 #' top point point layer, default is \code{.1}.
 #' @param ... Other arguments passed on to \code{\link[ggplot2]{layer}}.
-#' @details
+#' @details Aesthetics \code{geom_scattermore2} understands the following aesthetics. Required
+#' aesthetics are displayed in bold and defaults are displayed for optional aesthetics:
 #'  \itemize{
+#'     \item \strong{\code{x}}.
+#'     \item \strong{\code{y}}.
 #'     \item \code{colour} the colour of point, default is \code{black}.
 #'     \item \code{bg_colour} the colour of background point, default is \code{NA}.
 #'     \item \code{alpha} the transparency of colour, default is 1.

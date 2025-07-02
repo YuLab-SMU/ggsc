@@ -124,7 +124,7 @@ setMethod('sc_feature', 'Seurat', function(object, features,
     d2 <- tidyr::pivot_longer(d, indx.f, names_to = "features", values_to = valnm)
     d2$features <- factor(d2$features, features)
 
-    default_mapping <- aes_string(color=valnm)
+    default_mapping <- aes(color=!!rlang::sym(valnm))
     if (is.null(mapping)) {
         mapping <- default_mapping
     } else {
@@ -202,7 +202,7 @@ setMethod("sc_feature", "SingleCellExperiment",
 
     d2$features <- factor(d2$features, features)
     
-    default_mapping <- aes_string(color=valnm)
+    default_mapping <- aes(color=!!rlang::sym(valnm))
     if (is.null(mapping)) {
         mapping <- default_mapping
     } else {

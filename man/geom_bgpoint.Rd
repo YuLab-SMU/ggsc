@@ -43,7 +43,7 @@ from a \code{formula} (e.g. \code{~ head(.x, 10)}).}
 
 \item{stat}{The statistical transformation to use on the data for this layer.
 When using a \verb{geom_*()} function to construct a layer, the \code{stat}
-argument can be used the override the default coupling between geoms and
+argument can be used to override the default coupling between geoms and
 stats. The \code{stat} argument accepts the following:
 \itemize{
 \item A \code{Stat} ggproto subclass, for example \code{StatCount}.
@@ -76,12 +76,14 @@ with a warning, if \code{TRUE}, missing values are silently removed.}
 \code{NA}, the default, includes if any aesthetics are mapped.
 \code{FALSE} never includes, and \code{TRUE} always includes.
 It can also be a named logical vector to finely select the aesthetics to
-display.}
+display. To include legend keys for all levels, even
+when no data exists, use \code{TRUE}.  If \code{NA}, all levels are shown in legend,
+but unobserved levels are omitted.}
 
 \item{inherit.aes}{If \code{FALSE}, overrides the default aesthetics,
 rather than combining with them. This is most useful for helper functions
 that define both data and aesthetics and shouldn't inherit behaviour from
-the default plot specification, e.g. \code{\link[ggplot2:borders]{borders()}}.}
+the default plot specification, e.g. \code{\link[ggplot2:annotation_borders]{annotation_borders()}}.}
 
 \item{gap_colour}{colour of gap background between the bottom background
 and top point point layer, default is \code{white}.}
@@ -101,32 +103,17 @@ internal size aesthetics of \code{geom_bgpoint}}
 this add the background color for \code{\link[ggplot2]{geom_point}}
 }
 \details{
+Aesthetics \code{geom_bgpoint} understands the following aesthetics. Required
+aesthetics are displayed in bold and defaults are displayed for optional aesthetics:
 \itemize{
+\item \strong{\code{x}}.
+\item \strong{\code{y}}.
 \item \code{colour} the colour of point, default is \code{black}.
 \item \code{bg_colour} the colour of background point, default is \code{NA}.
 \item \code{alpha} the transparency of colour, default is 1.
 \item \code{subset} subset the data frame which meet conditions to display.
 }
 }
-\section{Aesthetics}{
-
-\code{geom_bgpoint()} understands the following aesthetics (required aesthetics are in bold):
-\itemize{
-\item \strong{\code{\link[=aes_position]{x}}}
-\item \strong{\code{\link[=aes_position]{y}}}
-\item \code{\link[=aes_colour_fill_alpha]{alpha}}
-\item \code{bg_colour}
-\item \code{\link[=aes_colour_fill_alpha]{colour}}
-\item \code{\link[=aes_colour_fill_alpha]{fill}}
-\item \code{\link[=aes_group_order]{group}}
-\item \code{\link[=aes_linetype_size_shape]{shape}}
-\item \code{\link[=aes_linetype_size_shape]{size}}
-\item \code{stroke}
-\item \code{subset}
-}
-Learn more about setting these aesthetics in \code{vignette("ggplot2-specs")}.
-}
-
 \examples{
 library(ggplot2)
 ggplot(iris,

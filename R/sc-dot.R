@@ -22,7 +22,6 @@
 ##'  [DotPlot][Seurat::DotPlot]; 
 ##' @return dot plot to visualize feature expression distribution
 ##' @importFrom utils modifyList
-##' @importFrom ggplot2 aes_string
 ##' @importFrom ggplot2 ggplot
 ##' @importFrom ggplot2 geom_point
 ##' @importFrom ggplot2 facet_wrap
@@ -240,7 +239,7 @@ setMethod('sc_dot', 'SingleCellExperiment',
         avg.exp[avg.exp$pct.exp > scale.max, 'pct.exp'] <- scale.max
     }
     
-    default_mapping <- aes_string(color=color.by, size="pct.exp")
+    default_mapping <- aes(color=!!rlang::sym(color.by), size=!!rlang::sym("pct.exp"))
     if (is.null(mapping)) {
         mapping <- default_mapping
     } else {

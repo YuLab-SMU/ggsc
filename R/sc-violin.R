@@ -13,7 +13,6 @@
 ##' @seealso
 ##'  [geom_violin][ggplot2::geom_violin]; 
 ##' @importFrom utils modifyList
-##' @importFrom ggplot2 aes_string
 ##' @importFrom ggplot2 ggplot
 ##' @importFrom ggplot2 geom_violin
 ##' @importFrom ggplot2 facet_wrap

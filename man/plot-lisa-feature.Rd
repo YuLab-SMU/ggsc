@@ -20,6 +20,7 @@ plot_lisa_feature(
   reduction = NULL,
   image.plot = FALSE,
   label_wrap_width = 30,
+  ncol = 6,
   ...
 )
 }
@@ -64,6 +65,8 @@ is FALSE.}
 
 \item{label_wrap_width}{numeric maximum number of characters before wrapping the strip.
 default is \code{30}.}
+
+\item{ncol}{numeric the column number, default is 6.}
 
 \item{...}{additional parameters pass to \code{scattermore::geom_scattermore()}
 \itemize{

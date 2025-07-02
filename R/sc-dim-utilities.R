@@ -113,7 +113,7 @@ sc_dim_geom_feature <- function(object, features, dims = c(1,2), ncol=3, ...,
 ##' @method ggplot_add sc_dim_geom_feature
 ##' @importFrom tibble as_tibble
 ##' @export
-ggplot_add.sc_dim_geom_feature <- function(object, plot, object_name){
+ggplot_add.sc_dim_geom_feature <- function(object, plot, object_name, ...){
     if (inherits(object$data, 'Seurat')){
         d <- get_dim_data(object$data, 
                           dims=object$dims, 
@@ -151,7 +151,7 @@ ggplot_add.sc_dim_geom_feature <- function(object, plot, object_name){
     ly <- list(p,
         .feature_setting(features=object$features, ncol=object$ncol)
     )
-    ggplot_add(ly, plot, object_name)
+    ggplot_add(ly, plot, object_name, ...)
 }
 
 
@@ -185,13 +185,13 @@ sc_dim_geom_label <- function(geom = ggplot2::geom_text, mapping=NULL, ...) {
 ##' @importFrom rlang .data
 ##' @method ggplot_add sc_dim_geom_label
 ##' @export
-ggplot_add.sc_dim_geom_label <- function(object, plot, object_name) {
+ggplot_add.sc_dim_geom_label <- function(object, plot, object_name, ...) {
     dims <- names(plot$data)[seq_len(3)]
     if (!is.null(object$mapping$label)){
         lab.text <- ggfun::get_aes_var(object$mapping, 'label')
         object$mapping$label <- NULL
     }else{
-        lab.text <- plot$labels$colour
+        lab.text <- ggplot_build(plot)$plot$labels$colour
     }
     flag1 <- lab.text %in% colnames(plot$data) && !is.numeric(plot$data[[lab.text]]) 
     if (is.null(object$data) && flag1) {
@@ -221,7 +221,7 @@ ggplot_add.sc_dim_geom_label <- function(object, plot, object_name) {
     object <- .set_inherit.aes(object)
 
     ly <- do.call(geom, object)    
-    ggplot_add(ly, plot, object_name)
+    ggplot_add(ly, plot, object_name, ...)
 }
 
 
@@ -261,13 +261,13 @@ sc_dim_geom_ellipse <- function(geom = stat_ellipse, mapping = NULL, level = 0.9
 ##' @importFrom ggplot2 aes
 ##' @importFrom ggplot2 stat_ellipse
 ##' @export
-ggplot_add.sc_dim_geom_ellipse <- function(object, plot, object_name) {
+ggplot_add.sc_dim_geom_ellipse <- function(object, plot, object_name, ...) {
     dims <- names(plot$data)[seq_len(3)]
     if (!is.null(object$mapping$group)){
         lab.text <- ggfun::get_aes_var(object$mapping, 'group')
         object$mapping$group <- NULL
     }else{
-        lab.text <- plot$labels$colour
+        lab.text <- ggplot_build(plot)$plot$labels$colour
     }
     flag1 <- lab.text %in% colnames(plot$data) && !is.numeric(plot$data[[lab.text]])
     if (!flag1){
@@ -292,7 +292,7 @@ ggplot_add.sc_dim_geom_ellipse <- function(object, plot, object_name) {
     object$geom <- NULL
 
     ly <- do.call(geomfun, object)
-    ggplot_add(ly, plot, object_name)
+    ggplot_add(ly, plot, object_name, ...)
 }
 
 ##' @title sc_dim_geom_subset
@@ -326,7 +326,7 @@ sc_dim_geom_sub <- function(mapping = NULL, subset, .column = "ident", ...) {
 
 ##' @method ggplot_add dim_geom_sub
 ##' @export     
-ggplot_add.dim_geom_sub <- function(object, plot, object_name) {
+ggplot_add.dim_geom_sub <- function(object, plot, object_name, ...) {
   ii <- plot$data[[object$.column]] %in% object$subset
   object$data <- plot$data[ii, ]
   default_mapping <- aes(color = .data[[object$.column]])
@@ -345,7 +345,7 @@ ggplot_add.dim_geom_sub <- function(object, plot, object_name) {
       object$pixels <- NULL
   }
   ly <- do.call(geomfun, object)
-  ggplot_add(ly, plot, object_name)
+  ggplot_add(ly, plot, object_name, ...)
 }
 
 ##' @title sc_dim_sub
@@ -373,7 +373,7 @@ sc_dim_sub <- function(subset, .column = "ident") {
 
 ##' @method ggplot_add dim_sub
 ##' @export     
-ggplot_add.dim_sub <- function(object, plot, object_name) {
+ggplot_add.dim_sub <- function(object, plot, object_name, ...) {
   ii <- plot$data[[object$.column]] %in% object$subset
   plot$data <- plot$data[ii, ]
   plot

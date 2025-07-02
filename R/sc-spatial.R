@@ -33,6 +33,10 @@
 ##' @param pointsize the size of point, default is 5.
 ##' @param geom the layer of point, default is \code{sc_geom_point}, other option is
 ##' \code{geom_bgpoint}.
+##' @param reduction, reduction method name, default is NULL and will use the
+##' spatial coordinates. 
+##' @param dims selected dimensions (must be a two-length vector) that
+##' are used in visualization, which works with \code{reduction} argument.
 ##' @param ... additional parameters, see also \code{geom_scattermore2()}.
 ##' \itemize{
 ##'     \item \code{bg_colour} the colour of background point, default is \code{NA}.
@@ -94,11 +98,14 @@ setGeneric('sc_spatial', function(object,
                                   joint.fun = prod,
                                   common.legend = TRUE,
                                   pointsize = 5,
-				  geom = sc_geom_point,
+                                  geom = sc_geom_point,
+                                  reduction = NULL,
+                                  dims = NULL,
                                   ...) 
            standardGeneric('sc_spatial')
 )
 
+##' @importFrom rlang sym
 ##' @importFrom grDevices as.raster
 ##' @rdname sc-spatial-methods
 ##' @aliases sc_spatial,Seurat
@@ -111,7 +118,7 @@ setMethod("sc_spatial", 'Seurat',
                    remove.point = FALSE, mapping = NULL, ncol = 6, 
                    density=FALSE, grid.n = 100, joint = FALSE, 
                    joint.fun = prod, common.legend = TRUE, pointsize = 5, 
-                   geom = sc_geom_point,
+                   geom = sc_geom_point, reduction = NULL, dims = NULL,
                    ...) {
     images <- SeuratObject::Images(object = object, 
                     assay = Seurat::DefaultAssay(object = object)
@@ -119,7 +126,15 @@ setMethod("sc_spatial", 'Seurat',
     img <- object@images[[images]]@image 
     if (!is.null(img)) img <- as.raster(img)
     
-    coords.da <- SeuratObject::GetTissueCoordinates(object = object[[images]])
+    if (!is.null(reduction)){
+        if (is.null(dims)) dims <- seq(2)
+        dims <- paste0(SeuratObject::Key(object = object[[reduction]]), dims)
+        coords.da <- as.data.frame(SeuratObject::Embeddings(object[[reduction]])[, dims,drop=FALSE], check.names=FALSE)
+    }else{
+        coords.da <- SeuratObject::GetTissueCoordinates(object = object[[images]])
+    }
+
+
     if (is.numeric(features)){
         features <- rownames(object)[features]
     }
@@ -144,7 +159,7 @@ setMethod("sc_spatial", 'Seurat',
     }
     d <- cbind(coords.da, d)
 
-    default_mapping <- aes_string(x = colnames(coords.da)[2], y = colnames(coords.da)[1])
+    default_mapping <- aes(x = !!sym(colnames(coords.da)[2]), y = !!sym(colnames(coords.da)[1]))
 
     if (!is.null(features)){
 
@@ -161,7 +176,7 @@ setMethod("sc_spatial", 'Seurat',
              )
         d$features <- factor(d$features, levels=features)
         if (!plot.pie){
-           default_mapping <- modifyList(default_mapping, aes_string(color = valnm))
+           default_mapping <- modifyList(default_mapping, aes(color = !!sym(valnm)))
         }else{
            colnames(d)[colnames(d) == valnm] <- 'value'
         }
@@ -254,6 +269,8 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
                                                          common.legend = TRUE,
                                                          pointsize = 5,
                                                          geom = sc_geom_point,
+                                                         reduction = NULL,
+                                                         dims = NULL,
                                                          ...
                                                         ){
     if (!"imgData" %in% names(int_metadata(object))){
@@ -262,7 +279,13 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
     
     img.da <- .extract_img_data(object, sample.id = sample.id, image.id = image.id)
     
-    coords.da <- .extract_coords(object, img.da)
+    if (!is.null(reduction)){
+       if (is.null(dims)) dims <- seq(2)
+       coords.da <- reducedDims(object)[[reduction]][,dims] |>
+                    as.data.frame(check.names = FALSE)
+    }else{
+       coords.da <- .extract_coords(object, img.da)
+    }
 
     if (is.numeric(features)){
         features <- rownames(object)[features]
@@ -278,7 +301,7 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
     d <- merge(coords.da, features.da, by=0)
     colnames(d)[1] <- '.BarcodeID'
 
-    default_mapping <- aes_string(x = colnames(coords.da)[2], y = colnames(coords.da)[1])
+    default_mapping <- aes(x = !!sym(colnames(coords.da)[2]), y = !!sym(colnames(coords.da)[1]))
     if (!is.null(features)){
         if (plot.pie){
             d <- d[rowSums(d[,features,drop=FALSE]) != 0,,drop=FALSE]
@@ -308,7 +331,7 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
                                  names_to = 'features', values_to = valnm)
         d$features <- factor(d$features, levels=features)
         if (!plot.pie){
-           default_mapping <- modifyList(default_mapping, aes_string(color = valnm))
+           default_mapping <- modifyList(default_mapping, aes(color = !!sym(valnm)))
         }else{
            colnames(d)[colnames(d) == valnm] <- 'value' 
         }
