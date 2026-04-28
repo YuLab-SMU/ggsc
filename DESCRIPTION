@@ -1,6 +1,6 @@
 Package: ggsc
 Title: Visualizing Single Cell and Spatial Transcriptomics
-Version: 1.10.0
+Version: 1.11.0
 Authors@R: c(
        person("Guangchuang", "Yu", 
               email = "guangchuangyu@gmail.com", 
