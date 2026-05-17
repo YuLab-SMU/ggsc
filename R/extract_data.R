@@ -82,7 +82,11 @@ get_dim_data <- function(object, features = NULL,
             features <- features[features <= nrow(object)]
             features <- rownames(object)[features]
         }
-        tmp <- SeuratObject::FetchData(object, vars = features, cells = cells, slot = slot)
+        if ('layer' %in% names(formals(utils::getS3method('FetchData', 'Seurat', envir = asNamespace('SeuratObject'))))) {
+            tmp <- SeuratObject::FetchData(object, vars = features, cells = cells, layer = slot)
+        } else {
+            tmp <- SeuratObject::FetchData(object, vars = features, cells = cells, slot = slot)
+        }
         xx <- xx[, !colnames(xx) %in% colnames(tmp),drop=FALSE]
         if (density && !is.null(reduced.dat) && !plot.pie){
             tmp <- .buildWkde(t(tmp), reduced.dat, grid.n, joint, joint.fun)

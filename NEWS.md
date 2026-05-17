@@ -1,3 +1,7 @@
+# ggsc 1.11.1
+
++ compatible with Seurat V5 (2026-05-17, Sun)
+
 # ggsc 1.10.0
 
 + Bioconductor RELEASE_3_23 (2026-04-29, Wed)

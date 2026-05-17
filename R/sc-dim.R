@@ -35,7 +35,7 @@
 ##' library(scran)
 ##' library(ggplot2)
 ##' sce <- mockSCE()
-##' sce <- logNormCounts(sce)
+##' sce <- suppressWarnings(logNormCounts(sce))
 ##' clusters <- clusterCells(sce, assay.type = 'logcounts')
 ##' colLabels(sce) <- clusters
 ##' sce <- runUMAP(sce, assay.type = 'logcounts')

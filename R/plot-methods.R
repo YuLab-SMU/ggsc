@@ -50,7 +50,7 @@
 ##' ah_id <- myfiles$ah_id[myfiles$title == 'Visium_humanDLPFC']
 ##' spe <- myfiles[[ah_id]]
 ##' spe <- spe[, colData(spe)$in_tissue == 1]
-##' spe <-scater::logNormCounts(spe)
+##' spe <- suppressWarnings(scater::logNormCounts(spe))
 ##' genes <- c('MOBP', 'PCP4', 'SNAP25', 'HBB', 'IGKC', 'NPY')
 ##' target.features <- rownames(spe)[match(genes, rowData(spe)$gene_name)]
 ##' library(SVP)

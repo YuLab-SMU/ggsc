@@ -33,7 +33,7 @@
 ##' library(scran)
 ##' library(ggplot2)
 ##' sce <- mockSCE()
-##' sce <- logNormCounts(sce)
+##' sce <- suppressWarnings(logNormCounts(sce))
 ##' set.seed(123)
 ##' genes <- rownames(sce) |> sample(6) 
 ##' sc_dot(sce, genes[1:5], 'Treatment', slot = 'logcounts')

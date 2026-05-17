@@ -16,7 +16,7 @@
 ##' library(scran)
 ##' library(ggplot2)
 ##' sce <- mockSCE()
-##' sce <- logNormCounts(sce)
+##' sce <- suppressWarnings(logNormCounts(sce))
 ##' clusters <- clusterCells(sce, assay.type = 'logcounts')
 ##' colLabels(sce) <- clusters
 ##' sce <- runUMAP(sce, assay.type = 'logcounts')
@@ -81,7 +81,7 @@ sc_dim_count <- function(sc_dim_plot) {
 ##' library(scran)
 ##' library(ggplot2)
 ##' sce <- mockSCE()
-##' sce <- logNormCounts(sce)
+##' sce <- suppressWarnings(logNormCounts(sce))
 ##' clusters <- clusterCells(sce, assay.type = 'logcounts')
 ##' colLabels(sce) <- clusters
 ##' sce <- runUMAP(sce, assay.type = 'logcounts')
@@ -169,7 +169,7 @@ ggplot_add.sc_dim_geom_feature <- function(object, plot, object_name, ...){
 ##' library(scran)
 ##' library(ggplot2)
 ##' sce <- mockSCE()
-##' sce <- logNormCounts(sce)
+##' sce <- suppressWarnings(logNormCounts(sce))
 ##' clusters <- clusterCells(sce, assay.type = 'logcounts')
 ##' colLabels(sce) <- clusters
 ##' sce <- runUMAP(sce, assay.type = 'logcounts')
@@ -243,7 +243,7 @@ ggplot_add.sc_dim_geom_label <- function(object, plot, object_name, ...) {
 ##' library(scran)
 ##' library(ggplot2)
 ##' sce <- mockSCE()
-##' sce <- logNormCounts(sce)
+##' sce <- suppressWarnings(logNormCounts(sce))
 ##' clusters <- clusterCells(sce, assay.type = 'logcounts')
 ##' colLabels(sce) <- clusters
 ##' sce <- runUMAP(sce, assay.type = 'logcounts')
@@ -310,7 +310,7 @@ ggplot_add.sc_dim_geom_ellipse <- function(object, plot, object_name, ...) {
 ##' library(scran)
 ##' library(ggplot2)
 ##' sce <- mockSCE()
-##' sce <- logNormCounts(sce)
+##' sce <- suppressWarnings(logNormCounts(sce))
 ##' clusters <- clusterCells(sce, assay.type = 'logcounts')
 ##' colLabels(sce) <- clusters
 ##' sce <- runUMAP(sce, assay.type = 'logcounts')
@@ -361,7 +361,7 @@ ggplot_add.dim_geom_sub <- function(object, plot, object_name, ...) {
 ##' library(scran)
 ##' library(ggplot2)
 ##' sce <- mockSCE()
-##' sce <- logNormCounts(sce)
+##' sce <- suppressWarnings(logNormCounts(sce))
 ##' clusters <- clusterCells(sce, assay.type = 'logcounts')
 ##' colLabels(sce) <- clusters
 ##' sce <- runUMAP(sce, assay.type = 'logcounts')
