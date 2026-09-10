@@ -5,8 +5,11 @@ gh-pages
 ^README\.md$
 ^README\.Rmd$
 ^CONDUCT\.md$
+^AGENTS\.md$
 ^\.Rproj\.user$
 ^\.Rproj$
 docs
 ^\.github
 README.html
+.reasonix/
+AGENTS.md

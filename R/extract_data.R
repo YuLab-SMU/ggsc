@@ -1,3 +1,19 @@
+## Convert a 'DataFrame' or 'matrix' into a 'data.frame' without touching
+## the column names (i.e. what `check.names = FALSE` used to do).
+##
+## `as.data.frame()` no longer accepts `check.names` for 'DataFrame' objects
+## (recent S4Vectors uses `make.names` instead and raises an error for
+## `check.names`), so the original column names are restored afterwards,
+## which works with all S4Vectors versions.
+.as_data_frame <- function(x){
+    nms <- colnames(x)
+    df <- as.data.frame(x)
+    if (!is.null(nms) && length(nms) == ncol(df)){
+        colnames(df) <- nms
+    }
+    df
+}
+
 ##' @importFrom methods as
 ##' @importFrom SingleCellExperiment reducedDims reducedDimNames
 ##' @importFrom SummarizedExperiment assay colData assayNames
@@ -10,7 +26,7 @@
         object <- object[, cells]
     }
 
-    xx <- colData(object) |> as.data.frame(check.names=FALSE) |> suppressWarnings()
+    xx <- colData(object) |> .as_data_frame() |> suppressWarnings()
     reduced.dat <- NULL
     if (!is.null(dims)){
         if (length(reducedDimNames(object)) == 0){
@@ -20,7 +36,7 @@
             reduction <- 1
         }
         reduced.dat <- reducedDims(object)[[reduction]][,dims] |>
-            as.data.frame(check.names = FALSE)
+            .as_data_frame()
         xx <- cbind(reduced.dat, xx)
     }
 
@@ -45,7 +61,7 @@
           tmp <- tmp |>
                  as('matrix') |>
                  t() |>
-                 as.data.frame(check.names=FALSE)
+                 .as_data_frame()
         }
         xx <- cbind(xx[,!colnames(xx) %in% colnames(tmp),drop=FALSE], tmp)
     }
@@ -130,7 +146,7 @@ get_dim_data <- function(object, features = NULL,
     }
 
     meta.data <- colData(x) |>
-                 as.data.frame(check.names=FALSE) |>
+                 .as_data_frame() |>
                  suppressWarnings()
 
     nm2 <- lapply(seq(ncol(meta.data)), function(x)is.numeric(meta.data[,x])) |>

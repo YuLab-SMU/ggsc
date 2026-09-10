@@ -16,8 +16,8 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{ggfun}{\code{\link[ggfun:attacher]{\%<+\%}}}
+  \item{ggfun}{\code{\link[ggfun:\%<+\%]{\%<+\%}}}
 
-  \item{ggplot2}{\code{\link[ggplot2]{aes}}, \code{\link[ggplot2]{theme}}}
+  \item{ggplot2}{\code{\link[ggplot2:aes]{aes()}}, \code{\link[ggplot2:theme]{theme()}}}
 }}
 

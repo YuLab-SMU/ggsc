@@ -1,6 +1,6 @@
 Package: ggsc
 Title: Visualizing Single Cell and Spatial Transcriptomics
-Version: 1.11.1
+Version: 1.11.2
 Authors@R: c(
        person("Guangchuang", "Yu", 
               email = "guangchuangyu@gmail.com", 
@@ -76,7 +76,6 @@ ByteCompile: true
 License: Artistic-2.0
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 Config/testthat/edition: 3
 LinkingTo: 
   Rcpp,
@@ -84,3 +83,4 @@ LinkingTo:
   RcppParallel
 Remotes:
   YuLab-SMU/SVP
+Config/roxygen2/version: 8.1.0

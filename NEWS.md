@@ -1,3 +1,7 @@
+# ggsc 1.11.2
+
++ compatible with new S4Vectors (2026-09-10, Thu)
+
 # ggsc 1.11.1
 
 + compatible with Seurat V5 (2026-05-17, Sun)

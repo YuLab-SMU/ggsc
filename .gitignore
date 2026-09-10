@@ -4,3 +4,4 @@ vignettes/*.html
 vignettes/*.R
 docs
 README.html
+.reasonix/

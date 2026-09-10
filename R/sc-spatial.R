@@ -129,7 +129,7 @@ setMethod("sc_spatial", 'Seurat',
     if (!is.null(reduction)){
         if (is.null(dims)) dims <- seq(2)
         dims <- paste0(SeuratObject::Key(object = object[[reduction]]), dims)
-        coords.da <- as.data.frame(SeuratObject::Embeddings(object[[reduction]])[, dims,drop=FALSE], check.names=FALSE)
+        coords.da <- .as_data_frame(SeuratObject::Embeddings(object[[reduction]])[, dims,drop=FALSE])
     }else{
         coords.da <- SeuratObject::GetTissueCoordinates(object = object[[images]])
     }
@@ -282,7 +282,7 @@ setMethod('sc_spatial', 'SingleCellExperiment', function(object,
     if (!is.null(reduction)){
        if (is.null(dims)) dims <- seq(2)
        coords.da <- reducedDims(object)[[reduction]][,dims] |>
-                    as.data.frame(check.names = FALSE)
+                    .as_data_frame()
     }else{
        coords.da <- .extract_coords(object, img.da)
     }
