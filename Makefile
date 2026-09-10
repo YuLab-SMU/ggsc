@@ -79,6 +79,9 @@ publish:
 	git add .; git commit -m 'update'; git push
 
 
+biocinit:
+	git remote add upstream git@git.bioconductor.org:packages/$(PKGNAME).git;\
+	git fetch --all
 
 
 
