@@ -38,6 +38,10 @@ library(Seurat)
 library(ggplot2)
 library(ggsc)
 
+## Several attached packages export `as.factor`, and 'conflicted' turns that
+## ambiguity into an error even inside `aes()`. Declare the base version.
+conflicts_prefer(base::as.factor, .quiet = TRUE)
+
 options(width=60)
 
 library(knitr)

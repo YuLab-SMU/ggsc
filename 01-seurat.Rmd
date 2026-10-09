@@ -212,10 +212,26 @@ f1 | f2
 
 ## Visualize ellipse on a dimensional reduction plot
 
+`sc_dim_geom_ellipse()` adds one ellipse per cluster to a dimensional reduction plot. The default `geom` is `stat_ellipse()`, and the `level` argument sets its confidence level:
+
 ```{r dim-ellipse}
 sc_dim(pbmc) +
   sc_dim_geom_ellipse(level=0.95)
 ```
+
+The `geom` argument also takes any other layer function that draws a group. With `ggforce::geom_mark_hull()`, the cells of each cluster are outlined with a hull instead of an ellipse:
+
+```{r dim-ellipse-hull}
+sel <- c("B", "NK", "FCGR3A+ Mono", "DC")
+sc_dim(subset(pbmc, idents = sel)) +
+  sc_dim_geom_ellipse(geom = ggforce::geom_mark_hull, concavity = 2) +
+  sc_dim_geom_label(geom = shadowtext::geom_shadowtext,
+                    color = 'black', bg.color = 'white', size = 5)
+```
+
+`level` is specific to `stat_ellipse()` and is only forwarded to a layer that accepts it, so `geom_mark_hull()` is not passed an unknown parameter. Arguments of the chosen layer, such as `concavity`, are supplied through `...`.
+
+A hull follows the cells rather than a covariance ellipse, so it is best used for clusters that are compact and well separated; a single cell far from the rest of its cluster is drawn as a long thin spike. The clusters drawn here are a subset for that reason. `sc_dim_geom_label()` combines with either layer and places the labels at the centre of each cluster.
 
 ## Visualize selected clusters 
 
