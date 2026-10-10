@@ -80,6 +80,8 @@ f2 <- sc_dim(pbmc,
 f2
 ```
 
+The `bg_colour` aesthetic has its own scales: `scale_bg_colour_discrete()` is the default, `scale_bg_colour_manual()` sets the colours by hand, and `scale_bg_color_manual()` is the same function under the American spelling.
+
 
 The number of cells in each clusters can be easily Visualized using `sc_dim_count()`. The colors of the bar plot is consistent with the dimensional reduction plot.
 
@@ -305,6 +307,8 @@ f2 <- sc_spatial(brain, features=c("Hpca", "Ttr"), image.mirror.axis='v', densit
 plot_list(f1, f2, ncol=1)
 ```
 
+To mark the spatially variable genes on such a plot, `SVP::runLISA()` computes a local indicator of spatial association for each spot. Its result is drawn by `plot_lisa_feature()`, which takes the `SpatialExperiment` and the `runLISA()` result and returns the spatial plot with the significant spots outlined. The same annotation can be built layer by layer with `sc_geom_annot()`, which is what a density plot needs.
+
 ```{r sc_spatail-hight_annot, fig.width = 15, fig.height = 10}
 {library(SingleCellExperiment)
 library(SpatialExperiment)} |> suppressPackageStartupMessages()
@@ -316,17 +320,12 @@ library(SVP)
 res.lisa1 <- runLISA(spe.brain, features = c("Hpca", "Ttr"), assay.type = 'logcounts', weight.method='knn', k=20)
 da.lisa1 <- res.lisa1 |> lapply(function(x)x |> tibble::rownames_to_column(var='.BarcodeID')) |> dplyr::bind_rows(.id='features')
 head(da.lisa1)
-# The features and .BarcodeID must be provided
-# which be the same to the .BarcodeID and features of 
-# f1$data
-f1 + sc_geom_annot(
-        data=da.lisa1, 
-        mapping = aes(bg_color=cluster.test, subset=cluster.test=='High'), 
-        pointsize =1.5,
-        bg_line_width = .3, 
-        gap_line_width=.3,
-      ) +
-      scale_bg_colour_manual(values = 'black')
+# plot_lisa_feature() draws the annotation in one call
+plot_lisa_feature(spe.brain, lisa.res = res.lisa1, features = c("Hpca", "Ttr"),
+                  geom = geom_bgpoint, pointsize = 1.5, hlpointsize = 1.5,
+                  gap_line_width = .3, bg_line_width = .3)
+# the same annotation is added layer by layer with sc_geom_annot(),
+# which is what a density plot needs
 f2 + sc_geom_annot(
         data = da.lisa1,
 	mapping = aes(bg_colour = cluster.test, subset = cluster.test == 'High'),
