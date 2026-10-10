@@ -22,7 +22,7 @@
 
 
 
-<meta name="date" content="2026-10-09" />
+<meta name="date" content="2026-10-10" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -245,6 +245,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb14-8"><a href="visualizing-seurat-objects.html#cb14-8" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">&#39;black&#39;</span>, <span class="at">bg.color=</span><span class="st">&#39;white&#39;</span>)</span>
 <span id="cb14-9"><a href="visualizing-seurat-objects.html#cb14-9" tabindex="-1"></a>f2</span></code></pre></div>
 <p><img src="ggsc_files/figure-html/dimplot-5.png" alt="" width="100%" /></p>
+<p>The <code>bg_colour</code> aesthetic has its own scales: <code>scale_bg_colour_discrete()</code> is the default, <code>scale_bg_colour_manual()</code> sets the colours by hand, and <code>scale_bg_color_manual()</code> is the same function under the American spelling.</p>
 <p>The number of cells in each clusters can be easily Visualized using <code>sc_dim_count()</code>. The colors of the bar plot is consistent with the dimensional reduction plot.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="visualizing-seurat-objects.html#cb15-1" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">sc_dim_count</span>(p)</span>
 <span id="cb15-2"><a href="visualizing-seurat-objects.html#cb15-2" tabindex="-1"></a></span>
@@ -427,6 +428,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb39-3"><a href="visualizing-seurat-objects.html#cb39-3" tabindex="-1"></a>f2 <span class="ot">&lt;-</span> <span class="fu">sc_spatial</span>(brain, <span class="at">features=</span><span class="fu">c</span>(<span class="st">&quot;Hpca&quot;</span>, <span class="st">&quot;Ttr&quot;</span>), <span class="at">image.mirror.axis=</span><span class="st">&#39;v&#39;</span>, <span class="at">density=</span><span class="cn">TRUE</span>, <span class="at">geom=</span>geom_bgpoint, <span class="at">pointsize=</span><span class="fl">1.5</span>)</span>
 <span id="cb39-4"><a href="visualizing-seurat-objects.html#cb39-4" tabindex="-1"></a><span class="fu">plot_list</span>(f1, f2, <span class="at">ncol=</span><span class="dv">1</span>)</span></code></pre></div>
 <p><img src="ggsc_files/figure-html/sc_spatial-1.png" alt="" width="100%" /></p>
+<p>To mark the spatially variable genes on such a plot, <code>SVP::runLISA()</code> computes a local indicator of spatial association for each spot. Its result is drawn by <code>plot_lisa_feature()</code>, which takes the <code>SpatialExperiment</code> and the <code>runLISA()</code> result and returns the spatial plot with the significant spots outlined. The same annotation can be built layer by layer with <code>sc_geom_annot()</code>, which is what a density plot needs.</p>
 <div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="visualizing-seurat-objects.html#cb40-1" tabindex="-1"></a>{<span class="fu">library</span>(SingleCellExperiment)</span>
 <span id="cb40-2"><a href="visualizing-seurat-objects.html#cb40-2" tabindex="-1"></a><span class="fu">library</span>(SpatialExperiment)} <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
 <span id="cb40-3"><a href="visualizing-seurat-objects.html#cb40-3" tabindex="-1"></a>spe.brain <span class="ot">&lt;-</span> brain <span class="sc">|&gt;</span> <span class="fu">as.SingleCellExperiment</span>()</span>
@@ -474,25 +476,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 4             Low          Low
 ## 5             Low          Low
 ## 6             Low          Low</code></pre>
-<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="visualizing-seurat-objects.html#cb44-1" tabindex="-1"></a><span class="co"># The features and .BarcodeID must be provided</span></span>
-<span id="cb44-2"><a href="visualizing-seurat-objects.html#cb44-2" tabindex="-1"></a><span class="co"># which be the same to the .BarcodeID and features of </span></span>
-<span id="cb44-3"><a href="visualizing-seurat-objects.html#cb44-3" tabindex="-1"></a><span class="co"># f1$data</span></span>
-<span id="cb44-4"><a href="visualizing-seurat-objects.html#cb44-4" tabindex="-1"></a>f1 <span class="sc">+</span> <span class="fu">sc_geom_annot</span>(</span>
-<span id="cb44-5"><a href="visualizing-seurat-objects.html#cb44-5" tabindex="-1"></a>        <span class="at">data=</span>da.lisa1, </span>
-<span id="cb44-6"><a href="visualizing-seurat-objects.html#cb44-6" tabindex="-1"></a>        <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">bg_color=</span>cluster.test, <span class="at">subset=</span>cluster.test<span class="sc">==</span><span class="st">&#39;High&#39;</span>), </span>
-<span id="cb44-7"><a href="visualizing-seurat-objects.html#cb44-7" tabindex="-1"></a>        <span class="at">pointsize =</span><span class="fl">1.5</span>,</span>
-<span id="cb44-8"><a href="visualizing-seurat-objects.html#cb44-8" tabindex="-1"></a>        <span class="at">bg_line_width =</span> .<span class="dv">3</span>, </span>
-<span id="cb44-9"><a href="visualizing-seurat-objects.html#cb44-9" tabindex="-1"></a>        <span class="at">gap_line_width=</span>.<span class="dv">3</span>,</span>
-<span id="cb44-10"><a href="visualizing-seurat-objects.html#cb44-10" tabindex="-1"></a>      ) <span class="sc">+</span></span>
-<span id="cb44-11"><a href="visualizing-seurat-objects.html#cb44-11" tabindex="-1"></a>      <span class="fu">scale_bg_colour_manual</span>(<span class="at">values =</span> <span class="st">&#39;black&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="visualizing-seurat-objects.html#cb44-1" tabindex="-1"></a><span class="co"># plot_lisa_feature() draws the annotation in one call</span></span>
+<span id="cb44-2"><a href="visualizing-seurat-objects.html#cb44-2" tabindex="-1"></a><span class="fu">plot_lisa_feature</span>(spe.brain, <span class="at">lisa.res =</span> res.lisa1, <span class="at">features =</span> <span class="fu">c</span>(<span class="st">&quot;Hpca&quot;</span>, <span class="st">&quot;Ttr&quot;</span>),</span>
+<span id="cb44-3"><a href="visualizing-seurat-objects.html#cb44-3" tabindex="-1"></a>                  <span class="at">geom =</span> geom_bgpoint, <span class="at">pointsize =</span> <span class="fl">1.5</span>, <span class="at">hlpointsize =</span> <span class="fl">1.5</span>,</span>
+<span id="cb44-4"><a href="visualizing-seurat-objects.html#cb44-4" tabindex="-1"></a>                  <span class="at">gap_line_width =</span> .<span class="dv">3</span>, <span class="at">bg_line_width =</span> .<span class="dv">3</span>)</span></code></pre></div>
 <p><img src="ggsc_files/figure-html/sc_spatail-hight_annot-1.png" alt="" width="100%" /></p>
-<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="visualizing-seurat-objects.html#cb45-1" tabindex="-1"></a>f2 <span class="sc">+</span> <span class="fu">sc_geom_annot</span>(</span>
-<span id="cb45-2"><a href="visualizing-seurat-objects.html#cb45-2" tabindex="-1"></a>        <span class="at">data =</span> da.lisa1,</span>
-<span id="cb45-3"><a href="visualizing-seurat-objects.html#cb45-3" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">bg_colour =</span> cluster.test, <span class="at">subset =</span> cluster.test <span class="sc">==</span> <span class="st">&#39;High&#39;</span>),</span>
-<span id="cb45-4"><a href="visualizing-seurat-objects.html#cb45-4" tabindex="-1"></a>    <span class="at">pointsize =</span> <span class="fl">1.5</span>,</span>
-<span id="cb45-5"><a href="visualizing-seurat-objects.html#cb45-5" tabindex="-1"></a>        <span class="at">bg_line_width =</span> .<span class="dv">3</span>,</span>
-<span id="cb45-6"><a href="visualizing-seurat-objects.html#cb45-6" tabindex="-1"></a>    <span class="at">gap_line_width =</span> .<span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb45-7"><a href="visualizing-seurat-objects.html#cb45-7" tabindex="-1"></a>    <span class="fu">scale_bg_colour_manual</span>(<span class="at">values =</span> <span class="st">&#39;black&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="visualizing-seurat-objects.html#cb45-1" tabindex="-1"></a><span class="co"># the same annotation is added layer by layer with sc_geom_annot(),</span></span>
+<span id="cb45-2"><a href="visualizing-seurat-objects.html#cb45-2" tabindex="-1"></a><span class="co"># which is what a density plot needs</span></span>
+<span id="cb45-3"><a href="visualizing-seurat-objects.html#cb45-3" tabindex="-1"></a>f2 <span class="sc">+</span> <span class="fu">sc_geom_annot</span>(</span>
+<span id="cb45-4"><a href="visualizing-seurat-objects.html#cb45-4" tabindex="-1"></a>        <span class="at">data =</span> da.lisa1,</span>
+<span id="cb45-5"><a href="visualizing-seurat-objects.html#cb45-5" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">bg_colour =</span> cluster.test, <span class="at">subset =</span> cluster.test <span class="sc">==</span> <span class="st">&#39;High&#39;</span>),</span>
+<span id="cb45-6"><a href="visualizing-seurat-objects.html#cb45-6" tabindex="-1"></a>    <span class="at">pointsize =</span> <span class="fl">1.5</span>,</span>
+<span id="cb45-7"><a href="visualizing-seurat-objects.html#cb45-7" tabindex="-1"></a>        <span class="at">bg_line_width =</span> .<span class="dv">3</span>,</span>
+<span id="cb45-8"><a href="visualizing-seurat-objects.html#cb45-8" tabindex="-1"></a>    <span class="at">gap_line_width =</span> .<span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb45-9"><a href="visualizing-seurat-objects.html#cb45-9" tabindex="-1"></a>    <span class="fu">scale_bg_colour_manual</span>(<span class="at">values =</span> <span class="st">&#39;black&#39;</span>)</span></code></pre></div>
 <p><img src="ggsc_files/figure-html/sc_spatail-hight_annot-2.png" alt="" width="100%" /></p>
 <div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="visualizing-seurat-objects.html#cb46-1" tabindex="-1"></a>f3 <span class="ot">&lt;-</span> <span class="fu">sc_spatial</span>(brain, <span class="at">features=</span><span class="fu">c</span>(<span class="st">&quot;Hpca&quot;</span>, <span class="st">&quot;Ttr&quot;</span>), <span class="at">image.mirror.axis=</span><span class="st">&#39;v&#39;</span>, </span>
 <span id="cb46-2"><a href="visualizing-seurat-objects.html#cb46-2" tabindex="-1"></a>    <span class="at">density=</span><span class="cn">TRUE</span>, <span class="at">joint=</span><span class="cn">TRUE</span>)</span>
