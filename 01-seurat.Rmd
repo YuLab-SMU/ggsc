@@ -82,6 +82,15 @@ f2
 
 The `bg_colour` aesthetic has its own scales: `scale_bg_colour_discrete()` is the default, `scale_bg_colour_manual()` sets the colours by hand, and `scale_bg_color_manual()` is the same function under the American spelling.
 
+By default `sc_dim()` and `sc_feature()` draw the cells with `sc_geom_point()`, a rasterised point layer that stays fast with tens of thousands of cells. The `geom_bgpoint()` layer used above is the vector version that adds the background colour, and `geom_scattermore2()` is the rasterised version of that same layer, for a `bg_colour` plot with more cells than the vector layer can draw comfortably:
+
+```{r geom-scattermore2, fig.width=9, fig.height=6}
+sc_dim(pbmc, geom = geom_scattermore2, pointsize = 1,
+       mapping = aes(bg_colour = ident), gap_line_width = .2) +
+  sc_dim_geom_label(geom = shadowtext::geom_shadowtext,
+                    color = 'black', bg.color = 'white')
+```
+
 
 The number of cells in each clusters can be easily Visualized using `sc_dim_count()`. The colors of the bar plot is consistent with the dimensional reduction plot.
 
