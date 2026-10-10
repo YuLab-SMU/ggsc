@@ -1,5 +1,6 @@
 # ggsc 1.11.3
 
++ `sc_dim_geom_ellipse()` and `sc_dim_geom_label()` now report that the group column could not be determined when the plot has no non-numeric column to group by (e.g. `sc_dim()` without `colLabels()`); the check indexed the plot data with the missing column name and failed with `attempt to select less than one element in get1index` before the message could be displayed (2026-10-10, Sat)
 + `sc_dim_geom_ellipse()` only passes `level` to layer functions that accept it, so the documented `geom = ggforce::geom_mark_hull` no longer warns about an unknown parameter (2026-10-09, Fri)
 + `sc_dim_geom_label()` places labels at the true group centre; the reference point was averaged from a sampled ellipse outline, which was offset from the centre and drifted with the ellipse `level` (2026-10-09, Fri)
 + `sc_dim_geom_label(data = )` now reports that `data` must not be supplied, instead of an unrelated message about the label mapping (2026-10-09, Fri)

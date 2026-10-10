@@ -192,7 +192,17 @@ sc_dim_geom_label <- function(geom = ggplot2::geom_text, mapping=NULL, ...) {
     } else {
         lab.text <- ggplot_build(plot)$plot$labels$colour
     }
-    ok <- lab.text %in% colnames(plot$data) && !is.numeric(plot$data[[lab.text]])
+    ## `lab.text` is `NULL` when neither the layer nor the plot maps a colour,
+    ## and it may name a column that `plot$data` does not have.  Indexing with
+    ## either used to fail ("attempt to select less than one element") before
+    ## the caller could report the missing group column, so test the name
+    ## before touching the data.
+    ok <- length(lab.text) == 1L && !is.na(lab.text) &&
+        lab.text %in% colnames(plot$data) &&
+        !is.numeric(plot$data[[lab.text]])
+    if (!ok) {
+        lab.text <- NULL
+    }
     list(object = object, lab.text = lab.text, ok = ok)
 }
 
