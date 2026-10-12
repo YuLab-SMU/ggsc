@@ -152,7 +152,7 @@ sc_feature(pbmc, "CD4", mapping = aes(bg_colour = ident))
 ```{r feature-plot-multi}
 sc_feature(pbmc, features)
 
-sc_feature(pbmc, features, mapping = aes(bg_color = ident), geom = geom_bgpoint, pointsize=.5)
+sc_feature(pbmc, features, mapping = aes(bg_colour = ident), geom = geom_bgpoint, pointsize=.5)
 ```
 
 
@@ -242,7 +242,7 @@ sc_dim(subset(pbmc, idents = sel)) +
 
 `level` is specific to `stat_ellipse()` and is only forwarded to a layer that accepts it, so `geom_mark_hull()` is not passed an unknown parameter. Arguments of the chosen layer, such as `concavity`, are supplied through `...`.
 
-A hull follows the cells rather than a covariance ellipse, so it is best used for clusters that are compact and well separated; a single cell far from the rest of its cluster is drawn as a long thin spike. The clusters drawn here are a subset for that reason. `sc_dim_geom_label()` combines with either layer and places the labels at the centre of each cluster.
+A hull follows the cells rather than a covariance ellipse, so it is best used for clusters that are compact and well separated; a single cell far from the rest of its cluster is drawn as a long thin spike. The clusters drawn here are a subset for that reason. `sc_dim_geom_label()` combines with either layer and places each label at a robust centre estimated from the coordinates of its cluster.
 
 ## Visualize selected clusters 
 

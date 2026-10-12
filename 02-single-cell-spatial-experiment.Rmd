@@ -203,7 +203,7 @@ f1 <- f1 + sc_geom_annot(
 plot_list(f1, f2, ncol=1)
 ```
 
-The same annotation is drawn in one call by `plot_lisa_feature()`. It takes the `SpatialExperiment` and the result of `runLISA()` and plots on the object's `spatialCoords`, with one panel per feature:
+The same annotation is drawn in one call by `plot_lisa_feature()`. It takes the `SpatialExperiment` and the result of `runLISA()` and, by default (`reduction = NULL`), plots on the object's `spatialCoords`; passing `reduction` plots on that reduced dimension instead, with one panel per feature:
 
 ```{r sce-lisa-feature, fig.width=10, fig.height=10}
 plot_lisa_feature(spe, lisa.res = lisa.res1, features = target.features[seq(2)],
