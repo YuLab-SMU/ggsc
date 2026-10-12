@@ -22,7 +22,7 @@
 
 
 
-<meta name="date" content="2026-10-10" />
+<meta name="date" content="2026-10-12" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -301,7 +301,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><img src="ggsc_files/figure-html/feature-plot-3.png" alt="" width="100%" /></p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="visualizing-seurat-objects.html#cb22-1" tabindex="-1"></a><span class="fu">sc_feature</span>(pbmc, features)</span></code></pre></div>
 <p><img src="ggsc_files/figure-html/feature-plot-multi-1.png" alt="" width="100%" /></p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="visualizing-seurat-objects.html#cb23-1" tabindex="-1"></a><span class="fu">sc_feature</span>(pbmc, features, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">bg_color =</span> ident), <span class="at">geom =</span> geom_bgpoint, <span class="at">pointsize=</span>.<span class="dv">5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="visualizing-seurat-objects.html#cb23-1" tabindex="-1"></a><span class="fu">sc_feature</span>(pbmc, features, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">bg_colour =</span> ident), <span class="at">geom =</span> geom_bgpoint, <span class="at">pointsize=</span>.<span class="dv">5</span>)</span></code></pre></div>
 <p><img src="ggsc_files/figure-html/feature-plot-multi-2.png" alt="" width="100%" /></p>
 <p>Here is the real ‘features’ on dimensional plot</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="visualizing-seurat-objects.html#cb24-1" tabindex="-1"></a><span class="fu">sc_dim</span>(pbmc) <span class="sc">+</span> </span>
@@ -377,7 +377,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb32-5"><a href="visualizing-seurat-objects.html#cb32-5" tabindex="-1"></a>                    <span class="at">color =</span> <span class="st">&#39;black&#39;</span>, <span class="at">bg.color =</span> <span class="st">&#39;white&#39;</span>, <span class="at">size =</span> <span class="dv">5</span>)</span></code></pre></div>
 <p><img src="ggsc_files/figure-html/dim-ellipse-hull-1.png" alt="" width="100%" /></p>
 <p><code>level</code> is specific to <code>stat_ellipse()</code> and is only forwarded to a layer that accepts it, so <code>geom_mark_hull()</code> is not passed an unknown parameter. Arguments of the chosen layer, such as <code>concavity</code>, are supplied through <code>...</code>.</p>
-<p>A hull follows the cells rather than a covariance ellipse, so it is best used for clusters that are compact and well separated; a single cell far from the rest of its cluster is drawn as a long thin spike. The clusters drawn here are a subset for that reason. <code>sc_dim_geom_label()</code> combines with either layer and places the labels at the centre of each cluster.</p>
+<p>A hull follows the cells rather than a covariance ellipse, so it is best used for clusters that are compact and well separated; a single cell far from the rest of its cluster is drawn as a long thin spike. The clusters drawn here are a subset for that reason. <code>sc_dim_geom_label()</code> combines with either layer and places each label at a robust centre estimated from the coordinates of its cluster.</p>
 </div>
 <div id="visualize-selected-clusters" class="section level2 hasAnchor" number="1.4">
 <h2><span class="header-section-number">1.4</span> Visualize selected clusters<a href="visualizing-seurat-objects.html#visualize-selected-clusters" class="anchor-section" aria-label="Anchor link to header"></a></h2>

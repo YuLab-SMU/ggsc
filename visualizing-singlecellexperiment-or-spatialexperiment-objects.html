@@ -22,7 +22,7 @@
 
 
 
-<meta name="date" content="2026-10-10" />
+<meta name="date" content="2026-10-12" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -384,7 +384,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb73-16"><a href="visualizing-singlecellexperiment-or-spatialexperiment-objects.html#cb73-16" tabindex="-1"></a>)</span>
 <span id="cb73-17"><a href="visualizing-singlecellexperiment-or-spatialexperiment-objects.html#cb73-17" tabindex="-1"></a><span class="fu">plot_list</span>(f1, f2, <span class="at">ncol=</span><span class="dv">1</span>)</span></code></pre></div>
 <p><img src="ggsc_files/figure-html/sce_spatial-density-1.png" alt="" width="100%" /></p>
-<p>The same annotation is drawn in one call by <code>plot_lisa_feature()</code>. It takes the <code>SpatialExperiment</code> and the result of <code>runLISA()</code> and plots on the object’s <code>spatialCoords</code>, with one panel per feature:</p>
+<p>The same annotation is drawn in one call by <code>plot_lisa_feature()</code>. It takes the <code>SpatialExperiment</code> and the result of <code>runLISA()</code> and, by default (<code>reduction = NULL</code>), plots on the object’s <code>spatialCoords</code>; passing <code>reduction</code> plots on that reduced dimension instead, with one panel per feature:</p>
 <div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="visualizing-singlecellexperiment-or-spatialexperiment-objects.html#cb74-1" tabindex="-1"></a><span class="fu">plot_lisa_feature</span>(spe, <span class="at">lisa.res =</span> lisa.res1, <span class="at">features =</span> target.features[<span class="fu">seq</span>(<span class="dv">2</span>)],</span>
 <span id="cb74-2"><a href="visualizing-singlecellexperiment-or-spatialexperiment-objects.html#cb74-2" tabindex="-1"></a>                  <span class="at">assay.type =</span> <span class="st">&#39;logcounts&#39;</span>, <span class="at">pointsize =</span> <span class="dv">1</span>, <span class="at">hlpointsize =</span> <span class="dv">1</span>,</span>
 <span id="cb74-3"><a href="visualizing-singlecellexperiment-or-spatialexperiment-objects.html#cb74-3" tabindex="-1"></a>                  <span class="at">gap_line_width =</span> .<span class="dv">3</span>, <span class="at">bg_line_width =</span> .<span class="dv">3</span>, <span class="at">ncol =</span> <span class="dv">2</span>)</span></code></pre></div>
