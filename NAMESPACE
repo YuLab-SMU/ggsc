@@ -5,6 +5,8 @@ S3method(ggplot_add,dim_sub)
 S3method(ggplot_add,sc_dim_geom_ellipse)
 S3method(ggplot_add,sc_dim_geom_feature)
 S3method(ggplot_add,sc_dim_geom_label)
+S3method(ggplot_add,sc_dim_geom_ring)
+S3method(ggplot_add,sc_dim_geom_ring_label)
 S3method(ggplot_add,sc_geom_annot)
 export("%<+%")
 export(aes)
@@ -14,9 +16,12 @@ export(geom_scattermore2)
 export(plot_lisa_feature)
 export(sc_dim)
 export(sc_dim_count)
+export(sc_dim_fraction)
 export(sc_dim_geom_ellipse)
 export(sc_dim_geom_feature)
 export(sc_dim_geom_label)
+export(sc_dim_geom_ring)
+export(sc_dim_geom_ring_label)
 export(sc_dim_geom_sub)
 export(sc_dim_sub)
 export(sc_dot)
@@ -75,6 +80,7 @@ importFrom(ggplot2,
   geom_blank,
   geom_col,
   geom_point,
+  geom_text,
   geom_violin,
   ggplot,
   ggplot_add,

@@ -1,3 +1,18 @@
+# ggsc 1.11.4
+
++ add `sc_dim_geom_ring()` and `sc_dim_geom_ring_label()` to draw annotation rings around a
+  dimension reduction plot without rescaling the embedding: the cells are laid out in
+  sectors (by default the clusters used to colour the points) and each ring shows a metadata
+  variable as coloured arcs, so the cluster, the treatment and any other track can be read
+  around the same circle. Each metadata ring gets its own legend (`legend`, `legend.title`);
+  a ring that repeats the variable already colouring the points stays silent by default so
+  the point legend is not duplicated, and multiple legend-bearing rings use ggnewscale
+  (2026-11-08, Sun)
++ add `sc_dim_fraction()`, the bar-plot companion of the rings for the aplot-combined style:
+  it shows the same cell-type composition beside the embedding (e.g. `aplot::plot_list()`)
+  and reuses the embedding's colour scale so a cell type has one colour across both views
+  (2026-11-08, Sun)
+
 # ggsc 1.11.3
 
 + `sc_dim_geom_ellipse()` and `sc_dim_geom_label()` now report that the group column could not be determined when the plot has no non-numeric column to group by (e.g. `sc_dim()` without `colLabels()`); the check indexed the plot data with the missing column name and failed with `attempt to select less than one element in get1index` before the message could be displayed (2026-10-10, Sat)
