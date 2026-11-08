@@ -135,6 +135,41 @@ insert_top(g, p3, height=.2)
 ```
 
 
+## Circular annotation rings
+
+`sc_dim_geom_ring()` draws annotation rings around the embedding, in the spirit of plot1cell's circlize plot. The cells are laid out in sectors — by default the clusters that colour the points — and each ring shows a metadata variable as coloured arcs, without rescaling the embedding. `sc_dim_geom_ring_label()` places the sector labels outside the outermost ring.
+
+To illustrate a second track, we derive a library-complexity group (above/below the median number of detected genes); any categorical metadata column works the same way.
+
+```{r ring-setup}
+pbmc$complexity <- factor(ifelse(pbmc$nFeature_RNA > median(pbmc$nFeature_RNA),
+                                 "high", "low"))
+```
+
+```{r seurat-ring, fig.width=8, fig.height=7}
+sc_dim(pbmc) +
+  sc_dim_geom_ring() +
+  sc_dim_geom_ring(mapping = aes(colour = complexity)) +
+  sc_dim_geom_ring_label() +
+  theme_void()
+```
+
+The inner ring repeats the cell-type identity that already colours the points, so it stays silent by default; the `complexity` ring gets its own legend. `legend = TRUE/FALSE` forces a ring's legend and `legend.title` renames it. Sector width is proportional to cell number by default (`width = "n"`); `"sqrt"` and `"log10"` compress large sectors so that small clusters remain visible.
+
+## Cell-type composition beside the embedding
+
+The same composition can be shown as a bar plot next to the embedding instead of around it, which is often easier to read. `sc_dim_fraction()` reuses the embedding's colour scale, so a cell type keeps one colour across both views. The two are assembled with `aplot::plot_list()`: the bar plot has its own discrete x axis, so it is stacked as a separate panel rather than axis-aligned.
+
+```{r seurat-fraction, fig.width=8, fig.height=9}
+p0 <- sc_dim(pbmc)
+pf <- sc_dim_fraction(p0, group.by = "complexity")
+
+aplot::plot_list(gglist = list(p0, pf + theme(legend.position = "none")),
+                 ncol = 1, heights = c(3, 1.2))
+```
+
+`position = "fill"` (the default) normalises each bar to proportions summing to 1; `position = "stack"` shows raw cell counts.
+
 ## Visualize 'features' on a dimensional reduction plot
 
 ```{r feature-plot}

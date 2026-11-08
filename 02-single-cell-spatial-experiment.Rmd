@@ -94,6 +94,37 @@ sc_dim(spe, reduction = 'TSNE') +
   )
 ```
 
+## Circular annotation rings
+
+The ring layers work the same way on a `SingleCellExperiment` or `SpatialExperiment` object. Here the sectors are the cluster labels of the `TSNE` reduction, and a second track shows a library-complexity group derived from the number of detected genes.
+
+```{r sce-ring-setup}
+spe$complexity <- factor(ifelse(spe$detected > median(spe$detected),
+                                "high", "low"))
+```
+
+```{r sce-ring, fig.width=8, fig.height=7}
+sc_dim(spe, reduction = 'TSNE') +
+  sc_dim_geom_ring() +
+  sc_dim_geom_ring(mapping = aes(colour = complexity)) +
+  sc_dim_geom_ring_label() +
+  theme_void()
+```
+
+As with the Seurat object, the cluster ring repeats the point colours and stays silent by default, while the `complexity` ring gets its own legend.
+
+## Cell-type composition beside the embedding
+
+`sc_dim_fraction()` shows the same composition as a bar plot beside the embedding, reusing its colour scale; the two are assembled with `aplot::plot_list()`.
+
+```{r sce-fraction, fig.width=8, fig.height=9}
+p0 <- sc_dim(spe, reduction = 'TSNE')
+pf <- sc_dim_fraction(p0, group.by = "complexity")
+
+aplot::plot_list(gglist = list(p0, pf + theme(legend.position = "none")),
+                 ncol = 1, heights = c(3, 1.2))
+```
+
 ## Visualize 'features' on a dimensional reduction plot
 
 To visualize the gene expression of cells in the result of reduction, `ggsc` provides `sc_feature` function to highlight on a dimensional reduction plot.

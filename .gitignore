@@ -4,3 +4,5 @@ pkgdocs_cache
 gh-pages
 ggsc.Rmd
 src
+/ggsc_cache/
+/ggsc_files/
